@@ -387,10 +387,6 @@ importers:
         version: 5.9.3
 
   packages/shared:
-    dependencies:
-      zod:
-        specifier: ^3.24.2
-        version: 3.25.76
     devDependencies:
       '@pergon/config':
         specifier: workspace:*
