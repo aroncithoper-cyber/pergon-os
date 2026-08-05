@@ -1,6 +1,7 @@
 # PerGon — Brand System
 
-> Guía oficial de identidad de marca.  
+> Guía oficial de identidad de marca (logo, paleta, tipografía de sistema).  
+> Universo visual canónico: `PERGON_VISUAL_BIBLE.md`.  
 > Fuente de verdad junto a `PERGON_DESIGN_BIBLE.md`, `UI_UX_PRINCIPLES.md` y `ART_DIRECTION.md`.  
 > No es un kit de marketing genérico: es la identidad de una **plataforma tecnológica** de confianza, trazabilidad e identidad digital.
 
@@ -227,15 +228,14 @@ Reglas: contraste alto, tipografía mono en IDs, sin glow, sin stickers flotante
 
 ## 7. Aplicaciones (mapa)
 
-Detalle en documentos hijos:
-
-| Documento               | Contenido                                         |
-| ----------------------- | ------------------------------------------------- |
-| `ART_DIRECTION.md`      | Look & feel, composición, anti-patrones           |
-| `PHOTOGRAPHY.md`        | Fotografía de producto y entorno                  |
-| `ICONOGRAPHY.md`        | Iconos UI y señalética                            |
-| `3D_GUIDE.md`           | Renders y motion 3D                               |
-| `ILLUSTRATION_GUIDE.md` | Ilustración, motion 2D, video, packaging, entorno |
+| Documento                | Contenido                                           |
+| ------------------------ | --------------------------------------------------- |
+| `PERGON_VISUAL_BIBLE.md` | **Universo visual canónico** (Instrumental Realism) |
+| `ART_DIRECTION.md`       | Look & feel, composición, anti-patrones             |
+| `PHOTOGRAPHY.md`         | Fotografía de producto y entorno                    |
+| `ICONOGRAPHY.md`         | Iconos UI y señalética                              |
+| `3D_GUIDE.md`            | Renders y motion 3D                                 |
+| `ILLUSTRATION_GUIDE.md`  | Ilustración, motion 2D, video, packaging, entorno   |
 
 ---
 

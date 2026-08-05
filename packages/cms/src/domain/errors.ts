@@ -1,0 +1,37 @@
+export class CmsError extends Error {
+  constructor(
+    message: string,
+    readonly code: string,
+  ) {
+    super(message);
+    this.name = "CmsError";
+  }
+}
+
+export class CmsValidationError extends CmsError {
+  constructor(message: string) {
+    super(message, "VALIDATION_FAILED");
+    this.name = "CmsValidationError";
+  }
+}
+
+export class CmsNotFoundError extends CmsError {
+  constructor(message = "CMS home document not found") {
+    super(message, "NOT_FOUND");
+    this.name = "CmsNotFoundError";
+  }
+}
+
+export class CmsConflictError extends CmsError {
+  constructor(message: string) {
+    super(message, "CONFLICT");
+    this.name = "CmsConflictError";
+  }
+}
+
+export class CmsPreviewError extends CmsError {
+  constructor(message: string) {
+    super(message, "PREVIEW_INVALID");
+    this.name = "CmsPreviewError";
+  }
+}

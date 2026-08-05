@@ -1,43 +1,76 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { useReducedMotion } from "framer-motion";
+
+import type { CmsCtaSection, CmsFinalCtaSection, CmsTechnologyMedia } from "@pergon/cms";
 import { Button } from "@pergon/ui/components/button";
 import { Container } from "@pergon/ui/components/container";
-import { Section } from "@pergon/ui/components/section";
+import { cn } from "@pergon/ui/lib/utils";
 
-import { finalCtaContent } from "../content";
+import { BlockMedia } from "./block-media";
 import { SectionReveal } from "./section-reveal";
 
-export function FinalCtaSection() {
+type CtaContent = CmsCtaSection | CmsFinalCtaSection;
+
+const emptyMedia: CmsTechnologyMedia = {
+  mode: "none",
+  loop: false,
+  enableVideo: false,
+  enableImage: false,
+};
+
+/**
+ * Final CTA — narrative close of the Home.
+ * Not a banner or card: typography + air + optional elegant media.
+ */
+export function FinalCtaSection({ content }: { content: CtaContent }) {
+  const reduce = useReducedMotion();
+
+  if (!content.enabled) return null;
+
+  const media = content.media ?? emptyMedia;
+  const hasSecondary =
+    Boolean(content.secondaryCta?.label?.trim()) && Boolean(content.secondaryCta?.href?.trim());
+  const hasMedia =
+    (media.enableVideo && Boolean(media.videoUrl?.trim())) ||
+    (media.enableImage && Boolean(media.imageUrl?.trim() || media.posterUrl?.trim()));
+
   return (
-    <div className="border-border border-t">
-      <Container size="md" asChild>
-        <Section id={finalCtaContent.id} className="scroll-mt-20" density="cinematic">
-          <SectionReveal>
-            <div className="mx-auto max-w-2xl space-y-10 text-center">
-              <div className="space-y-5">
-                <h2 className="text-foreground text-3xl font-semibold tracking-tight sm:text-4xl">
-                  {finalCtaContent.title}
-                </h2>
-                <p className="text-muted-foreground text-lede mx-auto max-w-lg">
-                  {finalCtaContent.body}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <Button asChild size="lg">
-                  <Link href={finalCtaContent.primaryCta.href}>
-                    {finalCtaContent.primaryCta.label}
-                  </Link>
-                </Button>
+    <section id={content.id} className="border-border scroll-mt-20 border-t">
+      <Container size="lg" className="chapter-gap">
+        <SectionReveal>
+          <div className="mx-auto max-w-3xl space-y-10 text-center md:space-y-14">
+            <h2
+              className={cn(
+                "text-foreground font-semibold tracking-tight",
+                "text-[clamp(2.25rem,6vw,4rem)] leading-[1.05]",
+              )}
+            >
+              {content.title}
+            </h2>
+            <p className="text-muted-foreground text-lede mx-auto max-w-xl">{content.body}</p>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <Button asChild size="lg">
+                <Link href={content.primaryCta.href}>{content.primaryCta.label}</Link>
+              </Button>
+              {hasSecondary ? (
                 <Button asChild size="lg" variant="outline">
-                  <Link href={finalCtaContent.secondaryCta.href}>
-                    {finalCtaContent.secondaryCta.label}
-                  </Link>
+                  <Link href={content.secondaryCta!.href}>{content.secondaryCta!.label}</Link>
                 </Button>
-              </div>
+              ) : null}
             </div>
-          </SectionReveal>
-        </Section>
+          </div>
+        </SectionReveal>
       </Container>
-    </div>
+
+      {hasMedia ? (
+        <SectionReveal delay={0.05}>
+          <div className="border-border border-y">
+            <BlockMedia media={media} label={content.title} reduce={reduce} aspect="hero" />
+          </div>
+        </SectionReveal>
+      ) : null}
+    </section>
   );
 }

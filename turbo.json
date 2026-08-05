@@ -27,6 +27,10 @@
     "AI_PROVIDER",
     "PERGON_SETUP_SECRET",
     "ALLOW_DEV_RESET_TOKEN",
+    "CMS_REVALIDATE_SECRET",
+    "CMS_PREVIEW_SECRET",
+    "NEXT_PUBLIC_WEB_URL",
+    "WEB_APP_URL",
     "HUSKY"
   ],
   "tasks": {

@@ -59,6 +59,13 @@ export const ADMIN_NAV: NavGroup[] = [
     ],
   },
   {
+    title: "CMS",
+    items: [
+      { href: "/cms/home", label: "Home", permission: "cms:read" },
+      { href: "/cms/media", label: "Media", permission: "cms:read" },
+    ],
+  },
+  {
     title: "Sistema",
     items: [
       { href: "/settings", label: "Configuración", permission: "settings:read" },

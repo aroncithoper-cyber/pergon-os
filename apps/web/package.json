@@ -13,6 +13,7 @@
   "dependencies": {
     "@pergon/auth": "workspace:*",
     "@pergon/catalog": "workspace:*",
+    "@pergon/cms": "workspace:*",
     "@pergon/database": "workspace:*",
     "@pergon/expert": "workspace:*",
     "@pergon/identity": "workspace:*",

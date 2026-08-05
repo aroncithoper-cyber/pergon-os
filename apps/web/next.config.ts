@@ -31,12 +31,15 @@ const nextConfig: NextConfig = {
     "@pergon/identity",
     "@pergon/auth",
     "@pergon/catalog",
+    "@pergon/cms",
     "@pergon/expert",
     "@pergon/three",
   ],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**.supabase.co", pathname: "/storage/v1/object/**" },
+      { protocol: "https", hostname: "i.ytimg.com", pathname: "/**" },
+      { protocol: "https", hostname: "img.youtube.com", pathname: "/**" },
       { protocol: "http", hostname: "127.0.0.1", pathname: "/**" },
       { protocol: "http", hostname: "localhost", pathname: "/**" },
     ],

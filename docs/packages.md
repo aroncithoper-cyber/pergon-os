@@ -9,6 +9,7 @@
 | `packages/identity` | `@pergon/identity` | Passport/QR domain + use cases                           |
 | `packages/auth`     | `@pergon/auth`     | AuthN/AuthZ, sessions, RBAC→permissions                  |
 | `packages/ops`      | `@pergon/ops`      | Admin ops domain, engines, APIs logic                    |
+| `packages/cms`      | `@pergon/cms`      | Experience CMS (Home V1: publish, preview, versions)     |
 | `packages/three`    | `@pergon/three`    | React Three Fiber utilities                              |
 
 ## Adding a package

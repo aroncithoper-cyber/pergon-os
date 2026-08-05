@@ -1,25 +1,25 @@
 import { FileText } from "lucide-react";
 
-import { EmptyState } from "@pergon/ui/components/empty-state";
+import type { CmsCasesSection, CmsEcosystemSection } from "@pergon/cms";
 import { Container } from "@pergon/ui/components/container";
+import { EmptyState } from "@pergon/ui/components/empty-state";
 import { Section } from "@pergon/ui/components/section";
 import { Separator } from "@pergon/ui/components/separator";
 
-import { casesContent, ecosystemContent } from "../content";
 import { SectionReveal } from "./section-reveal";
 
-export function EcosystemSection() {
-  const { distributors, comparator, calculators } = ecosystemContent;
+export function EcosystemSection({ content }: { content: CmsEcosystemSection }) {
+  const { distributors, comparator, calculators } = content;
 
   return (
     <div className="bg-panel">
       <Container size="lg" asChild>
         <Section
-          id={ecosystemContent.id}
+          id={content.id}
           className="scroll-mt-20"
           density="cinematic"
           title="Ecosistema"
-          description="Capas que extienden el sistema más allá de la narrativa principal. Estructura lista; datos reales después."
+          description="Capas que extienden el sistema más allá de la narrativa principal."
         >
           <SectionReveal>
             <div>
@@ -57,21 +57,21 @@ export function EcosystemSection() {
   );
 }
 
-export function CasesSection() {
+export function CasesSection({ content }: { content: CmsCasesSection }) {
   return (
     <Container size="lg" asChild>
       <Section
-        id={casesContent.id}
+        id={content.id}
         className="scroll-mt-20"
-        title={casesContent.title}
-        description={casesContent.description}
+        title={content.title}
+        description={content.description}
       >
         <SectionReveal>
           <div className="border-border border">
             <EmptyState
               icon={<FileText aria-hidden="true" />}
-              title={casesContent.emptyTitle}
-              description={casesContent.emptyDescription}
+              title={content.emptyTitle}
+              description={content.emptyDescription}
             />
           </div>
         </SectionReveal>

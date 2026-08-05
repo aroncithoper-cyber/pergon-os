@@ -1,11 +1,10 @@
 import Link from "next/link";
 
+import type { CmsNavItem } from "@pergon/cms";
 import { Button } from "@pergon/ui/components/button";
 import { Navbar } from "@pergon/ui/components/navbar";
 
-import { homeNav } from "../content";
-
-export function SiteHeader() {
+export function SiteHeader({ nav }: { nav: CmsNavItem[] }) {
   return (
     <Navbar
       className="border-border/80"
@@ -19,7 +18,7 @@ export function SiteHeader() {
       }
       nav={
         <ul className="hidden items-center gap-1 md:flex">
-          {homeNav.map((item) => (
+          {nav.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}

@@ -1,13 +1,12 @@
 import Link from "next/link";
 
-import { PassportBadge } from "@pergon/ui/components/passport-badge";
-import { QrViewer } from "@pergon/ui/components/qr-viewer";
+import type { CmsSystemSection } from "@pergon/cms";
 import { Button } from "@pergon/ui/components/button";
 import { Container } from "@pergon/ui/components/container";
+import { PassportBadge } from "@pergon/ui/components/passport-badge";
+import { QrViewer } from "@pergon/ui/components/qr-viewer";
 import { Section } from "@pergon/ui/components/section";
-import { Separator } from "@pergon/ui/components/separator";
 
-import { systemContent } from "../content";
 import { SectionReveal } from "./section-reveal";
 
 function MiniQr() {
@@ -27,12 +26,12 @@ function MiniQr() {
   );
 }
 
-export function SystemChaptersSection() {
+export function SystemChaptersSection({ content }: { content: CmsSystemSection }) {
   return (
-    <div id={systemContent.id} className="scroll-mt-20">
-      {systemContent.chapters.map((chapter, index) => {
+    <div id={content.id} className="scroll-mt-20">
+      {content.chapters.map((chapter, index) => {
         const odd = index % 2 === 1;
-        const href = "href" in chapter ? chapter.href : undefined;
+        const href = chapter.href;
 
         return (
           <div key={chapter.id} className={index % 2 === 0 ? "bg-background" : "bg-panel"}>
@@ -75,23 +74,6 @@ export function SystemChaptersSection() {
                           </p>
                         </div>
                       )}
-                      {chapter.id === "pergon-expert" && (
-                        <div className="max-w-sm space-y-4 text-left">
-                          <p className="text-muted-foreground text-xs uppercase tracking-[0.18em]">
-                            Especialista
-                          </p>
-                          <p className="text-foreground text-lg font-medium tracking-tight">
-                            PerGon Expert
-                          </p>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
-                            Consulta técnica con fuentes. Sin orbes, sin estética de chatbot.
-                          </p>
-                          <Separator />
-                          <p className="text-muted-foreground font-mono text-xs">
-                            /expert · contexto de sesión
-                          </p>
-                        </div>
-                      )}
                       {chapter.id === "academia" && (
                         <div className="max-w-sm space-y-4 text-left">
                           <p className="text-muted-foreground text-xs uppercase tracking-[0.18em]">
@@ -104,6 +86,16 @@ export function SystemChaptersSection() {
                             Curriculum y recursos se publicarán con la misma precisión tipográfica.
                           </p>
                         </div>
+                      )}
+                      {![
+                        "tecnologia-qr",
+                        "pasaporte-digital",
+                        "pergon-expert",
+                        "academia",
+                      ].includes(chapter.id) && (
+                        <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
+                          {chapter.title}
+                        </p>
                       )}
                     </div>
                   </div>

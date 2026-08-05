@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
     "@pergon/auth",
     "@pergon/ops",
     "@pergon/catalog",
+    "@pergon/cms",
     "@pergon/expert",
   ],
   images: {
