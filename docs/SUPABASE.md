@@ -1,6 +1,6 @@
 # Supabase Integration
 
-Project URL: `https://hrsxzqdfvwwsiiegbzvg.supabase.co`
+Configure `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and server-only `SUPABASE_SERVICE_ROLE_KEY` from Dashboard → **Settings → API**. Never commit real keys.
 
 ## Package `@pergon/database`
 
@@ -19,15 +19,7 @@ Apps wire through:
 
 ## Environment
 
-Copy each app `.env.example` → `.env.local` and fill keys from Dashboard → **Settings → API**.
-
-Required:
-
-1. `NEXT_PUBLIC_SUPABASE_URL` (already set in examples)
-2. `NEXT_PUBLIC_SUPABASE_ANON_KEY` (`anon` `public`)
-3. `SUPABASE_SERVICE_ROLE_KEY` (`service_role` `secret` — server only)
-
-Optional storage bucket overrides are documented in `.env.example`.
+Copy root / app `.env.example` → `.env.local` and fill keys. Also set `PERGON_SETUP_SECRET` before using Admin org bootstrap.
 
 ## Migrations
 
@@ -38,9 +30,13 @@ Apply in order with CLI (or Dashboard SQL):
 3. `20260304230000_ops_core.sql`
 4. `20260304240000_rls_foundation.sql` — RLS fail-closed
 5. `20260304250000_storage_realtime.sql` — buckets + realtime publication
+6. `20260304260000_catalog_core.sql`
+7. `20260304270000_expert_core.sql`
+8. `20260304280000_automation_engine.sql`
+9. `20260304290000_automation_engine_rls.sql`
 
 ```bash
-supabase link --project-ref hrsxzqdfvwwsiiegbzvg
+supabase link --project-ref <your-project-ref>
 supabase db push
 ```
 
@@ -55,3 +51,5 @@ supabase db push
 ## Production vs development
 
 Same variable names. Use separate Supabase projects or Dashboard environments if needed; never commit `.env.local`. Builds succeed without keys; clients throw only when invoked without env.
+
+**Rotate any keys that were ever committed to git history before production use.**

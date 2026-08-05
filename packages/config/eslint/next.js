@@ -5,6 +5,16 @@ import pluginReactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
 import { baseConfig } from "./base.js";
 
+/** Next.js Flat Config fragment (plugin + core-web-vitals rules) for monorepo root. */
+export const nextPluginFlatConfig = {
+  ...pluginNext.flatConfig.coreWebVitals,
+  settings: {
+    next: {
+      rootDir: ["apps/web/", "apps/admin/"],
+    },
+  },
+};
+
 /** @type {import("eslint").Linter.Config[]} */
 export const nextJsConfig = [
   ...baseConfig,
@@ -19,12 +29,12 @@ export const nextJsConfig = [
     },
   },
   {
-    plugins: {
-      "@next/next": pluginNext,
-    },
-    rules: {
-      ...pluginNext.configs.recommended.rules,
-      ...pluginNext.configs["core-web-vitals"].rules,
+    ...pluginNext.flatConfig.coreWebVitals,
+    settings: {
+      next: {
+        // Per-app ESLint runs with cwd = apps/<app>; "." is that app root.
+        rootDir: ["."],
+      },
     },
   },
   {

@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { Button } from "@pergon/ui/components/button";
+
 import { logger } from "@/lib/logger";
 
 type ErrorProps = {
@@ -16,14 +18,10 @@ export default function Error({ error, reset }: ErrorProps) {
 
   return (
     <main className="bg-background text-foreground flex min-h-dvh flex-col items-center justify-center gap-4 px-6">
-      <h1 className="text-lg font-medium tracking-tight">Something went wrong</h1>
-      <button
-        type="button"
-        onClick={reset}
-        className="border-border bg-background hover:bg-accent rounded-md border px-3 py-2 text-sm"
-      >
-        Try again
-      </button>
+      <h1 className="text-lg font-medium tracking-tight">Algo salió mal</h1>
+      <Button type="button" variant="outline" onClick={reset}>
+        Reintentar
+      </Button>
     </main>
   );
 }

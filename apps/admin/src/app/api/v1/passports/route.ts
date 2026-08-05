@@ -1,12 +1,14 @@
+import { requireApiPermission } from "@/lib/auth";
 import { getIdentityServices, toErrorResponse } from "@/lib/identity";
 
 export async function POST(request: Request) {
   try {
+    const ctx = await requireApiPermission(request, "passports:issue");
     const body = (await request.json()) as Record<string, unknown>;
     const services = getIdentityServices();
 
     const result = await services.createPassport({
-      organizationId: String(body.organizationId),
+      organizationId: String(body.organizationId ?? ctx.organizationId),
       productId: String(body.productId),
       batchId: body.batchId ? String(body.batchId) : undefined,
       publicId: body.publicId ? String(body.publicId) : undefined,
@@ -18,7 +20,7 @@ export async function POST(request: Request) {
       assignQr: body.assignQr !== false,
       actor: {
         type: "user",
-        id: body.actorId ? String(body.actorId) : undefined,
+        id: ctx.userId,
       },
       correlationId: request.headers.get("x-request-id") ?? undefined,
     });

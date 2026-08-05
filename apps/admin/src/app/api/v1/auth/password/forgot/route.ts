@@ -8,7 +8,9 @@ export async function POST(request: Request) {
       data: {
         accepted: result.accepted,
         // Token only returned in memory/dev adapters; production must send via email channel.
-        ...(process.env.NODE_ENV !== "production" && result.token ? { token: result.token } : {}),
+        ...(process.env.ALLOW_DEV_RESET_TOKEN === "1" && result.token
+          ? { token: result.token }
+          : {}),
       },
     });
   } catch (error) {

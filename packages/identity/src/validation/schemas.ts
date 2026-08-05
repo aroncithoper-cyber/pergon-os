@@ -67,10 +67,23 @@ export const getHistorySchema = z.object({
   afterSeq: z.number().int().min(0).optional(),
 });
 
+export const getPublicVerificationSchema = z.object({
+  passportId: z
+    .string()
+    .min(6)
+    .max(40)
+    .transform((v) => v.trim().toUpperCase()),
+  channel: z.enum(["web", "admin", "mobile", "api", "partner"]).optional().default("web"),
+  ipHash: z.string().min(8).max(128).optional(),
+  userAgent: z.string().max(512).optional(),
+  geo: z.record(z.unknown()).optional(),
+});
+
 export type CreatePassportParsed = z.infer<typeof createPassportSchema>;
 export type TransitionPassportParsed = z.infer<typeof transitionPassportSchema>;
 export type RotateQrParsed = z.infer<typeof rotateQrSchema>;
 export type VerifyCodeParsed = z.infer<typeof verifyCodeSchema>;
 export type RechargePassportParsed = z.infer<typeof rechargePassportSchema>;
+export type GetPublicVerificationParsed = z.infer<typeof getPublicVerificationSchema>;
 
 export { CUSTODY_STAGES };

@@ -50,6 +50,15 @@ export function createMemoryUnitOfWork(store = new MemoryStore()): IdentityUnitO
       }
       return null;
     },
+    async findByPublicIdGlobal(publicId) {
+      const normalized = publicId.trim().toUpperCase();
+      for (const p of store.passports.values()) {
+        if (p.publicId.toUpperCase() === normalized && !p.deletedAt) {
+          return clone(p);
+        }
+      }
+      return null;
+    },
     async save(passport) {
       const existing = store.passports.get(passport.id);
       if (existing && existing.version > passport.version) {
@@ -130,11 +139,25 @@ export function createMemoryUnitOfWork(store = new MemoryStore()): IdentityUnitO
       return store.scans.filter((s) => s.passportId === passportId && s.createdAt >= sinceIso)
         .length;
     },
+    async listByPassportId(passportId, options) {
+      const limit = options?.limit ?? 50;
+      return store.scans
+        .filter((s) => s.passportId === passportId)
+        .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+        .slice(0, limit)
+        .map(clone);
+    },
   };
 
   const recharges: RechargeRepository = {
     async findByIdempotencyKey(key) {
       return store.recharges.get(key) ? clone(store.recharges.get(key)!) : null;
+    },
+    async listByPassportId(passportId) {
+      return [...store.recharges.values()]
+        .filter((r) => r.passportId === passportId)
+        .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+        .map(clone);
     },
     async save(recharge) {
       store.recharges.set(recharge.idempotencyKey, clone(recharge));

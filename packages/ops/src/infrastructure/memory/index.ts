@@ -4,6 +4,8 @@ import type {
   AlertRecord,
   AutomationRecord,
   AutomationRunRecord,
+  AutomationVersionRecord,
+  AutomationWebhookRecord,
   BatchRecord,
   CustomerRecord,
   DashboardLayoutRecord,
@@ -54,6 +56,8 @@ export class OpsMemoryStore {
   batches = new Map<string, BatchRecord>();
   automations = new Map<string, AutomationRecord>();
   automationRuns = new Map<string, AutomationRunRecord>();
+  automationVersions = new Map<string, AutomationVersionRecord>();
+  automationWebhooks = new Map<string, AutomationWebhookRecord>();
   aiSessions = new Map<string, AiSessionRecord>();
   reportDefinitions = new Map<string, ReportDefinitionRecord>();
   reportJobs = new Map<string, ReportJobRecord>();
@@ -209,8 +213,48 @@ export function createMemoryUnitOfWork(store = new OpsMemoryStore()): OpsUnitOfW
           .reverse()
           .map(clone);
       },
+      async listRunnable(limit, now) {
+        return [...store.automationRuns.values()]
+          .filter(
+            (r) =>
+              (r.status === "pending" || r.status === "waiting") &&
+              (!r.nextAttemptAt || r.nextAttemptAt <= now),
+          )
+          .sort((a, b) =>
+            (a.nextAttemptAt ?? a.createdAt).localeCompare(b.nextAttemptAt ?? b.createdAt),
+          )
+          .slice(0, limit)
+          .map(clone);
+      },
       async save(run) {
         store.automationRuns.set(run.id, clone(run));
+      },
+    },
+    automationVersions: {
+      async save(version) {
+        store.automationVersions.set(version.id, clone(version));
+      },
+      async listByAutomation(automationId) {
+        return [...store.automationVersions.values()]
+          .filter((v) => v.automationId === automationId)
+          .sort((a, b) => b.version - a.version)
+          .map(clone);
+      },
+    },
+    automationWebhooks: {
+      async findByPathKey(pathKey) {
+        for (const w of store.automationWebhooks.values()) {
+          if (w.pathKey === pathKey) return clone(w);
+        }
+        return null;
+      },
+      async listByOrg(organizationId) {
+        return [...store.automationWebhooks.values()]
+          .filter((w) => w.organizationId === organizationId)
+          .map(clone);
+      },
+      async save(webhook) {
+        store.automationWebhooks.set(webhook.id, clone(webhook));
       },
     },
     aiSessions: createCrud(store.aiSessions),

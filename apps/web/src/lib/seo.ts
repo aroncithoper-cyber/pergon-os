@@ -27,8 +27,11 @@ export const siteMetadata: Metadata = {
     url: appUrl,
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: APP_NAME,
     description: `${APP_NAME} — plataforma de identidad digital, trazabilidad y operación.`,
+  },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
   },
 };

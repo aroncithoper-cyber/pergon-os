@@ -1,9 +1,11 @@
+import { requireApiPermission } from "@/lib/auth";
 import { getIdentityServices, toErrorResponse } from "@/lib/identity";
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, { params }: Params) {
   try {
+    await requireApiPermission(request, "passports:read");
     const { id } = await params;
     const url = new URL(request.url);
     const limit = url.searchParams.get("limit");

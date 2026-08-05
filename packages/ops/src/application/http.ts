@@ -1,5 +1,18 @@
 import { ForbiddenOpsError, OpsError } from "../domain/base";
 
+const AUTH_STATUS_BY_CODE: Record<string, number> = {
+  UNAUTHORIZED: 401,
+  INVALID_CREDENTIALS: 401,
+  SESSION_NOT_FOUND: 401,
+  MFA_REQUIRED: 401,
+  FORBIDDEN: 403,
+  VALIDATION_FAILED: 400,
+  USER_NOT_FOUND: 404,
+  INVITATION_NOT_FOUND: 404,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
+};
+
 export function mapOpsHttpError(error: unknown): {
   status: number;
   code: string;
@@ -22,8 +35,9 @@ export function mapOpsHttpError(error: unknown): {
     return { status, code: error.code, message: error.message };
   }
   if (error && typeof error === "object" && "code" in error && "message" in error) {
-    const e = error as { code: string; message: string };
-    return { status: 400, code: e.code, message: e.message };
+    const e = error as { code: string; message: string; name?: string };
+    const status = AUTH_STATUS_BY_CODE[e.code] ?? 400;
+    return { status, code: e.code, message: e.message };
   }
   return { status: 500, code: "INTERNAL", message: "Internal error" };
 }

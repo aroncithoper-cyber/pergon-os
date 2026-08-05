@@ -17,13 +17,13 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
   return (
     <html lang="es">
       <body className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-white px-6 text-neutral-950">
-        <h1 className="text-lg font-medium tracking-tight">Something went wrong</h1>
+        <h1 className="text-lg font-medium tracking-tight">Algo salió mal</h1>
         <button
           type="button"
           onClick={reset}
-          className="rounded-md border border-neutral-200 px-3 py-2 text-sm"
+          className="rounded-md border border-neutral-200 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2"
         >
-          Try again
+          Reintentar
         </button>
       </body>
     </html>

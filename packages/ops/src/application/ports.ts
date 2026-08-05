@@ -4,6 +4,8 @@ import type {
   AlertRecord,
   AutomationRecord,
   AutomationRunRecord,
+  AutomationVersionRecord,
+  AutomationWebhookRecord,
   BatchRecord,
   CustomerRecord,
   DashboardLayoutRecord,
@@ -61,7 +63,17 @@ export interface OpsUnitOfWork {
     findById(id: string): Promise<AutomationRunRecord | null>;
     findByIdempotencyKey(key: string): Promise<AutomationRunRecord | null>;
     listByOrg(organizationId: string, limit?: number): Promise<AutomationRunRecord[]>;
+    listRunnable(limit: number, nowIso: string): Promise<AutomationRunRecord[]>;
     save(run: AutomationRunRecord): Promise<void>;
+  };
+  automationVersions: {
+    save(version: AutomationVersionRecord): Promise<void>;
+    listByAutomation(automationId: string): Promise<AutomationVersionRecord[]>;
+  };
+  automationWebhooks: {
+    findByPathKey(pathKey: string): Promise<AutomationWebhookRecord | null>;
+    listByOrg(organizationId: string): Promise<AutomationWebhookRecord[]>;
+    save(webhook: AutomationWebhookRecord): Promise<void>;
   };
   aiSessions: CrudRepo<AiSessionRecord>;
   reportDefinitions: CrudRepo<ReportDefinitionRecord> & {

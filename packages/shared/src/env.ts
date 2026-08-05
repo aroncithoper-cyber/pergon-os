@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 export type SupabasePublicEnv = {
   url: string;
   anonKey: string;
@@ -77,19 +75,28 @@ export function getStorageBucket(
   return (map[name] ?? name).trim() || name;
 }
 
-export const appEnvSchema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]).optional(),
-  NEXT_PUBLIC_APP_URL: z.string().optional(),
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional().or(z.literal("")),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
-  NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_MEDIA: z.string().optional(),
-  NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_EXPORTS: z.string().optional(),
-  NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_AVATARS: z.string().optional(),
-  NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_DOCUMENTS: z.string().optional(),
-});
-
+/**
+ * Public app origin for SEO, redirects, and absolute URLs.
+ * Prefer NEXT_PUBLIC_APP_URL; on Vercel previews fall back to VERCEL_URL.
+ * Always returns a `new URL()`-safe origin so metadata never crashes the root layout.
+ */
 export function getAppUrl(fallback = "http://localhost:3000"): string {
-  const value = process.env.NEXT_PUBLIC_APP_URL;
-  return value && value.length > 0 ? value : fallback;
+  const candidates = [
+    process.env.NEXT_PUBLIC_APP_URL?.trim(),
+    process.env.VERCEL_URL?.trim(),
+    fallback,
+  ];
+
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const trimmed = candidate.replace(/\/$/, "");
+    const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    try {
+      return new URL(withProtocol).origin;
+    } catch {
+      // try next candidate
+    }
+  }
+
+  return "http://localhost:3000";
 }

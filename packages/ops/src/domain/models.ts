@@ -118,8 +118,39 @@ export type BatchRecord = {
   deletedAt?: string;
 };
 
-export type AutomationTrigger = "event" | "cron" | "manual";
+export type AutomationTrigger = "event" | "cron" | "manual" | "webhook" | "schedule";
 export type AutomationStatus = "draft" | "enabled" | "disabled";
+
+/** Retry policy applied by the automation engine / background drain. */
+export type AutomationRetryPolicy = {
+  maxAttempts: number;
+  backoffMs: number;
+};
+
+/**
+ * Flow Builder graph — architecture-ready for a future visual editor.
+ * Runtime may still execute flat `actions` until the graph executor ships.
+ */
+export type AutomationFlowNodeType = "trigger" | "condition" | "action" | "delay" | "schedule";
+export type AutomationFlowNode = {
+  id: string;
+  type: AutomationFlowNodeType;
+  kind?: string;
+  config?: Record<string, unknown>;
+  position?: { x: number; y: number };
+};
+export type AutomationFlowEdge = {
+  id: string;
+  source: string;
+  target: string;
+  label?: string;
+};
+export type AutomationFlowDefinition = {
+  schemaVersion: 1;
+  nodes: AutomationFlowNode[];
+  edges: AutomationFlowEdge[];
+};
+
 export type AutomationRecord = {
   id: EntityId;
   organizationId: OrganizationId;
@@ -129,14 +160,68 @@ export type AutomationRecord = {
   trigger: AutomationTrigger;
   cron?: string;
   eventType?: string;
+  /** Opaque or structured condition tree evaluated by the engine. */
   conditions: Record<string, unknown>;
+  /** Flat action steps (`kind` + `config`); Flow Builder may mirror these in `flow`. */
   actions: Array<Record<string, unknown>>;
+  flow?: AutomationFlowDefinition;
+  retryPolicy?: AutomationRetryPolicy;
   version: number;
   createdAt: string;
   updatedAt: string;
 };
 
-export type AutomationRunStatus = "pending" | "running" | "succeeded" | "failed" | "cancelled";
+/** Immutable definition snapshot for versioning / audit / rollback prep. */
+export type AutomationVersionRecord = {
+  id: EntityId;
+  organizationId: OrganizationId;
+  automationId: EntityId;
+  version: number;
+  snapshot: {
+    key: string;
+    name: string;
+    status: AutomationStatus;
+    trigger: AutomationTrigger;
+    cron?: string;
+    eventType?: string;
+    conditions: Record<string, unknown>;
+    actions: Array<Record<string, unknown>>;
+    flow?: AutomationFlowDefinition;
+    retryPolicy?: AutomationRetryPolicy;
+  };
+  createdAt: string;
+  createdBy?: string;
+};
+
+export type AutomationWebhookStatus = "active" | "disabled";
+export type AutomationWebhookRecord = {
+  id: EntityId;
+  organizationId: OrganizationId;
+  automationId: EntityId;
+  pathKey: string;
+  secret: string;
+  status: AutomationWebhookStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AutomationStepStatus = "pending" | "running" | "succeeded" | "failed" | "skipped";
+export type AutomationStepLog = {
+  stepId: string;
+  kind: string;
+  status: AutomationStepStatus;
+  startedAt?: string;
+  finishedAt?: string;
+  input?: Record<string, unknown>;
+  output?: Record<string, unknown>;
+  error?: string;
+};
+
+export type AutomationRunStatus =
+  "pending" | "running" | "succeeded" | "failed" | "cancelled" | "waiting";
+export type AutomationTriggerSource =
+  "manual" | "event" | "cron" | "webhook" | "schedule" | "retry";
+
 export type AutomationRunRecord = {
   id: EntityId;
   organizationId: OrganizationId;
@@ -149,6 +234,16 @@ export type AutomationRunRecord = {
   startedAt?: string;
   finishedAt?: string;
   createdAt: string;
+  /** Definition version at enqueue time. */
+  automationVersion?: number;
+  triggerSource?: AutomationTriggerSource;
+  attempt?: number;
+  maxAttempts?: number;
+  /** When status is pending/waiting — background drain resumes at/after this time. */
+  nextAttemptAt?: string;
+  /** Cursor into actions[] for delayed / resumable execution. */
+  stepIndex?: number;
+  stepLogs?: AutomationStepLog[];
 };
 
 export type AiSessionStatus = "open" | "closed";

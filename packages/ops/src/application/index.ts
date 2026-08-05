@@ -36,8 +36,16 @@ export function createOpsServices(uow: OpsUnitOfWork) {
     listAutomations: (input: unknown) => automations.listAutomations(uow, input),
     upsertAutomation: (input: unknown) => automations.upsertAutomation(uow, input),
     triggerAutomation: (input: unknown) => automations.triggerAutomation(uow, input),
+    dispatchAutomationEvent: (input: unknown) => automations.dispatchAutomationEvent(uow, input),
+    drainAutomations: (input?: unknown) => automations.drainAutomations(uow, input ?? {}),
+    registerAutomationWebhook: (input: unknown) =>
+      automations.registerAutomationWebhook(uow, input),
+    ingestAutomationWebhook: (input: unknown) => automations.ingestAutomationWebhook(uow, input),
     listAutomationRuns: (organizationId: string, limit?: number) =>
       automations.listAutomationRuns(uow, organizationId, limit),
+    listAutomationVersions: (automationId: string, organizationId?: string) =>
+      automations.listAutomationVersions(uow, automationId, organizationId),
+    getAutomationCatalog: () => automations.getAutomationCatalog(),
 
     // AI / Reports / Settings
     createAiSession: (input: unknown) => intelligence.createAiSession(uow, input),

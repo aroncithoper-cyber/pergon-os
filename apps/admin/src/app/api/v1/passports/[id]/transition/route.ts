@@ -1,11 +1,13 @@
 import type { PassportState } from "@pergon/identity";
 
+import { requireApiPermission } from "@/lib/auth";
 import { getIdentityServices, toErrorResponse } from "@/lib/identity";
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, { params }: Params) {
   try {
+    const ctx = await requireApiPermission(request, "passports:update");
     const { id } = await params;
     const body = (await request.json()) as Record<string, unknown>;
     const services = getIdentityServices();
@@ -16,7 +18,7 @@ export async function POST(request: Request, { params }: Params) {
       reason: String(body.reason ?? ""),
       actor: {
         type: "user",
-        id: body.actorId ? String(body.actorId) : undefined,
+        id: ctx.userId,
       },
       correlationId: request.headers.get("x-request-id") ?? undefined,
     });

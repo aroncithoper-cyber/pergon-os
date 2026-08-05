@@ -4,6 +4,7 @@ import { rotateQr } from "./use-cases/rotate-qr";
 import { verifyCode } from "./use-cases/verify-code";
 import { rechargePassport } from "./use-cases/recharge-passport";
 import { getPassportHistory } from "./use-cases/get-passport-history";
+import { getPublicVerification } from "./use-cases/get-public-verification";
 import type { IdentityUnitOfWork } from "./ports";
 
 export function createIdentityServices(uow: IdentityUnitOfWork) {
@@ -17,6 +18,8 @@ export function createIdentityServices(uow: IdentityUnitOfWork) {
       rechargePassport(uow, input),
     getPassportHistory: (input: Parameters<typeof getPassportHistory>[1]) =>
       getPassportHistory(uow, input),
+    getPublicVerification: (input: Parameters<typeof getPublicVerification>[1]) =>
+      getPublicVerification(uow, input),
   };
 }
 
@@ -29,3 +32,4 @@ export { rotateQr } from "./use-cases/rotate-qr";
 export { verifyCode } from "./use-cases/verify-code";
 export { rechargePassport } from "./use-cases/recharge-passport";
 export { getPassportHistory } from "./use-cases/get-passport-history";
+export { getPublicVerification } from "./use-cases/get-public-verification";

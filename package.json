@@ -14,7 +14,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,css}\"",
     "typecheck": "turbo run typecheck",
-    "prepare": "husky"
+    "prepare": "node -e \"if(!(process.env.CI||process.env.VERCEL||process.env.HUSKY==='0')){require('child_process').spawnSync('husky',{stdio:'inherit',shell:true})}\""
   },
   "devDependencies": {
     "@pergon/config": "workspace:^",

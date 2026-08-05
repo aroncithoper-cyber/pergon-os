@@ -101,11 +101,39 @@ export const upsertAutomationSchema = z.object({
   key: z.string().min(1).max(64),
   name: z.string().min(1).max(200),
   status: z.enum(["draft", "enabled", "disabled"]).default("draft"),
-  trigger: z.enum(["event", "cron", "manual"]),
+  trigger: z.enum(["event", "cron", "manual", "webhook", "schedule"]),
   cron: z.string().optional(),
   eventType: z.string().optional(),
   conditions: z.record(z.unknown()).optional().default({}),
   actions: z.array(z.record(z.unknown())).default([]),
+  flow: z
+    .object({
+      schemaVersion: z.literal(1),
+      nodes: z.array(
+        z.object({
+          id: z.string(),
+          type: z.enum(["trigger", "condition", "action", "delay", "schedule"]),
+          kind: z.string().optional(),
+          config: z.record(z.unknown()).optional(),
+          position: z.object({ x: z.number(), y: z.number() }).optional(),
+        }),
+      ),
+      edges: z.array(
+        z.object({
+          id: z.string(),
+          source: z.string(),
+          target: z.string(),
+          label: z.string().optional(),
+        }),
+      ),
+    })
+    .optional(),
+  retryPolicy: z
+    .object({
+      maxAttempts: z.number().int().min(1).max(20).default(3),
+      backoffMs: z.number().int().min(100).max(3_600_000).default(2000),
+    })
+    .optional(),
   actor: actorSchema,
   requestId: z.string().optional(),
 });
@@ -115,8 +143,43 @@ export const triggerAutomationSchema = z.object({
   automationId: z.string().uuid(),
   input: z.record(z.unknown()).optional().default({}),
   idempotencyKey: z.string().min(8).max(128),
+  executeNow: z.boolean().optional().default(true),
   actor: actorSchema,
   requestId: z.string().optional(),
+});
+
+export const dispatchAutomationEventSchema = z.object({
+  organizationId: z.string().uuid(),
+  eventType: z.string().min(1).max(120),
+  payload: z.record(z.unknown()).optional().default({}),
+  correlationId: z.string().optional(),
+  drain: z.boolean().optional().default(false),
+  actor: actorSchema,
+  requestId: z.string().optional(),
+});
+
+export const drainAutomationsSchema = z.object({
+  limit: z.number().int().min(1).max(500).optional().default(50),
+  organizationId: z.string().uuid().optional(),
+  tickSchedules: z.boolean().optional().default(false),
+  actor: actorSchema.optional(),
+  requestId: z.string().optional(),
+});
+
+export const registerAutomationWebhookSchema = z.object({
+  organizationId: z.string().uuid(),
+  automationId: z.string().uuid(),
+  pathKey: z.string().min(8).max(64),
+  secret: z.string().min(8).max(200),
+  actor: actorSchema,
+  requestId: z.string().optional(),
+});
+
+export const ingestAutomationWebhookSchema = z.object({
+  pathKey: z.string().min(1),
+  payload: z.record(z.unknown()).optional().default({}),
+  secret: z.string().optional(),
+  drain: z.boolean().optional().default(true),
 });
 
 export const createAiSessionSchema = z.object({
