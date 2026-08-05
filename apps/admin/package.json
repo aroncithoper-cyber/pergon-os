@@ -2,6 +2,7 @@
   "name": "@pergon/admin",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "next dev --port 3001",
     "build": "node -e \"require('node:fs').rmSync('.next',{recursive:true,force:true})\" && next build",

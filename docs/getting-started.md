@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Node.js >= 20
-- pnpm >= 9
+- pnpm **9.15.9** (Corepack: `corepack enable` — versión fijada en `package.json#packageManager`)
 - Supabase CLI (optional, for migrations / functions)
 
 ## Install

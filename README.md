@@ -5,7 +5,7 @@ Monorepo enterprise for PerGon OS.
 ## Requirements
 
 - Node.js >= 20
-- pnpm >= 9
+- pnpm **9.15.9** (`packageManager` + Corepack)
 
 ## Setup
 

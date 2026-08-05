@@ -8,7 +8,9 @@ Dos aplicaciones Next.js = **dos proyectos Vercel**.
 | Web (público)     | `@pergon/web`   | 3000         | `apps/web`     |
 | Admin (operación) | `@pergon/admin` | 3001         | `apps/admin`   |
 
-Package manager: **pnpm** (`packageManager` en el root). Node: **20** (ver `.nvmrc`).
+Package manager: **pnpm@9.15.9** vía Corepack (`packageManager` en root + `apps/web` + `apps/admin`).  
+Lockfile: `pnpm-lock.yaml` con `lockfileVersion: '9.0'` (pnpm 9). Node: **20** (ver `.nvmrc`).  
+No uses pnpm 10 ni `--no-frozen-lockfile`.
 
 ---
 
