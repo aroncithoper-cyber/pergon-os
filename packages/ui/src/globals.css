@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ——— Surfaces ——— */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --panel: 0 0% 98%;
+    --panel-foreground: 0 0% 4%;
+    --elevated: 0 0% 100%;
+    --elevated-foreground: 0 0% 4%;
+
+    /* ——— Brand / actions ——— */
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 42%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
+
+    /* ——— Semantic ——— */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 152 61% 34%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 92% 44%;
+    --warning-foreground: 0 0% 9%;
+    --info: 210 72% 42%;
+    --info-foreground: 0 0% 98%;
+
+    /* ——— Chrome ——— */
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 9%;
+
+    /* ——— Radius ——— */
+    --radius: 0.5rem;
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+
+    /* ——— Typography scale ——— */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    --font-size-display: 3rem;
+    --line-height-tight: 1.2;
+    --line-height-snug: 1.35;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.65;
+
+    /* ——— Spacing (4px base) ——— */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+
+    /* ——— Shadows (subtle, precision) ——— */
+    --shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.04);
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05), 0 1px 3px 0 hsl(0 0% 0% / 0.06);
+    --shadow-md: 0 4px 8px -2px hsl(0 0% 0% / 0.06), 0 2px 4px -2px hsl(0 0% 0% / 0.04);
+    --shadow-lg: 0 12px 24px -6px hsl(0 0% 0% / 0.08), 0 4px 8px -4px hsl(0 0% 0% / 0.04);
+    --shadow-overlay: 0 16px 40px -12px hsl(0 0% 0% / 0.18);
+
+    /* ——— Motion ——— */
+    --duration-micro: 150ms;
+    --duration-ui: 200ms;
+    --duration-panel: 280ms;
+    --duration-section: 400ms;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ——— Z-index ——— */
+    --z-base: 0;
+    --z-raised: 10;
+    --z-sticky: 40;
+    --z-dropdown: 50;
+    --z-overlay: 80;
+    --z-modal: 100;
+    --z-toast: 110;
+    --z-tooltip: 120;
+
+    /* ——— Layout / grid ——— */
+    --container-padding: 2rem;
+    --container-max: 1400px;
+    --grid-gutter: 1.5rem;
+    --sidebar-width: 16rem;
+    --sidebar-width-collapsed: 3.5rem;
+    --navbar-height: 3.5rem;
+
+    /* ——— Charts ——— */
+    --chart-1: 0 0% 20%;
+    --chart-2: 210 72% 42%;
+    --chart-3: 152 61% 34%;
+    --chart-4: 38 92% 44%;
+    --chart-5: 0 0% 55%;
+  }
+
+  .dark {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 98%;
+    --panel: 0 0% 7%;
+    --panel-foreground: 0 0% 98%;
+    --elevated: 0 0% 9%;
+    --elevated-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 0% 12%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 152 50% 42%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 85% 48%;
+    --warning-foreground: 0 0% 9%;
+    --info: 210 65% 52%;
+    --info-foreground: 0 0% 98%;
+
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 0 0% 84%;
+
+    --shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.35);
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.4), 0 1px 3px 0 hsl(0 0% 0% / 0.35);
+    --shadow-md: 0 4px 8px -2px hsl(0 0% 0% / 0.45), 0 2px 4px -2px hsl(0 0% 0% / 0.35);
+    --shadow-lg: 0 12px 24px -6px hsl(0 0% 0% / 0.5), 0 4px 8px -4px hsl(0 0% 0% / 0.4);
+    --shadow-overlay: 0 16px 40px -12px hsl(0 0% 0% / 0.65);
+
+    --chart-1: 0 0% 86%;
+    --chart-2: 210 65% 52%;
+    --chart-3: 152 50% 42%;
+    --chart-4: 38 85% 48%;
+    --chart-5: 0 0% 45%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    min-height: 100dvh;
+  }
+
+  :focus-visible {
+    @apply ring-ring ring-offset-background outline-none ring-2 ring-offset-2;
+  }
+}
+
+@layer utilities {
+  .text-display {
+    font-size: var(--font-size-display);
+    line-height: var(--line-height-tight);
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+
+  .transition-micro {
+    transition-duration: var(--duration-micro);
+    transition-timing-function: var(--ease-out);
+  }
+
+  .transition-ui {
+    transition-duration: var(--duration-ui);
+    transition-timing-function: var(--ease-out);
+  }
+
+  .transition-panel {
+    transition-duration: var(--duration-panel);
+    transition-timing-function: var(--ease-out);
+  }
+
+  .shadow-pergon-xs {
+    box-shadow: var(--shadow-xs);
+  }
+  .shadow-pergon-sm {
+    box-shadow: var(--shadow-sm);
+  }
+  .shadow-pergon-md {
+    box-shadow: var(--shadow-md);
+  }
+  .shadow-pergon-lg {
+    box-shadow: var(--shadow-lg);
+  }
+  .shadow-pergon-overlay {
+    box-shadow: var(--shadow-overlay);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

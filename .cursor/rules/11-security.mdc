@@ -1,0 +1,136 @@
+---
+description: Seguridad PerGon OS — roles, secretos, auditoría, threat boundaries
+alwaysApply: true
+---
+
+# 11 — Security
+
+## Objetivo
+
+Establecer el modelo de seguridad obligatorio de PerGon OS: autenticación, autorización, secretos, logs, auditoría y límites de confianza. La trazabilidad y el pasaporte digital **no tienen valor** si la seguridad es teatro.
+
+## Principios
+
+1. **Never trust the client.**
+2. **Defense in depth:** UI hide ≠ authorization.
+3. **Least privilege** en roles, keys y scopes.
+4. **Secrets never in git, client bundles, or prompts.**
+5. **Audit what hurts:** identidad, QR, pasaporte, usuarios, dinero/créditos si existen.
+6. **Secure by default** en nuevos endpoints.
+7. **Fail closed** en authz errors.
+8. **PII minimization** en Web pública y en logs.
+9. **Dependencias y headers** forman parte del producto.
+10. **Incident-ready:** correlación IDs, alertas, retención.
+
+## Reglas
+
+### Roles y permisos
+
+- Definir roles explícitos (ej. `owner`, `admin`, `operator`, `viewer`, `public_verifier`) — nombres finales en schema, pero el modelo RBAC es obligatorio.
+- Permisos por acción de dominio (`passport:issue`, `passport:revoke`, `qr:rotate`, `user:invite`, `alerts:manage`).
+- Evaluar authz en **server** (RLS + checks de aplicación).
+- La UI solo refleja permisos; nunca es la frontera.
+
+### Auth
+
+- Sesiones vía Supabase Auth / SSR patterns de `@pergon/database`.
+- Proteger rutas Admin enteras; Web pública solo endpoints pensados como públicos.
+- Logout invalida sesión; no dejar tokens en sitios inseguros.
+- MFA: planear para roles admin de alto privilegio.
+
+### Secrets y env
+
+- Secretos solo en env de hosting / secret manager.
+- `.env.example` con keys vacías; nunca valores reales.
+- `NEXT_PUBLIC_*` únicamente para datos públicamente seguros (URL + anon key).
+- Service role, webhook secrets, API keys de modelos: **solo server**.
+- Rotación documentada; no commitear `.env`.
+
+### Logs y auditoría
+
+- `audit_logs` para mutaciones sensibles con actor + before/after.
+- Logs de aplicación sin passwords, tokens, ni payloads de tarjeta/secretos.
+- Correlación: `request_id` en errores Admin.
+- Acceso a logs restringido.
+
+### Datos
+
+- Respuestas públicas de verificación: mínimo necesario.
+- Encriptar at-rest según capacidad Supabase/infra; TLS en tránsito.
+- Soft-deleted no significa “accesible sin permiso”.
+- Exports Admin: permiso + audit.
+
+### Superficie de ataque
+
+- Validar/parsear inputs (zod u equivalente) en boundary server.
+- Rate limit en auth, scan, IA.
+- CSRF/origen según modelo de cookies SSR.
+- Headers de seguridad en Next (CSP gradual, no abrir `unsafe-inline` eterno sin plan).
+- Uploads: tipo/tamaño/virus scanning policy cuando existan.
+
+### IA
+
+- No enviar secretos ni datasets ajenos al proveedor.
+- Redactar PII cuando no sea necesaria.
+- Tools de IA respetan RBAC del caller.
+
+## Buenas prácticas
+
+- Threat model corto por feature nueva (qué se rompe si el cliente miente).
+- Review de PRs que toquen auth, RLS, QR resolve, passport mutate.
+- Tests de “usuario B no lee/actúa sobre recurso de A”.
+- Inventario de secrets en docs internas (nombres, no valores).
+- Alertas en picos de `invalid_scan` / auth failures.
+
+## Malas prácticas
+
+- “Escondimos el botón, ya es seguro.”
+- Anon key tratada como secreta o service role en cliente.
+- Logs con Authorization headers.
+- Desactivar RLS “para probar” en prod.
+- Compartir cuentas admin genéricas.
+- Ignorar dependencias con CVEs críticos.
+
+## Checklist
+
+- [ ] ¿Authz server-side + RLS?
+- [ ] ¿Roles/permisos mapeados a la acción?
+- [ ] ¿Sin secretos en cliente/git/prompts?
+- [ ] ¿Audit en mutación sensible?
+- [ ] ¿Validación de input en boundary?
+- [ ] ¿Rate limit en endpoints abusables?
+- [ ] ¿PII minimizada en respuestas públicas?
+- [ ] ¿IA sin bypass de permisos?
+- [ ] ¿`.env.example` sin secretos?
+
+## Ejemplos
+
+**Correcto:** `revokePassport` route verifica sesión + permiso `passport:revoke` + RLS + escribe `audit_logs` + emite alerta.
+
+**Incorrecto:** Client llama `.from('passports').update({ status: 'revoked' })` confiando en que “solo admins ven la página”.
+
+**Correcto:** Scan público responde `{ status: "invalid" }` sin revelar si el código existió parcialmente.
+
+**Incorrecto:** `invalid: passport exists but revoked for customer X`.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| Frontera de seguridad | Server + RLS |
+| Secrets | Nunca en git/cliente |
+| Public env | Solo `NEXT_PUBLIC_SUPABASE_URL` + anon |
+| Service role | Server only |
+| Audit | Obligatorio en identidad/QR/pasaporte/usuarios |
+| Fail | Closed |
+| Security theater | Prohibido |
+
+## Prohibiciones
+
+- Guardar secretos en el repositorio o en `NEXT_PUBLIC_*` indebidos.
+- Autorización solo-UI.
+- Desactivar RLS en producción.
+- Filtrar logs con tokens/PII sensible.
+- Endpoints de debug abiertos.
+- Ayuda (humana o IA) para falsificar o evadir controles.
+- Compartir service role fuera de runtime server controlado.

@@ -1,0 +1,148 @@
+---
+description: Convenciones de base de datos Supabase — naming, migraciones, auditoría, soft delete
+globs: packages/database/**/*,supabase/**/*
+alwaysApply: true
+---
+
+# 10 — Database
+
+## Objetivo
+
+Fijar el estándar de datos de PerGon OS sobre **Supabase/Postgres** y `@pergon/database`. Naming, tablas, migraciones, auditoría, soft delete, UUID, timestamps y versionado deben ser predecibles durante una década.
+
+## Principios
+
+1. **Postgres es fuente de verdad**; el cliente solo consume.
+2. **Migraciones forward-only** en `supabase/migrations`.
+3. **RLS on** en tablas de dominio expuestas.
+4. **UUID como PK** de entidades de negocio.
+5. **Timestamps + actor** en mutaciones relevantes.
+6. **Soft delete** por defecto en entidades de negocio recuperables.
+7. **Hard delete** solo con política explícita (o purga job).
+8. **Tipos generados/mantenidos** en `@pergon/database`.
+9. **Nombres estables** — renombrar es evento mayor.
+10. **Least privilege** en roles DB y service keys.
+
+## Reglas
+
+### Naming
+
+- Tablas: `snake_case`, **plural** (`passports`, `qr_codes`, `scan_events`).
+- Columnas: `snake_case`.
+- PK: `id` UUID.
+- FK: `<entity>_id` (`passport_id`).
+- Booleanos: `is_` / `has_` (`is_active`).
+- Enums: tipo Postgres o check documentado; valores `snake_case` o `lowercase`.
+- Índices: `idx_<table>_<cols>`; unique: `uq_<table>_<cols>`.
+- Evitar palabras reservadas y abreviaturas opacas (`tbl1`, `dat`).
+
+### Tablas mínimas de gobierno (cuando existan features)
+
+Toda entidad de negocio debería considerar:
+
+- `id` UUID PK
+- `created_at` timestamptz not null default now()
+- `updated_at` timestamptz not null default now()
+- `deleted_at` timestamptz null (soft delete)
+- `created_by` / `updated_by` UUID null (si hay auth)
+- Opcional: `version` int para optimistic locking en entidades concurrentes
+
+### Auditoría
+
+- Tabla `audit_logs` (o equivalente) para acciones sensibles: actor, action, entity_type, entity_id, before/after (jsonb), ip, timestamp.
+- No sustituir audit con “updated_at” solamente.
+- Scans QR → `scan_events` (dominio) además de audit cuando aplique seguridad.
+
+### Migraciones
+
+- Una preocupación por migración; nombre timestamp + slug descriptivo.
+- Nunca editar migración ya aplicada en shared environments; crear una nueva.
+- Incluir índices para FKs y paths de query reales (verificación QR, listados admin).
+- Defaults seguros; backfill explícito.
+- Prohibido `DELETE FROM` masivo sin plan en producción.
+
+### Soft delete
+
+- Queries de app filtran `deleted_at is null` por defecto (vistas o helper).
+- Unique constraints consideran soft delete (índices parciales where deleted_at is null).
+- Restore es acción admin auditada.
+
+### UUID & timestamps
+
+- UUIDs generados en DB (`gen_random_uuid()`) o insert controlado.
+- Todo timestamptz en UTC.
+- `updated_at` via trigger o disciplina de escritura única.
+
+### Versionado
+
+- Schema version = historial de migraciones.
+- Documentar breaking changes de contrato en `docs/` cuando cambie forma pública.
+- API/`Database` type en package se actualiza con el schema.
+
+### Acceso desde código
+
+- Browser: anon key + RLS.
+- Server: `@pergon/database` server client; service role solo en server confiable y nunca expuesto.
+- Prohibido concatenar SQL en cliente.
+- Validar inputs en edge/server antes de mutar.
+
+## Buenas prácticas
+
+- Normalizar hasta que duela; desnormalizar solo con motivo de lectura medido.
+- Jsonb para metadata extensible acotada — no para reemplazar columnas críticas de filtro.
+- Constraints > validación solo-app.
+- Seeds solo en local/dev; nunca credenciales reales.
+- Explicar en comentario SQL decisiones no obvias (parcial indexes, etc.).
+
+## Malas prácticas
+
+- `id` serial en entidades públicas.
+- Tablas sin `created_at`.
+- Hard delete silencioso de pasaportes/QR.
+- Migraciones “fix” reescritas en caliente.
+- Service role en el browser.
+- Duplicar lógica de estado en app sin constraint DB.
+
+## Checklist
+
+- [ ] ¿Naming snake_case plural correcto?
+- [ ] ¿UUID + timestamps + soft delete evaluado?
+- [ ] ¿Migración nueva forward-only?
+- [ ] ¿RLS/policies pensadas?
+- [ ] ¿Índices para verificación y listados?
+- [ ] ¿Audit en sensibles?
+- [ ] ¿Types `@pergon/database` al día?
+- [ ] ¿Sin secretos en seeds/migraciones?
+- [ ] ¿Unique parcial con soft delete?
+
+## Ejemplos
+
+**Correcto:** `qr_codes` con `id`, `public_code`, `passport_id`, `status`, timestamps, `deleted_at`; índice único parcial en `public_code` where deleted_at is null.
+
+**Incorrecto:** Tabla `QR` con `id` integer identity expuesto en URL `/qr/42`.
+
+**Correcto:** Migración `20260304120000_add_scan_events.sql` nueva tras hallazgo en prod.
+
+**Incorrecto:** Editar la migración vieja ya aplicada para “corregir rapidito”.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| Engine | Supabase Postgres |
+| PK | UUID |
+| Time | timestamptz UTC |
+| Soft delete | Default en business entities |
+| Migrations | `supabase/migrations` forward-only |
+| Client | `@pergon/database` |
+| RLS | On para dominio expuesto |
+| Service role | Solo server |
+
+## Prohibiciones
+
+- Serial IDs públicos como identificadores de verificación.
+- Hard delete de identidad digital sin política + audit.
+- Service role en cliente.
+- SQL string-building desde input de usuario.
+- Migraciones destructivas sin plan de rollback/backup.
+- Schema drift no migrado (cambios manuales en prod).

@@ -1,0 +1,175 @@
+---
+description: Convenciones de código PerGon — TypeScript, RSC, hooks, testing, performance
+alwaysApply: true
+---
+
+# 12 — Code
+
+## Objetivo
+
+Definir el estándar de ingeniería de software de PerGon OS para los próximos 10 años: TypeScript estricto, arquitectura de apps/packages, Server/Client Components, hooks, testing, performance y documentación en código.
+
+## Principios
+
+1. **TypeScript strict es ley.**
+2. **Claridad > cleverness.**
+3. **Boundaries del monorepo sagrados.**
+4. **Server Components por defecto; Client solo por necesidad.**
+5. **Features por dominio**, pages delgadas.
+6. **Colocation** de UI+logic de feature; shared solo cuando hay 2+ consumidores reales.
+7. **Fallos tipados y visibles.**
+8. **Performance = producto** (especialmente Web pública y Admin con tablas).
+9. **Tests donde el costo del bug es alto** (QR resolve, authz, passport state).
+10. **Toda excepción se documenta** — no se normaliza en silencio.
+
+## Reglas
+
+### Monorepo
+
+- Apps: `apps/web`, `apps/admin`.
+- Packages: `@pergon/ui|config|database|shared|three`.
+- Imports de workspace vía nombres `@pergon/*`, no relative `../../packages` en features (salvo config de paths ya definida).
+- `transpilePackages` en Next config al agregar package consumido.
+- Scripts vía Turbo desde raíz.
+
+### TypeScript
+
+- `strict` on; no `any` sin justificación comentada y acotada.
+- Preferir `unknown` + narrowing.
+- Evitar enums numéricos; preferir union types o const maps.
+- Tipar contratos de API/zod en boundary.
+- No uses non-null `!` salvo invariante local evidente.
+
+### Imports
+
+- Orden: externos → `@pergon/*` → alias `@/` → relativos.
+- No circular imports entre features.
+- Preferir import de path exportado del package (`@pergon/database/server`) no deep internals no exportados.
+- Side-effect imports (CSS) solo en layouts/roots permitidos.
+
+### Estructura de feature
+
+```
+features/<domain>/
+  components/
+  hooks/
+  lib/
+  types/
+  server/          # si hay acciones/queries server-only
+  index.ts         # API pública de la feature si aplica
+```
+
+### Server vs Client Components
+
+- Default: Server Component (sin `"use client"`).
+- `"use client"` solo por: estado local, effects, browser APIs, librerías client-only (Framer partes, R3F).
+- Empujar client boundary lo más abajo posible (hojas interactivas).
+- Data fetching en server preferente; mutaciones vía Server Actions o route handlers con validación.
+- No importar módulos server-only en client graphs.
+
+### Hooks
+
+- Hooks solo en client components / custom hooks.
+- Prefijo `use`; un concern por hook.
+- No fetch ad-hoc duplicado: encapsular en lib/query pattern consistente cuando exista.
+- Limpiar subscriptions/timers.
+- No `useMemo`/`useCallback` por defecto; solo con razón de perf o deps estables requeridas (seguir compilación/React del repo).
+
+### Estado
+
+- URL como estado de filtros/paginación en Admin.
+- Evitar global store hasta dolor real; preferir server data + local UI state.
+- Forms: librería o controlled patterns consistentes; validación schema compartible.
+
+### Testing
+
+- Prioridad: unit de reducers/policies; integration de resolve QR / authz; e2e smoke de verify + admin login cuando existan.
+- Nombres descriptivos; sin snapshots frágiles de UI grande.
+- Fixtures sin PII real.
+- Tests no incluyen payloads de exploit; sí casos de authz negada.
+
+### Performance
+
+- Dynamic import de R3F/heavy charts.
+- Imágenes con componentes Next; tamaños correctos.
+- Evitar waterfalls; paralelizar fetches independientes.
+- Listas grandes: paginación/virtualización.
+- No bloquear TTI con motion/3D.
+- Medir antes de micro-optimizar.
+
+### Documentación en código
+
+- JSDoc en APIs públicas de packages.
+- Comentarios solo para “por qué”, no narrar el “qué”.
+- README de package si el contrato no es obvio.
+- Actualizar docs de dominio cuando cambie comportamiento de QR/pasaporte/IA.
+
+### Git / calidad
+
+- ESLint + Prettier vía Husky/lint-staged.
+- No `--no-verify` salvo emergencia documentada por humano.
+- PRs pequeños; descripción del “por qué”.
+
+## Buenas prácticas
+
+- Result types / discriminated unions para errores de dominio.
+- Feature flags solo con plan de retiro.
+- Logging estructurado en server.
+- Mantener `components.json` y aliases alineados al monorepo.
+- Diseño de APIs internas idempotentes donde haya retries (recargas QR).
+
+## Malas prácticas
+
+- `"use client"` en layouts enteros “por si acaso”.
+- Duplicar utils entre web y admin → van a `@pergon/shared`.
+- `any`, `@ts-ignore`, `eslint-disable` masivos.
+- Business logic en `page.tsx` monolíticos.
+- Fetch en useEffect sin necesidad cuando el server puede.
+- Commits con `.env` o keys.
+
+## Checklist
+
+- [ ] ¿Strict TS sin any injustificado?
+- [ ] ¿Package/app boundary correcto?
+- [ ] ¿RSC default; client mínimo?
+- [ ] ¿Feature folder limpia?
+- [ ] ¿Validación en boundary server?
+- [ ] ¿Sin secretos?
+- [ ] ¿Perf: heavy deps lazy?
+- [ ] ¿Tests en zona de riesgo?
+- [ ] ¿Lint/format OK?
+- [ ] ¿Docs/rules actualizadas si cambió contrato?
+
+## Ejemplos
+
+**Correcto:** `features/qr/server/resolve-qr.ts` (server-only) + client `QrScanner` hoja interactiva.
+
+**Incorrecto:** `page.tsx` client con service role y 400 líneas de JSX+SQL mental.
+
+**Correcto:** Extraer `formatPassportId` a `@pergon/shared` al usarse en web y admin.
+
+**Incorrecto:** Copiar la función en ambos apps.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| Lenguaje | TypeScript strict |
+| UI kit | `@pergon/ui` |
+| Data | `@pergon/database` |
+| RSC | Default |
+| Client | Opt-in mínimo |
+| Features | Por dominio |
+| Tooling | pnpm + Turbo + ESLint + Prettier + Husky |
+| any/ts-ignore | Excepción documentada |
+| Secrets in repo | Prohibido |
+
+## Prohibiciones
+
+- JavaScript sin tipos en código de producto nuevo.
+- Duplicar design system o database clients.
+- Service role / secrets en client.
+- Desactivar lint globalmente.
+- Monolitos de page/feature sin límites.
+- Patrones que contradigan rules 01–11 “porque es más rápido”.
+- Redefinir estas convenciones por chat sin actualizar este archivo.

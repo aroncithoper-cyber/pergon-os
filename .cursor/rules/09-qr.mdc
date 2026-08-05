@@ -1,0 +1,130 @@
+---
+description: Sistema QR y Pasaporte Digital — IDs, dinámicos, antifalsificación, ciclo de vida
+alwaysApply: true
+---
+
+# 09 — QR & Pasaporte Digital
+
+## Objetivo
+
+Definir las reglas de dominio del **Sistema QR** y su vínculo con el **Pasaporte Digital**: identidad única, dinamismo, antifalsificación, recargas, historial, escaneos y alertas. Cualquier feature relacionada obedece este contrato.
+
+## Principios
+
+1. **Un QR no es un JPEG.** Es un puntero criptográficamente gobernado a estado de sistema.
+2. **IDs únicos globales** (UUID) para entidades; códigos de presentación ≠ secretos de autorización.
+3. **QR dinámicos por defecto** en producto serio: el payload resoluble puede rotar sin reimprimir el significado de negocio cuando el diseño lo permita; si el QR físico es fijo, el **destino/estado** sigue siendo dinámico en servidor.
+4. **Pasaporte Digital es la fuente de verdad de identidad de unidad/lote/activo** según modelo; el QR es la puerta de entrada.
+5. **Antifalsificación = verificación server-side**, no “confianza en el cliente”.
+6. **Todo scan es evento** auditable.
+7. **Alertas son producto**, no logs olvidados.
+8. **Recargas/renovaciones** dejan rastro y versionan estado.
+9. **Privacidad:** el escáner público ve lo mínimo necesario.
+10. **Admin opera; Web verifica/consulta.**
+
+## Reglas
+
+### Identificadores
+
+- Primary keys: **UUID v4/v7** (decidir v7 si se necesita orden temporal; documentar en migrations).
+- Nunca usar IDs autoincrementales expuestos en URLs públicas de verificación.
+- Separar: `qr_id`, `public_code` / slug, `passport_id`, `product_id`, `batch_id`.
+- Códigos impresos pueden ser cortos, pero resuelven vía backend a UUID.
+
+### QR dinámicos
+
+- Resolución siempre pasa por backend/edge con validación de estado.
+- Estados mínimos: `active`, `rotated`, `suspended`, `revoked`, `expired`.
+- Rotación: invalidar resolución anterior; mantener historial; pasaporte permanece trazable.
+- No confiar en QR estático que apunte a JSON público mutable sin firma/control.
+
+### Pasaporte Digital
+
+- Contiene identidad y metadatos autorizados del activo/unidad (producto, lote, vigencia, estado, eventos relevantes).
+- Estados alineados al dominio (ej. `draft`, `issued`, `active`, `expired`, `revoked`).
+- Emisión y revocación solo con rol adecuado + audit log.
+- UI de pasaporte: legible, solemne, inequívoca; sin marketing noise en verificación.
+
+### Antifalsificación
+
+- Verificación online requerida para “válido”.
+- Detectar patrones: replay sospechoso, rate abuse, códigos inventados.
+- Nunca devolver datos sensibles en respuestas a códigos inválidos (evitar oráculos).
+- Respuestas de error genéricas al público; detalle fino solo en Admin.
+
+### Recargas
+
+- Toda recarga/renovación: actor, timestamp, motivo, estado anterior→nuevo.
+- Idempotencia en APIs de recarga (key de idempotencia).
+- UI Admin muestra historial de recargas en el pasaporte/QR.
+
+### Historial y escaneos
+
+- Persistir `scan_events`: qr_id, timestamp, resultado, geo/ip aproximada si política lo permite, user-agent, canal (web/app/admin).
+- Historial consultable en Admin; en Web solo el propio contexto permitido.
+- Retención según política de seguridad/privacidad.
+
+### Alertas
+
+- Triggers: vencimiento próximo, pico de scans anómalo, verificación fallida reiterada, revocación, fallo de automation.
+- Alertas con severidad, estado (open/ack/closed), destinatarios por rol.
+- No spam: deduplicar y agrupar.
+
+## Buenas prácticas
+
+- Diseñar URLs de verificación estables y cortas.
+- Cachear respuestas públicas con cuidado de no servir estado stale de revocación (TTL corto / revalidación).
+- Pruebas de estados: active→rotated→revoked y scans concurrentes.
+- Imágenes QR generadas con nivel de corrección adecuado a impresión industrial.
+- Documentar en Design Bible el modelo de entidad cuando se cierre el schema.
+
+## Malas prácticas
+
+- QR que abre un PDF estático sin control de revocación.
+- Confiar en “secreto” en el querystring como única auth.
+- Borrar escaneos para “limpiar” sin política.
+- Mostrar en público datos de cliente/operación interna.
+- Reutilizar el mismo public_code tras revoke sin estrategia explícita.
+
+## Checklist
+
+- [ ] ¿UUID y separación de identificadores?
+- [ ] ¿Resolución server-side con estados?
+- [ ] ¿Pasaporte como verdad; QR como acceso?
+- [ ] ¿Scan events persistidos?
+- [ ] ¿Recargas con audit + idempotencia?
+- [ ] ¿Alertas definidas para riesgos clave?
+- [ ] ¿Respuestas públicas mínimas (anti-oráculo)?
+- [ ] ¿Admin vs Web responsibilities claras?
+- [ ] ¿Antifalsificación no delegada al cliente?
+
+## Ejemplos
+
+**Correcto:** Scan → API verifica firma/estado → UI “Válido” + datos de pasaporte públicos → `scan_event` guardado.
+
+**Incorrecto:** App lee QR y muestra texto embebido offline como prueba de autenticidad.
+
+**Correcto:** Rotar QR dinámico ante sospecha; pasaporte mantiene historial; alertas a seguridad.
+
+**Incorrecto:** Cambiar la imagen QR en planta sin invalidar resoluciones previas.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| IDs | UUID; no seriales públicos como PK |
+| Veracidad | Server-side |
+| QR | Dinámico en resolución/estado |
+| Scans | Eventos persistidos |
+| Recargas | Auditadas + idempotentes |
+| Pasaporte | Fuente de verdad de identidad de unidad |
+| Falsificación aid | Prohibido en cualquier capa |
+
+## Prohibiciones
+
+- QR estático sin control de ciclo de vida como “seguridad”.
+- Verificación solo-client.
+- IDs predecibles en verificación pública.
+- Borrar historial de escaneos/audit para ocultar incidentes.
+- Exponer PII innecesaria en respuestas de scan público.
+- Features QR que no registren alertas ante abuso obvio.

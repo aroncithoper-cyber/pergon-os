@@ -1,0 +1,99 @@
+---
+description: Reglas visuales obligatorias de PerGon OS — precisión premium, sin UI genérica
+alwaysApply: true
+---
+
+# 02 — UI
+
+## Objetivo
+
+Gobernar toda decisión visual de PerGon OS. La UI debe transmitir **precisión industrial + confianza tecnológica**, al nivel percibido de Apple / Stripe / Linear / Vercel, con **identidad propia PerGon** — nunca clon ni plantilla.
+
+Fuente complementaria: `docs/UI_UX_PRINCIPLES.md`.
+
+## Principios
+
+1. **Tokens antes que píxeles.** Color, tipo, espacio, radio, sombra y motion salen del sistema.
+2. **Jerarquía antes que decoración.** Título → acción → soporte → metadata.
+3. **Superficies con función.** Fondo, borde y elevación separan información; no adornan.
+4. **Default sin cards.** Contenedores solo cuando la interacción o el agrupamiento lo exigen.
+5. **Una composición en el primer viewport (Web).** No un dashboard de marketing.
+6. **Densidad por superficie.** Web respira; Admin comprime con disciplina.
+7. **Contraste no negociable.** WCAG AA mínimo en texto e iconos esenciales.
+8. **Identidad ≠ tendencia.** Prohibido el “look AI” y los defaults de generadores.
+9. **Premium = precisión.** Alineación, ritmo, estados completos — no glow.
+10. **3D y glass son herramientas caras.** Solo con justificación funcional y de performance.
+
+## Reglas
+
+- Usar CSS variables / tokens de `@pergon/ui` (`globals.css` + Tailwind preset). Sin hex sueltos en JSX salvo prototipo local no mergeable.
+- Escala de spacing base **4**, layout preferente múltiplos de **8**.
+- Tipografía solo de la escala del sistema. Evitar Inter/Roboto/Arial/system como identidad de marca en Web.
+- Un acento dominante por vista. Semántica (`destructive`, `success`, etc.) no compite con marca.
+- Iconos SVG del sistema (Lucide). Nunca emoji como icono UI.
+- Todo control interactivo: `cursor-pointer`, hover, `focus-visible`, active, disabled.
+- Hero Web: marca + un headline + una frase + CTA group + ancla visual dominante full-bleed. Sin stats/chips/badges flotantes.
+- Cards: prohibidas en hero; en el resto, solo si quitar borde/fondo/radio rompe comprensión o interacción.
+- Glassmorphism: overlays/modales sobre media rica o chrome puntual — nunca lenguaje global ni Admin denso.
+- Dark mode, si existe, es sistema de tokens — no inversión automática.
+- Breakpoints de verificación: 375, 768, 1024, 1440.
+
+## Buenas prácticas
+
+- Componer con whitespace deliberado y alineación a rejilla.
+- Preferir bordes sutiles y tipografía fuerte antes que sombras multicapa.
+- Separar Web (narrativa, atmósfera controlada) de Admin (scanability, tablas, filtros).
+- Tratar empty/loading/error con el mismo cuidado que el estado ideal.
+- Revisar contraste sobre glass, imágenes y surfaces elevadas.
+- Limitar motion a presupuesto (ver `05-animations.mdc`).
+
+## Malas prácticas
+
+- UI que podría pertenecer a cualquier SaaS al quitar el logo.
+- Cards anidadas, pill clusters, badge stickers, gradient meshes “porque premium”.
+- Purple-on-white, purple→indigo, cream+#terracotta “AI luxury”.
+- Glow, neumorphism, glass en cada panel.
+- Tipografía display compitiendo con la marca en el primer viewport.
+- Inset heroes, collages, media en cards redondeadas como ancla principal.
+
+## Checklist
+
+- [ ] ¿Se siente PerGon o un template?
+- [ ] ¿Tokens usados de punta a punta?
+- [ ] ¿Jerarquía clara en 3 segundos?
+- [ ] ¿Cards justificadas o eliminadas?
+- [ ] ¿Sin paletas/anti-patrones AI default?
+- [ ] ¿Contraste AA y focus visible?
+- [ ] ¿Densidad correcta (Web vs Admin)?
+- [ ] ¿Glass/3D justificados o ausentes?
+- [ ] ¿Estados visuales completos?
+
+## Ejemplos
+
+**Correcto:** Página de verificación de pasaporte con tipografía solemne, superficie limpia, QR legible, CTA único “Verificar”, sin cards decorativas.
+
+**Incorrecto:** Misma página con 3 cards de “beneficios”, gradiente púrpura y badges “New / Secure / AI”.
+
+**Correcto:** Admin users table con header sticky, densidad alta, acento solo en estado y acciones.
+
+**Incorrecto:** Admin con glass cards por KPI y animación de entrada en cada fila.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| Design system | `@pergon/ui` + shadcn (New York / neutral tokens) |
+| Referencia de calidad | Precisión tipo Apple/Stripe/Linear/Vercel — no copia visual |
+| Cards | Opt-in, nunca default, nunca en hero |
+| Color AI-default | Prohibido |
+| Iconos | Lucide / SVG sistema |
+| Documentos | Obedecer `UI_UX_PRINCIPLES.md` |
+
+## Prohibiciones
+
+- UI genérica, plantillas, “SaaS starter” aesthetics.
+- Gradientes típicos de generadores y colores de IA.
+- Cards innecesarias, pill spam, floating promo chrome.
+- Páginas que parezcan themes comprados.
+- Ignorar contraste por estética.
+- Inventar radios/sombras/spacing fuera del sistema.

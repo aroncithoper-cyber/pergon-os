@@ -1,0 +1,27 @@
+---
+description: Índice de Foundation Rules V1 de PerGon OS — apunta al set 01–12
+alwaysApply: true
+---
+
+# PerGon OS — Foundation Index
+
+Fuente de verdad de reglas del agente: `.cursor/rules/01` … `12`.
+
+| Archivo | Gobierna |
+|---------|----------|
+| `01-philosophy.mdc` | Filosofía de plataforma |
+| `02-ui.mdc` | UI visual |
+| `03-ux.mdc` | UX / flujos |
+| `04-components.mdc` | Arquitectura de componentes |
+| `05-animations.mdc` | Motion |
+| `06-admin.mdc` | Panel Admin |
+| `07-web.mdc` | Web / confianza |
+| `08-ai.mdc` | PerGon Expert |
+| `09-qr.mdc` | QR + Pasaporte |
+| `10-database.mdc` | Datos / Supabase |
+| `11-security.mdc` | Seguridad |
+| `12-code.mdc` | Código / TS / RSC |
+
+Complementos humanos: `docs/PERGON_DESIGN_BIBLE.md`, `docs/UI_UX_PRINCIPLES.md`.
+
+Ante conflicto entre improvisación en chat y estos archivos, **ganan estos archivos**.

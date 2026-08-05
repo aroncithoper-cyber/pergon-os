@@ -1,0 +1,29 @@
+{
+  "name": "@pergon/identity",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./domain": "./src/domain/index.ts",
+    "./application": "./src/application/index.ts",
+    "./validation": "./src/validation/index.ts",
+    "./infrastructure/memory": "./src/infrastructure/memory/index.ts",
+    "./infrastructure/supabase": "./src/infrastructure/supabase/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@pergon/database": "workspace:*",
+    "@pergon/shared": "workspace:*",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@pergon/config": "workspace:*",
+    "@types/node": "^22.13.10",
+    "eslint": "^9.22.0",
+    "typescript": "^5.8.2"
+  }
+}

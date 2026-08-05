@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@pergon/ui/components",
+    "utils": "@pergon/ui/lib/utils",
+    "ui": "@pergon/ui/components",
+    "lib": "@pergon/ui/lib",
+    "hooks": "@pergon/ui/hooks"
+  },
+  "iconLibrary": "lucide"
+}

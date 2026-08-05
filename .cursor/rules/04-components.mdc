@@ -1,0 +1,107 @@
+---
+description: Arquitectura de componentes PerGon — reuso obligatorio vía @pergon/ui
+alwaysApply: true
+---
+
+# 04 — Components
+
+## Objetivo
+
+Definir cómo se crean, viven y reutilizan los componentes en PerGon OS. **Nunca duplicar.** Toda primitive y pieza de design system sale de `@pergon/ui`. Las apps solo componen features.
+
+## Principios
+
+1. **`@pergon/ui` es la única fuente de primitives.**
+2. **Composición > configuración infinita.** Variantes claras (CVA) mejor que 30 booleans.
+3. **Apps no reinventan Button/Input/Dialog/Table.**
+4. **Features poseen orquestación de dominio**, no el look del sistema.
+5. **Accesibilidad en la primitive**, no como afterthought en cada pantalla.
+6. **API estable.** Cambios breaking en UI exigen migración coordinada web+admin.
+7. **Headless + tokens.** shadcn como base; personalización por tokens PerGon.
+8. **Un componente = un trabajo.**
+9. **Sin dependencias de apps dentro de UI.**
+10. **Documentar contrato** (props, variants, a11y) cuando el componente sale del package.
+
+## Reglas
+
+### Dónde vive qué
+
+| Capa | Ubicación | Contiene |
+|------|-----------|----------|
+| Primitive / DS | `packages/ui` | Button, Input, Dialog, tokens, `cn` |
+| Shared domain UI | `packages/ui` (domain) o package dedicado si crece | PassportBadge, QrFrame — si es cross-app |
+| Feature UI | `apps/*/src/features/<feature>/components` | Composición con datos y reglas de negocio |
+| Route glue | `apps/*/src/app` | Pages/layouts delgados |
+| App chrome | `apps/*/src/components` | Shell local mínimo (nav app-specific) |
+
+### Creación
+
+1. Buscar en `@pergon/ui` y shadcn registry del monorepo.
+2. Si no existe: agregar a `@pergon/ui` (o `shadcn add` hacia el package), no a la app.
+3. Si es 100% one-off de una feature y no reutilizable: feature-local, pero **sin** reimplementar primitives.
+4. Export explícito desde el package (`exports` en `package.json`).
+5. Variantes vía `class-variance-authority`; clases mergeadas con `cn`.
+
+### Contratos
+
+- Props tipadas; no `any`.
+- Forward refs en primitives interactivos.
+- Soportar `className` para escape hatch controlado.
+- No fetch dentro de primitives de UI.
+- No importar `@pergon/database` desde UI.
+
+## Buenas prácticas
+
+- Diseñar variants: `size`, `variant`, `state` alineadas en todo el DS.
+- Story/ejemplo mínimo solo cuando se pida documentación — no demos en apps.
+- Preferir composición (`<Card><CardHeader>…`) al monolito.
+- Mantener paridad visual Web/Admin en primitives; la densidad se ajusta por tokens/size, no por forks.
+- Revisar a11y: roles, teclado, focus trap en overlays.
+
+## Malas prácticas
+
+- `apps/web/components/ui/button.tsx` duplicando el package.
+- Copiar JSX de shadcn en una feature “para ir más rápido”.
+- Prop drilling de estilos mágicos (`bg-[#…]`) saltándose tokens.
+- Componentes “god” que mezclan tabla + filtros + fetch + toasts.
+- Exportar barrel caótico que rompe tree-shaking sin necesidad.
+
+## Checklist
+
+- [ ] ¿Existe ya en `@pergon/ui`?
+- [ ] ¿Se está creando en el package correcto?
+- [ ] ¿Sin duplicar primitive?
+- [ ] ¿Tipado estricto + variants?
+- [ ] ¿Sin data fetching en UI primitive?
+- [ ] ¿A11y cubierta?
+- [ ] ¿Exports del package actualizados?
+- [ ] ¿Apps solo componen?
+
+## Ejemplos
+
+**Correcto:** `import { Button } from "@pergon/ui/components/button"` en web y admin.
+
+**Incorrecto:** Dos `Button.tsx` locales con classNames distintos “porque el admin es más compacto” — se resuelve con `size="sm"` / densidad token.
+
+**Correcto:** `features/passports/components/PassportRevokeDialog.tsx` usa `Dialog` + `Button` del DS y contiene copy/permisos de dominio.
+
+**Incorrecto:** Un `RevokeDialog` en UI package hardcodeado con texto de negocio y llamada a Supabase.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| Design system | `@pergon/ui` |
+| Estilo base | shadcn New York + tokens neutrales PerGon |
+| Utilidad de clases | `cn` = clsx + tailwind-merge |
+| Duplicación | Prohibida |
+| Fetch en primitives | Prohibido |
+| Cross-app domain visuals | Subir a package, no copiar |
+
+## Prohibiciones
+
+- Duplicar componentes entre apps o entre app y package.
+- Crear “mini design systems” locales.
+- Meter negocio/Supabase dentro de `@pergon/ui` primitives.
+- Usar emoji/HTML crudo donde existe primitive.
+- Aceptar PRs que añaden `components/ui/*` dentro de apps.

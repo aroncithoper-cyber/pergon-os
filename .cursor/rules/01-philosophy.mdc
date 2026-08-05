@@ -1,0 +1,93 @@
+---
+description: Filosofía fundacional de PerGon OS — calidad, escala y plataforma sobre velocidad
+alwaysApply: true
+---
+
+# 01 — Philosophy
+
+## Objetivo
+
+Fijar el criterio de decisión permanente de PerGon OS. Toda IA, contributor y PR debe subordinarse a esta filosofía. PerGon OS no es un sitio de marketing ni un CRUD: es una **plataforma tecnológica** de identidad digital, trazabilidad, operación y confianza (Pasaporte Digital, QR, Admin, PerGon Expert, automatizaciones).
+
+Si una decisión acelera el ship pero degrada calidad, mantenimiento, escalabilidad, automatización, reutilización o experiencia, **está prohibida**.
+
+## Principios
+
+1. **Plataforma > página.** Cada feature debe vivir en el monorepo como capacidad reutilizable, no como pantalla aislada.
+2. **Calidad no negociable.** Type-safety, estados completos, accesibilidad y seguridad van en el MVP de la feature, no en un “después”.
+3. **Mantenimiento es producto.** Código que solo el autor entiende es deuda. Preferir claridad a cleverness.
+4. **Escalabilidad temporal.** Diseñar para 10 años de evolución: límites claros entre `apps/*` y `packages/*`, features por dominio, cero acoplamientos accidentales.
+5. **Automatización primero.** Lo que un humano repite en Admin debe convertirse en flujo, job o regla — no en más clics.
+6. **Reutilización obligatoria.** Si existe en `@pergon/ui`, `@pergon/shared` o `@pergon/database`, se usa. Duplicar es un defecto.
+7. **Experiencia = tiempo + confianza.** Cada interacción debe reducir fricción y aumentar certeza sobre el estado del sistema.
+8. **Nunca rapidez como prioridad.** La velocidad de entrega se logra con arquitectura limpia y reuso, no saltándose estándares.
+9. **Dominio PerGon primero.** Productos, limpieza, QR, pasaporte, manuales y operación industrial/comercial son el centro. No diluir el producto con features genéricas de SaaS “porque sí”.
+10. **Documentación viviente.** Design Bible, UI/UX Principles y estas rules son fuente de verdad. El código las obedece; no las contradice en silencio.
+
+## Reglas
+
+- Antes de implementar: declarar intención, superficie (`web` | `admin` | `shared` | `package`) y impacto en dominio (QR / Pasaporte / IA / Auth / Operación).
+- Toda feature nueva nace en `src/features/<dominio>/` de la app correspondiente, o en un package si es cross-app.
+- Prohibido “páginas demo”, “placeholders de marketing” o datos ficticios en ramas que puedan mergearse.
+- Preferir extender el sistema a inventar un patrón local.
+- Cambios que tocan identidad visual, seguridad, QR o pasaporte requieren alineación explícita con Design Bible + estas rules.
+- Si hay conflicto entre “quedaría bonito” y “es operable/auditable”, gana operable/auditable — especialmente en Admin y verificación.
+- Dependencias nuevas solo si aportan capacidad que no existe en el stack aprobado (Next, Tailwind, shadcn/`@pergon/ui`, Supabase, R3F, Framer Motion).
+- Toda excepción a esta filosofía se documenta en el PR y, si es permanente, se actualiza la rule correspondiente.
+
+## Buenas prácticas
+
+- Diseñar APIs internas y packages pensando en un segundo consumidor (otra app o feature) desde el día 1.
+- Nombrar entidades con lenguaje de dominio PerGon (`passport`, `qr_code`, `scan_event`, `product_batch`), no con nombres genéricos (`item`, `thing`, `data`).
+- Separar “presentación” de “política de negocio”.
+- Preferir cambios pequeños, revisables, con límites claros.
+- Automatizar lint, format, typecheck y checks de seguridad en el camino crítico (Husky / CI).
+- Cuando dudes entre dos diseños, elige el que reduce estados especiales y excepciones.
+
+## Malas prácticas
+
+- Shippear “para mostrar algo” con deuda consciente no registrada.
+- Copiar patrones de dashboards SaaS genéricos sin mapearlos al dominio PerGon.
+- Crear una segunda fuente de verdad de UI fuera de `@pergon/ui`.
+- Mezclar responsabilidades de Web (confianza/narrativa) con Admin (operación) en el mismo flujo visual.
+- Optimizar solo para el happy path e ignorar empty/error/permission denied.
+- Introducir librerías “de moda” que compiten con el stack ya elegido.
+
+## Checklist
+
+- [ ] ¿Esto fortalece la plataforma o solo una pantalla?
+- [ ] ¿Mejora calidad, mantenimiento, escala, automatización, reuso o experiencia?
+- [ ] ¿Se priorizó deliberadamente la rapidez sobre alguno de esos ejes? → rechazar
+- [ ] ¿Usa packages/apps correctos y lenguaje de dominio?
+- [ ] ¿Queda documentada cualquier excepción?
+- [ ] ¿Puede otra IA implementar lo siguiente sin redefinir reglas?
+
+## Ejemplos
+
+**Correcto:** Extraer un `PassportStatusBadge` a `@pergon/ui` porque Web (consulta) y Admin (gestión) lo necesitan con la misma semántica visual.
+
+**Incorrecto:** Copiar el badge en `apps/web` y otra variante en `apps/admin` “porque el admin necesita un color distinto” sin token ni variante del sistema.
+
+**Correcto:** Rechazar un hero con 6 stats inventadas aunque “convierta más en plantillas”.
+
+**Incorrecto:** Aceptar contenido ficticio “temporal” en `main`/release.
+
+## Decisiones obligatorias
+
+| Decisión | Valor fijo |
+|----------|------------|
+| Naturaleza del producto | Plataforma tecnológica, no website |
+| Prioridad de trade-offs | Calidad → mantenimiento → escala → automatización → reuso → experiencia → (nunca) rapidez primero |
+| UI compartida | `@pergon/ui` |
+| Datos | `@pergon/database` + Supabase |
+| Apps | `web` (confianza/producto) + `admin` (corazón operativo) |
+| Docs de diseño | `docs/PERGON_DESIGN_BIBLE.md` + `docs/UI_UX_PRINCIPLES.md` |
+| Reglas de agente | `.cursor/rules/*.mdc` (este set) |
+
+## Prohibiciones
+
+- Tratar PerGon OS como landing desechable o template.
+- Priorizar demos visuales sobre integridad del sistema.
+- Introducir deuda “porque el cliente lo ve mañana” sin plan de pago de deuda en el mismo ciclo.
+- Ignorar estas rules porque “es un cambio pequeño”.
+- Redefinir filosofía por chat: se actualiza este archivo o no cambia.

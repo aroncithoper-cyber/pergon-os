@@ -1,0 +1,99 @@
+---
+description: Reglas UX de PerGon OS — menos clics, más claridad, confianza operable
+alwaysApply: true
+---
+
+# 03 — UX
+
+## Objetivo
+
+Garantizar que toda interacción de PerGon OS **ahorre tiempo** y reduzca incertidumbre. Cada pantalla debe responder, antes de diseñarse:
+
+1. ¿Qué quiere hacer el usuario ahora?
+2. ¿Cómo hacerlo en el mínimo de clics/gestos con seguridad adecuada?
+
+## Principios
+
+1. **Tiempo es la métrica.** Cada paso extra debe justificarse (seguridad, confirmación destructiva, cumplimiento).
+2. **Una intención primaria por vista.**
+3. **Feedback ≤ percepción de 150ms.** Nunca silencio ante acción.
+4. **Estados primero.** Default, hover, focus, active, loading, empty, error, success, disabled, forbidden.
+5. **Progressive disclosure.** Detalle avanzado bajo demanda.
+6. **Errores recuperables.** Qué pasó + qué hacer + cómo seguir.
+7. **Contexto persistente.** Filtros, deep links, selección y conversación IA no se pierden sin motivo.
+8. **Confianza sin ficción.** No inventar prueba social ni métricas.
+9. **Fricción proporcional al riesgo.** Verificar pasaporte ≠ eliminar lote.
+10. **Accesibilidad = UX.** Teclado, foco, lectores, reduced-motion.
+
+## Reglas
+
+- Antes de UI: escribir la tarea primaria en una frase (“Emitir pasaporte”, “Validar QR”, “Localizar lote”).
+- Contar clics del happy path; si > 3 para tareas frecuentes de Admin, rediseñar.
+- Búsqueda/filtros cerca de los datos; no esconder acciones primarias en menús anidados.
+- Confirmación solo para destructivo/irreversible o alto impacto (recarga QR, revocar pasaporte, borrar usuario).
+- Loading: skeleton/estructura > spinner de página completa.
+- Empty: explicación + próxima acción, no ilustración vacía sin CTA.
+- Formularios: labels visibles; placeholder no sustituye label; validación cercana al campo.
+- Web: el argumento de confianza se construye por secuencia, no por densidad de claims.
+- Admin: shortcut mental — buscar → identificar → actuar → confirmar solo si duele.
+- IA: no interceptar flujos críticos sin confirmación humana explícita.
+- Mobile: no depender de hover para acciones críticas.
+
+## Buenas prácticas
+
+- Defaults inteligentes (filtros recientes, último almacén, rol actual).
+- Guardar drafts cuando perder datos es costoso.
+- Deep-link a entidades (`/passports/[id]`, `/qr/[code]`).
+- Mensajes de error con ID de correlación en Admin (soporte/auditoría).
+- Prefetch/navegación optimista solo si el fallo es reversible y claro.
+- Homogeneizar patrones: drawer de detalle, bulk bar, toast de éxito corto.
+
+## Malas prácticas
+
+- Wizards de 7 pasos para una tarea de 1 decisión.
+- Modales sobre modales.
+- “¿Estás seguro?” en acciones triviales.
+- Resetear filtros al paginar.
+- Dejar al usuario sin siguiente paso tras éxito/error.
+- Copy ingenioso que oculta el significado.
+- Mezclar jerga de marketing en pantallas de verificación crítica.
+
+## Checklist
+
+- [ ] ¿Tarea primaria explícita?
+- [ ] ¿Mínimo de clics posible sin subir riesgo indebido?
+- [ ] ¿Estados completos?
+- [ ] ¿Feedback inmediato?
+- [ ] ¿Errores accionables?
+- [ ] ¿Sin pasos de ceremonia?
+- [ ] ¿Teclado y focus OK?
+- [ ] ¿Contexto preservado (filtros/selección/URL)?
+- [ ] ¿Riesgo vs fricción calibrados?
+
+## Ejemplos
+
+**Correcto:** Escaneo QR → resultado válido/ inválido / vencido en una pantalla con acciones contextuales (ver pasaporte, reportar incidente).
+
+**Incorrecto:** Escaneo → “éxito” genérico → navegar manualmente a otra sección a buscar el pasaporte.
+
+**Correcto:** Admin “Revocar pasaporte” pide confirmación con consecuencia visible y motivo obligatorio.
+
+**Incorrecto:** Revocar en un solo clic desde la tabla sin audit trail.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| Preguntas previas a cualquier pantalla | Qué quiere / cómo en menos clics |
+| Confirmaciones | Solo riesgo alto |
+| Empty/loading/error | Obligatorios |
+| Contenido ficticio | Prohibido |
+| Hover-only critical | Prohibido |
+
+## Prohibiciones
+
+- Pasos innecesarios, ceremonias UX, dark patterns.
+- Silencio ante acciones.
+- Flujos que entrenan al usuario a ignorar confirmaciones (alert fatigue).
+- Perder el trabajo del usuario por navegación descuidada.
+- Optimizar vanity metrics de UI sobre tiempo-a-tarea.

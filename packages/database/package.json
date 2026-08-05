@@ -1,0 +1,32 @@
+{
+  "name": "@pergon/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./server": "./src/server.ts",
+    "./service": "./src/service.ts",
+    "./middleware": "./src/middleware.ts",
+    "./storage": "./src/storage.ts",
+    "./realtime": "./src/realtime.ts",
+    "./edge": "./src/edge.ts",
+    "./types": "./src/types/database.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@pergon/shared": "workspace:*",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.49.1"
+  },
+  "devDependencies": {
+    "@pergon/config": "workspace:*",
+    "@types/node": "^22.13.10",
+    "eslint": "^9.22.0",
+    "typescript": "^5.8.2"
+  }
+}

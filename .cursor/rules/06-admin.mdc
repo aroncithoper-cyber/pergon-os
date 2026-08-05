@@ -1,0 +1,116 @@
+---
+description: Reglas del Panel Admin — corazón operativo de PerGon OS
+globs: apps/admin/**/*
+alwaysApply: true
+---
+
+# 06 — Admin
+
+## Objetivo
+
+Gobernar `apps/admin` como **corazón operativo** de PerGon OS. El Admin prioriza **velocidad, densidad, productividad y automatización**. No es un showcase visual.
+
+## Principios
+
+1. **Operación > espectáculo.**
+2. **Densidad alta, caos bajo.** Scanability extrema.
+3. **Shell estable.** El chrome no baila; el contenido cambia.
+4. **Automatizar lo repetitivo.** Si un operador lo hace 10 veces al día, es candidato a job/regla.
+5. **Permisos visibles y honestos.**
+6. **Auditoría por defecto** en acciones sensibles.
+7. **Datos primero:** tablas, filtros, búsqueda, detalle.
+8. **Motion mínimo.** Feedback only.
+9. **Glass/3D/cinematic: prohibidos por defecto.**
+10. **Features de dominio** en `src/features/{auth,users,settings,…}`.
+
+## Reglas
+
+### IA y layout
+
+- Route group `(dashboard)` = shell: nav, contexto de org/usuario, outlet.
+- Pages delgadas; lógica en features.
+- Densidad compacta (`size="sm"` en controles), no claustrofobia: usar spacing 8/12 disciplinadamente.
+- Navegación predecible; deep links a entidades.
+
+### Productividad
+
+- Búsqueda global o por módulo para entidades clave (usuarios, pasaportes, QR, lotes).
+- Filtros persistentes en URL.
+- Bulk actions con barra de selección.
+- Atajos: Enter confirma en dialogs primarios; Esc cierra; focus inicial en campo primario.
+- Tablas: columnas decisionales; resto en drawer/detalle.
+- Headers sticky; paginación o virtualización según volumen.
+
+### Automatización
+
+- Exponer triggers claros (“programar recarga”, “alertar vencimiento”) en vez de solo formularios manuales.
+- Toda automatización muestra estado: idle / running / last run / next run / failed.
+- Fallos de automation visibles en Admin, no solo en logs.
+
+### Seguridad operativa
+
+- Roles/permisos gatean UI y server.
+- Destructivo: confirmación + motivo cuando afecte pasaporte/QR/identidad.
+- Mostrar quién hizo qué (audit) en detalle de entidad.
+
+### Visual
+
+- Sin glass excesivo, sin hero marketing, sin KPI theater vacío.
+- Color solo semántico (estado, riesgo) + acento de sistema.
+- Charts solo si responden una pregunta operativa.
+
+## Buenas prácticas
+
+- Empty states con acción (“Crear usuario”, “Emitir QR”).
+- Skeletons de tabla/filas.
+- Toasts cortos; errores persistentes junto al contexto.
+- Separar “configuración” de “operación diaria” en IA.
+- Diseñar para teclado: operadores avanzados no dependen del mouse.
+
+## Malas prácticas
+
+- Dashboard de widgets bonitos sin acciones.
+- Animaciones de entrada en listados.
+- Modales anidados para tareas frecuentes.
+- Ocultar filtros detrás de “Advanced” cuando son el trabajo diario.
+- Copiar layout de Web marketing al Admin.
+
+## Checklist
+
+- [ ] ¿La tarea se completa en mínimos clics?
+- [ ] ¿Densidad Admin (no Web)?
+- [ ] ¿Sin glass/3D/cinematic?
+- [ ] ¿Tabla/filtros/URL state correctos?
+- [ ] ¿Permisos y auditoría en sensibles?
+- [ ] ¿Automatización expuesta cuando aplica?
+- [ ] ¿Estados loading/empty/error?
+- [ ] ¿Feature en carpeta de dominio correcta?
+
+## Ejemplos
+
+**Correcto:** Lista de QR con estado (activo/rotado/revocado), filtro por producto/lote, acción “rotar código”, audit en drawer.
+
+**Incorrecto:** Muro de glass cards “Total QRs” animados sin forma de actuar.
+
+**Correcto:** Settings de alertas de vencimiento con cron legible y último resultado.
+
+**Incorrecto:** Pedir al operador exportar CSV a mano cada mañana sin automation.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| App | `apps/admin` puerto 3001 |
+| Prioridad | Velocidad, densidad, productividad, automatización |
+| Motion | Mínimo |
+| Glass/cinematic/R3F | Prohibidos por defecto |
+| Features seed | auth, users, settings (+ dominio QR/pasaporte) |
+| Datos | Siempre vía `@pergon/database` + RLS/roles |
+
+## Prohibiciones
+
+- Efectos innecesarios, animaciones pesadas, glass excesivo.
+- Marketing layouts, storytelling scroll, hero full-bleed.
+- Acciones sensibles sin fricción ni audit.
+- UI que finge permisos que el server no aplica.
+- Duplicar primitives fuera de `@pergon/ui`.

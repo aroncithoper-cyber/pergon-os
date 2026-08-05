@@ -1,0 +1,111 @@
+---
+description: Reglas de apps/web — vender confianza tecnológica, no químicos
+globs: apps/web/**/*
+alwaysApply: true
+---
+
+# 07 — Web
+
+## Objetivo
+
+Gobernar `apps/web` como superficie pública/producto. La web **vende confianza**: tecnología, seguridad, trazabilidad e innovación. **No vende químicos** como catálogo commodity ni con copy de ferretería genérica.
+
+## Principios
+
+1. **Confianza es el producto percibido.**
+2. **Storytelling visual con ancla real** (sistema, pasaporte, QR, operación) — no stock vacío.
+3. **Marca primero en el primer viewport.**
+4. **Una composición, no un dashboard.**
+5. **Demostración > adjetivos.**
+6. **SEO y performance son UX pública.**
+7. **Sin ficción:** no testimonios/métricas/logos inventados.
+8. **Motion con presupuesto** (ver animations).
+9. **R3F permitido cuando eleva comprensión/presencia.**
+10. **Separación clara:** marketing/producto ≠ operación (Admin).
+
+## Reglas
+
+### Mensaje
+
+- Ejes de comunicación: **tecnología, seguridad, trazabilidad, innovación, identidad digital**.
+- Evitar promesas químicas genéricas (“limpia más”, “rinde más”) como eje central sin anclarlas al sistema PerGon (pasaporte, lote, verificación).
+- Si se habla de producto físico, conectar siempre a **origen digital verificable** (QR/pasaporte/historial).
+
+### Primer viewport
+
+- Marca + un headline + una frase + CTA group + plano visual dominante edge-to-edge.
+- Prohibido en fold: stats inventados, schedules, chips promo, address blocks, “this week”, metadata rows.
+- Sin overlays tipo sticker/badge flotante sobre hero media.
+- Sin cards en hero.
+
+### Páginas
+
+- Landing: secuencia de confianza argumentada (no template fijo Hero→Features→Testimonials).
+- Producto: una promesa + demostración del sistema.
+- Verificación / pasaporte público: solemnidad, claridad, resultado inequívoco.
+- Legal/privacidad: legible, no escondido detrás de dark patterns.
+
+### Técnico
+
+- Metadata/OG reales por ruta indexable.
+- Contenido crítico no solo dentro de Canvas WebGL.
+- `framer-motion` con reduced-motion.
+- 3D vía `@pergon/three` cuando aporte; lazy load pesado.
+- Forms públicos: mínimos campos, privacidad clara.
+
+## Buenas prácticas
+
+- Mostrar el pasaporte/QR como artefactos de confianza.
+- Usar ritmo tipográfico fuerte y whitespace generoso.
+- CTAs alineados al momento del argumento (“Verificar”, “Conocer el sistema”, “Acceder”).
+- Mantener paridad móvil del hero sin degradar a collage.
+- Medir LCP/CLS; imagen hero optimizada.
+
+## Malas prácticas
+
+- Landing de “empresa de limpieza” genérica intercambiable.
+- Feature grids con iconos emoji y copy vacío.
+- Social proof falso.
+- Pricing theater sin producto real detrás.
+- Mezclar panel operativo dentro de marketing routes.
+
+## Checklist
+
+- [ ] ¿Vende confianza tecnológica / trazabilidad / seguridad / innovación?
+- [ ] ¿Evita vender “químicos” como commodity sin sistema?
+- [ ] ¿Primer viewport = una composición válida?
+- [ ] ¿Sin contenido ficticio?
+- [ ] ¿CTA claro y único por región?
+- [ ] ¿SEO metadata presente en rutas públicas?
+- [ ] ¿Motion/3D justificados y performant?
+- [ ] ¿Cumple UI_UX_PRINCIPLES?
+
+## Ejemplos
+
+**Correcto:** Hero: “Identidad digital para cada unidad.” Soporte: verificación y trazabilidad. CTA: “Verificar pasaporte”. Visual: pasaporte/QR real del sistema.
+
+**Incorrecto:** Hero: “Los mejores productos de limpieza.” 6 cards de beneficios genéricos y gradiente púrpura.
+
+**Correcto:** Sección que explica antifalsificación vía QR dinámico + historial.
+
+**Incorrecto:** Carrusel de frascos stock sin vínculo a PerGon OS.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| App | `apps/web` puerto 3000 |
+| Promesa central | Confianza tecnológica y trazabilidad |
+| No promesa central | Commodity químico / plantilla limpia |
+| Hero | Full-bleed, brand-first, sin cards |
+| Social proof falso | Prohibido |
+| Admin patterns en Web | Prohibidos |
+
+## Prohibiciones
+
+- Vender químicos como eje sin anclar al sistema.
+- UI de plantilla SaaS/limpieza genérica.
+- Stats/testimonios inventados.
+- Badge spam y card grids en hero.
+- Ignorar SEO en páginas públicas.
+- Convertir la web en dashboard interno.

@@ -1,0 +1,128 @@
+---
+description: Motion Design PerGon — story, presupuesto, timings y microinteracciones
+alwaysApply: true
+---
+
+# 05 — Animations
+
+## Objetivo
+
+Definir el sistema de motion de PerGon OS. Las animaciones **cuentan historia, orientan y confirman** — no decoran. Framer Motion y R3F son herramientas con costo; se usan con presupuesto.
+
+## Principios
+
+1. **Propósito > spectacle.**
+2. **Presupuesto cerrado.** 2–3 motions intencionales en composiciones Web fuertes.
+3. **Admin: motion mínimo.** Solo feedback y orientación.
+4. **Misma familia de easing** para acciones similares.
+5. **`prefers-reduced-motion` obligatorio.**
+6. **Performance first.** 60fps objetivo; degradar a estático.
+7. **Scroll cinematográfico solo en narrativa Web** — nunca en Admin/forms/tablas.
+8. **Microinteracciones > page choreography** en producto operable.
+9. **3D (R3F) = presencia o comprensión**, no wallpaper.
+10. **Motion no bloquea tarea.**
+
+## Reglas
+
+### Duraciones
+
+| Tipo | Duración |
+|------|----------|
+| Micro (hover, color, focus ring) | 120–180ms |
+| UI control (menu, accordion, toast in) | 180–250ms |
+| Panel / drawer / modal | 200–320ms |
+| Page section reveal (Web) | 300–500ms |
+| Narrative / cinematic beat | 600–1200ms (raro, justificado) |
+
+### Easing
+
+- Entradas UI: curve suave tipo `ease-out`.
+- Salidas: `ease-in` o simétrica corta.
+- Evitar bounce/elastic en Admin, Pasaporte y verificación.
+- Mantener tokens/motion constants compartidos cuando se centralicen en UI o shared.
+
+### Scroll
+
+- Cinematográfico: landings/producto/pasaporte presentacional en Web.
+- Un concepto por beat; sin scrolljacking.
+- Contenido crítico disponible sin motion.
+- CTA alcanzable sin completar la narrativa.
+
+### Microinteracciones
+
+- Hover/active en controles.
+- Feedback de submit (pending → success/error).
+- Row hover en tablas (sutil).
+- Estados IA: thinking / streaming (claro, no theatrical).
+
+### Motion budget por superficie
+
+| Superficie | Presupuesto |
+|------------|-------------|
+| Landing / producto Web | 2–3 intencionales + micros |
+| Pasaporte presentacional | Contado, solemne |
+| Admin | Solo micros + feedback |
+| Forms / tables | Casi ninguno |
+| R3F | Escenas acotadas; no concurrente con blur pesado |
+
+### Implementación
+
+- CSS/Tailwind transitions para lo simple.
+- Framer Motion para orquestación, shared layout, gestos.
+- R3F solo vía `@pergon/three` / web features 3D.
+- No animar `filter: blur` a gran escala en scroll mobile.
+
+## Buenas prácticas
+
+- Animar `transform` y `opacity`, no layout thrash innecesario.
+- Stagger corto (≤ 40–60ms) y limitado a pocos items.
+- Cancelar animaciones al navegar away.
+- Probar con reduced-motion y CPU throttling.
+- Coordinar illuminación/entrada 3D con carga real (no fake forever).
+
+## Malas prácticas
+
+- Animar todo on-mount en dashboards.
+- Parallax agresivo, bounce en botones de producción.
+- Scroll hijacking, pinning eterno.
+- Loaders “bonitos” que añaden espera artificial.
+- Glass + blur animado + 3D simultáneo en mobile.
+
+## Checklist
+
+- [ ] ¿Qué historia o feedback aporta esta animación?
+- [ ] ¿Duración/easing dentro de tabla?
+- [ ] ¿Presupuesto de superficie respetado?
+- [ ] ¿Reduced-motion OK?
+- [ ] ¿No bloquea input/navegación?
+- [ ] ¿60fps razonable en target device?
+- [ ] ¿Admin libre de cinematic noise?
+
+## Ejemplos
+
+**Correcto:** Hero Web: fade-up del copy 350ms + CTA; media full-bleed estática o loop 3D suave; nada más above the fold.
+
+**Incorrecto:** Cada sección con parallax, contadores animados, glow pulse y cards que vuelan.
+
+**Correcto:** Toast Admin 200ms in/out; filas sin entrance stagger.
+
+**Incorrecto:** Tabla que anima 50 filas al filtrar.
+
+## Decisiones obligatorias
+
+| Tema | Decisión |
+|------|----------|
+| Librería UI motion | Framer Motion (apps) |
+| 3D | R3F en `@pergon/three` / web |
+| Admin cinematic scroll | Prohibido |
+| Reduced motion | Obligatorio |
+| Bounce/elastic en crítico | Prohibido |
+
+## Prohibiciones
+
+- Decoración motion sin función.
+- Scrolljacking.
+- Ignorar `prefers-reduced-motion`.
+- Animaciones pesadas en Admin.
+- Esperas artificiales “para que se note el motion”.
+- Usar R3F como fondo ornamental permanente en operación.
