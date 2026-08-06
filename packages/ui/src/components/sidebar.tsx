@@ -64,7 +64,7 @@ const Sidebar = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
         ref={ref}
         data-collapsed={collapsed}
         className={cn(
-          "border-border bg-background flex min-h-svh shrink-0 flex-col border-r transition-[width] duration-200 ease-out",
+          "border-border bg-background/70 flex min-h-svh shrink-0 flex-col border-r backdrop-blur-xl transition-[width] duration-200 ease-out",
           collapsed ? "w-sidebar-collapsed" : "w-sidebar",
           className,
         )}

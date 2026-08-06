@@ -10,6 +10,8 @@ import { Container } from "@pergon/ui/components/container";
 import { ErrorState } from "@pergon/ui/components/error-state";
 import { Separator } from "@pergon/ui/components/separator";
 
+import { AtmosphereLayer } from "@/components/atmosphere-layer";
+
 import { VerifyActions } from "./verify-actions";
 import { VerifyInfoPanel } from "./verify-info-panel";
 import { VerifyResultHeader } from "./verify-result-header";
@@ -76,14 +78,21 @@ export function VerifyExperience({ passportId }: VerifyExperienceProps) {
   const showDetail = data.passport !== null;
 
   return (
-    <div className="surface-solemn min-h-[calc(100dvh-var(--navbar-height))]">
-      <Container size="md" className="py-16 sm:py-20">
+    <div className="surface-atmosphere relative min-h-[calc(100dvh-var(--navbar-height))] overflow-hidden">
+      <AtmosphereLayer />
+      <Container size="md" className="relative z-10 py-16 sm:py-20">
         <motion.div
-          className="space-y-14"
-          initial={reduce ? false : { y: 8 }}
-          animate={{ y: 0 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="glass-passport relative space-y-12 rounded-2xl p-6 sm:p-10"
+          initial={reduce ? false : { y: 16, rotateX: 6, opacity: 0.01 }}
+          animate={{ y: 0, rotateX: 0, opacity: 1 }}
+          whileHover={reduce ? undefined : { rotateY: 1.5, rotateX: -1.5, scale: 1.005 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          style={{ transformStyle: "preserve-3d", perspective: 1200 }}
         >
+          <div
+            className="glow-cyan bg-cyan/20 pointer-events-none absolute -right-6 -top-6 size-28 rounded-full blur-3xl"
+            aria-hidden
+          />
           <VerifyResultHeader
             outcome={data.outcome}
             publicId={data.passport?.publicId}
@@ -93,31 +102,14 @@ export function VerifyExperience({ passportId }: VerifyExperienceProps) {
           {showDetail && data.passport ? (
             <>
               <VerifyInfoPanel passport={data.passport} />
-              <Separator />
+              <Separator className="bg-white/10" />
               <VerifyTimeline items={data.passport.timeline} />
-              <Separator />
+              <Separator className="bg-white/10" />
               <VerifyActions />
             </>
           ) : (
-            <>
-              <section className="space-y-4">
-                <h2 className="text-foreground text-xl font-semibold tracking-tight">
-                  Qué significa esto
-                </h2>
-                <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
-                  Por seguridad, PerGon no revela detalles de pasaporte cuando el código no es
-                  verificable públicamente. Si cree que el producto es legítimo, contacte soporte o
-                  intente con el código impreso en el envase.
-                </p>
-              </section>
-              <VerifyActions />
-            </>
+            <VerifyActions />
           )}
-
-          <p className="text-muted-foreground font-mono text-[11px] tracking-wide">
-            Escaneo {data.scanId ? data.scanId.slice(0, 8) : "—"} · Riesgo {data.riskScore} ·{" "}
-            {data.scanResult}
-          </p>
         </motion.div>
       </Container>
     </div>

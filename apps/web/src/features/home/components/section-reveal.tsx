@@ -19,12 +19,11 @@ export function SectionReveal({ children, className, delay = 0 }: SectionRevealP
   return (
     <motion.div
       className={className}
-      // Keep content visible without JS (opacity:0 SSR = blank sections on failure).
-      initial={{ y: 16 }}
-      whileInView={{ y: 0 }}
-      viewport={{ once: true, amount: 0.2, margin: "0px 0px -8% 0px" }}
+      initial={{ y: 28, opacity: 0.01, filter: "blur(6px)" }}
+      whileInView={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.22, margin: "0px 0px -6% 0px" }}
       transition={{
-        duration: 0.35,
+        duration: 0.55,
         delay,
         ease: [0.16, 1, 0.3, 1],
       }}

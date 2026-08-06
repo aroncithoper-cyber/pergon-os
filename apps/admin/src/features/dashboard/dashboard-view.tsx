@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 import { ErrorState } from "@pergon/ui/components/error-state";
 import { LoadingBlock } from "@pergon/ui/components/loading";
-import { Separator } from "@pergon/ui/components/separator";
+import { cn } from "@pergon/ui/lib/utils";
 
 import { apiFetch } from "@/lib/api-client";
 import { useAuth } from "@/features/auth/auth-provider";
@@ -78,57 +79,81 @@ export function DashboardView() {
   const kpis = Array.isArray(kpiWidget?.data.kpis)
     ? (kpiWidget.data.kpis as Array<{ key: string; value: number }>)
     : [];
+  const otherWidgets = widgets.filter((w) => w.widgetKey !== "kpi");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div className="space-y-1">
-          <h1 className="text-foreground text-xl font-semibold tracking-tight">
+          <p className="text-signal text-[10px] font-medium uppercase tracking-[0.24em]">
+            Operación
+          </p>
+          <h1 className="text-foreground text-2xl font-semibold tracking-tight">
             Centro de control
           </h1>
           <p className="text-muted-foreground text-xs">
-            Señales operativas · widgets vía API existente
+            Señales operativas en vivo · mismos endpoints
           </p>
         </div>
+        <span className="bg-success/15 text-success inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-wider">
+          <span className="bg-success animate-pergon-pulse size-1.5 rounded-full" aria-hidden />
+          Live
+        </span>
       </header>
 
-      <section className="divide-border border-border divide-y border">
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.length === 0 ? (
-          <div className="text-muted-foreground flex items-center justify-between px-3 py-2.5 text-xs">
-            <span>KPIs</span>
-            <span className="font-mono">0</span>
+          <div className="glass-panel text-muted-foreground col-span-full rounded-xl px-4 py-6 text-sm">
+            Sin KPIs todavía.
           </div>
         ) : (
-          kpis.map((kpi) => (
-            <div key={kpi.key} className="flex items-center justify-between gap-4 px-3 py-2.5">
-              <span className="text-muted-foreground text-xs uppercase tracking-wide">
+          kpis.map((kpi, index) => (
+            <motion.article
+              key={kpi.key}
+              className="glass-panel group relative overflow-hidden rounded-xl p-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.04, duration: 0.3 }}
+            >
+              <div
+                className="from-signal/15 to-cyan/20 pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r"
+                aria-hidden
+              />
+              <p className="text-muted-foreground text-[10px] uppercase tracking-[0.18em]">
                 {kpi.key.replaceAll("_", " ")}
-              </span>
-              <span className="text-foreground font-mono text-sm tabular-nums">{kpi.value}</span>
-            </div>
+              </p>
+              <p className="text-foreground mt-3 font-mono text-3xl tabular-nums tracking-tight">
+                {kpi.value}
+              </p>
+            </motion.article>
           ))
         )}
       </section>
 
-      <Separator />
-
-      <section className="divide-border border-border divide-y border">
-        {widgets
-          .filter((w) => w.widgetKey !== "kpi")
-          .map((widget) => (
-            <article
-              key={widget.widgetKey}
-              className="grid gap-1 px-3 py-2.5 sm:grid-cols-[10rem_1fr_auto] sm:items-center sm:gap-4"
-            >
-              <h2 className="text-foreground text-xs font-medium uppercase tracking-wide">
+      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {otherWidgets.map((widget, index) => (
+          <motion.article
+            key={widget.widgetKey}
+            className={cn(
+              "glass-panel hover:border-signal/30 duration-ui rounded-xl border border-transparent p-4 transition-colors",
+            )}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 + index * 0.03, duration: 0.3 }}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-foreground text-xs font-medium uppercase tracking-[0.16em]">
                 {widget.widgetKey.replaceAll("_", " ")}
               </h2>
-              <p className="text-muted-foreground truncate text-xs">{summarize(widget.data)}</p>
               <span className="text-muted-foreground font-mono text-[10px] tabular-nums">
                 {widget.fetchedAt.slice(11, 19)}
               </span>
-            </article>
-          ))}
+            </div>
+            <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
+              {summarize(widget.data)}
+            </p>
+          </motion.article>
+        ))}
       </section>
     </div>
   );

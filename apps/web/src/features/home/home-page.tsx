@@ -16,6 +16,8 @@ import type {
 } from "@pergon/cms";
 import { listEnabledHomeBlocks } from "@pergon/cms";
 
+import { AtmosphereLayer } from "@/components/atmosphere-layer";
+
 import { CasesSection, EcosystemSection } from "./components/ecosystem-sections";
 import { ExpertSection } from "./components/expert-section";
 import { FeaturedProductsSection } from "./components/featured-products-section";
@@ -60,8 +62,8 @@ function renderBlock(section: CmsHomeSection) {
 }
 
 /**
- * Home Composer — renders official blocks in published CMS order.
- * Disabled blocks are omitted. Each block keeps its own component/design.
+ * Home Composer — cinematic narrative shell.
+ * CMS still owns content; design is presentation-only.
  */
 export function HomePage(props: { payload: CmsHomePayload; preview?: boolean }) {
   const { payload, preview } = props;
@@ -69,15 +71,18 @@ export function HomePage(props: { payload: CmsHomePayload; preview?: boolean }) 
   const blocks = listEnabledHomeBlocks(payload);
 
   return (
-    <div className="bg-background text-foreground flex min-h-dvh flex-col">
+    <div className="surface-atmosphere text-foreground relative flex min-h-dvh flex-col overflow-x-clip">
+      <AtmosphereLayer className="fixed inset-0 z-0" />
       {preview ? (
-        <div className="bg-foreground text-background px-4 py-2 text-center text-xs font-medium tracking-wide">
+        <div className="bg-signal text-signal-foreground relative z-50 px-4 py-2 text-center text-xs font-medium tracking-wide">
           PREVIEW — contenido no público
         </div>
       ) : null}
-      <SiteHeader nav={nav} />
-      <div id="main" className="flex flex-1 flex-col">
-        {blocks.map((section) => renderBlock(section))}
+      <div className="relative z-10 flex min-h-dvh flex-col">
+        <SiteHeader nav={nav} />
+        <div id="main" className="flex flex-1 flex-col">
+          {blocks.map((section) => renderBlock(section))}
+        </div>
       </div>
     </div>
   );

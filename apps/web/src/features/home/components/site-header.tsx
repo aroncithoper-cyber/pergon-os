@@ -7,7 +7,7 @@ import { Navbar } from "@pergon/ui/components/navbar";
 export function SiteHeader({ nav }: { nav: CmsNavItem[] }) {
   return (
     <Navbar
-      className="border-border/80"
+      className="border-border/40 bg-background/55 supports-[backdrop-filter]:bg-background/40"
       brand={
         <Link
           href="/"
@@ -31,7 +31,7 @@ export function SiteHeader({ nav }: { nav: CmsNavItem[] }) {
         </ul>
       }
       actions={
-        <Button asChild size="sm" variant="outline">
+        <Button asChild size="sm" variant="signal">
           <Link href="#tecnologia-qr">Verificar</Link>
         </Button>
       }

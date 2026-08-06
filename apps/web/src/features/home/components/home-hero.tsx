@@ -2,8 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, type ReactNode } from "react";
-import { motion, useReducedMotion, useScroll, useTransform, type MotionStyle } from "framer-motion";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionStyle,
+} from "framer-motion";
+import { ChevronDown } from "lucide-react";
 
 import type { CmsHeroSection } from "@pergon/cms";
 import { Button } from "@pergon/ui/components/button";
@@ -164,7 +174,6 @@ function HeroVisual({
     content.media.posterUrl?.trim() ||
     content.media.mobileImageUrl?.trim();
 
-  // Reduced motion: prefer still (poster / image) over autoplaying video.
   if (
     reduceMotion &&
     (resolved.kind === "youtube" || resolved.kind === "vimeo" || resolved.kind === "file")
@@ -186,7 +195,6 @@ function HeroVisual({
     return (
       <div className="absolute inset-0 overflow-hidden">
         {resolved.poster ? (
-          // Poster under iframe until stream paints (LCP-friendly hint).
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={resolved.poster}
@@ -233,6 +241,7 @@ function HeroVisual({
   return (
     <div className="surface-stage absolute inset-0" aria-hidden>
       <div className="from-background via-background/40 absolute inset-0 bg-gradient-to-t to-transparent" />
+      <div className="animate-aurora absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,hsl(var(--signal)/0.25),transparent_55%)]" />
     </div>
   );
 }
@@ -251,9 +260,9 @@ function Reveal({
   return (
     <motion.div
       className={className}
-      initial={reduce ? false : { opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay, ease: EASE_OUT }}
+      initial={reduce ? false : { opacity: 0, y: 28, filter: "blur(8px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, delay, ease: EASE_OUT }}
     >
       {children}
     </motion.div>
@@ -261,108 +270,122 @@ function Reveal({
 }
 
 /**
- * Hero Viewer — full-viewport identity stage.
+ * Hero Viewer — full-viewport cinematic identity stage.
  * Consumes published CMS hero only. No hardcoded copy.
  */
 export function HomeHero({ content }: { content: CmsHeroSection }) {
   const reduce = useReducedMotion();
   const stageRef = useRef<HTMLElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 40, damping: 18 });
+  const springY = useSpring(mouseY, { stiffness: 40, damping: 18 });
+  const glare = useMotionTemplate`radial-gradient(520px circle at ${springX}px ${springY}px, hsl(var(--signal) / 0.18), transparent 55%)`;
+
   const { scrollYProgress } = useScroll({
     target: stageRef,
     offset: ["start start", "end start"],
   });
-  const mediaY = useTransform(scrollYProgress, [0, 1], ["0%", "6%"]);
+  const mediaY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
+  const mediaScale = useTransform(scrollYProgress, [0, 1], [1.06, 1.14]);
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!content.enabled) return null;
 
   const hasSecondary =
     Boolean(content.secondaryCta?.label?.trim()) && Boolean(content.secondaryCta?.href?.trim());
 
-  const mediaStyle: MotionStyle | undefined = reduce ? undefined : { y: mediaY };
+  const mediaStyle: MotionStyle | undefined = reduce ? undefined : { y: mediaY, scale: mediaScale };
 
   return (
     <header
       ref={stageRef}
-      className="relative isolate min-h-[calc(100dvh-var(--navbar-height))] overflow-hidden"
+      className="relative isolate min-h-[100dvh] overflow-hidden"
+      onMouseMove={(event) => {
+        if (reduce) return;
+        const rect = event.currentTarget.getBoundingClientRect();
+        mouseX.set(event.clientX - rect.left);
+        mouseY.set(event.clientY - rect.top);
+      }}
     >
-      {/* Dominant visual plane — edge to edge */}
       <motion.div
         className="absolute inset-0 will-change-transform"
         style={mediaStyle}
         initial={reduce ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, ease: EASE_OUT }}
+        transition={{ duration: 1, ease: EASE_OUT }}
       >
-        <div className="absolute inset-0 scale-[1.04]">
+        <div className="absolute inset-0 scale-[1.05]">
           <HeroVisual content={content} reduceMotion={reduce} />
         </div>
       </motion.div>
 
-      {/* Contrast veils — readable type without cards */}
+      {/* Depth overlays */}
       <div
         className={cn(
           "pointer-events-none absolute inset-0",
-          // Mobile: bottom-weighted veil (copy lives low)
-          "from-background via-background/75 to-background/10 bg-gradient-to-t",
-          // Tablet+: left-weighted editorial veil
-          "md:from-background md:via-background/80 md:bg-gradient-to-r md:to-transparent",
-          "lg:via-background/70",
+          "from-background via-background/80 to-background/20 bg-gradient-to-t",
+          "md:from-background md:via-background/75 md:bg-gradient-to-r md:to-transparent",
         )}
         aria-hidden
       />
       <div
-        className="from-background/40 pointer-events-none absolute inset-0 hidden bg-gradient-to-t via-transparent to-transparent md:block"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,hsl(var(--background)/0.55)_100%)]"
         aria-hidden
       />
+      {!reduce && mounted ? (
+        <motion.div
+          className="pointer-events-none absolute inset-0 mix-blend-screen"
+          style={{ background: glare }}
+          aria-hidden
+        />
+      ) : null}
 
-      {/* Copy compositions — own layout per breakpoint */}
-      <div className="relative z-10 flex min-h-[calc(100dvh-var(--navbar-height))] flex-col">
+      <motion.div
+        className="relative z-10 flex min-h-[100dvh] flex-col"
+        style={reduce ? undefined : { opacity: copyOpacity }}
+      >
         <div
           className={cn(
             "flex flex-1 flex-col",
-            // Mobile: anchor to bottom — full-bleed media above
-            "justify-end px-6 pb-14 pt-24",
-            // Tablet: mid-left editorial column
-            "md:justify-center md:px-10 md:pb-20 md:pt-16",
-            // Desktop: generous left stage, huge air
-            "lg:max-w-[min(40rem,46%)] lg:px-12 xl:px-16",
+            "justify-end px-6 pb-24 pt-28",
+            "md:justify-center md:px-10 md:pb-28 md:pt-20",
+            "lg:max-w-[min(44rem,50%)] lg:px-12 xl:px-16",
             "xl:pl-[max(4rem,calc((100vw-80rem)/2+2rem))]",
           )}
         >
-          <div className="flex max-w-xl flex-col gap-8 md:gap-10 lg:gap-12">
+          <div className="flex max-w-2xl flex-col gap-8 md:gap-10 lg:gap-12">
             <Reveal reduce={reduce} delay={0}>
-              <p
-                className={cn(
-                  "text-foreground text-brand font-semibold tracking-tight",
-                  "text-[clamp(2.5rem,10vw,3.75rem)] leading-[0.95]",
-                  "md:text-[clamp(3.25rem,7vw,4.75rem)]",
-                  "lg:text-[clamp(4rem,5.5vw,5.5rem)]",
-                )}
-              >
+              <p className="text-editorial text-foreground drop-shadow-[0_8px_40px_hsl(var(--background)/0.55)]">
                 {content.brand}
               </p>
             </Reveal>
 
-            <div className="space-y-5 md:space-y-6">
-              <Reveal reduce={reduce} delay={0.06}>
+            <div className="space-y-6 md:space-y-7">
+              <Reveal reduce={reduce} delay={0.08}>
                 <h1
                   className={cn(
-                    "text-foreground max-w-[16ch] font-semibold tracking-tight",
-                    "text-[clamp(1.625rem,5.5vw,2.25rem)] leading-[1.12]",
-                    "md:max-w-[18ch] md:text-[clamp(2rem,3.8vw,2.75rem)]",
-                    "lg:max-w-[14ch] lg:text-[clamp(2.25rem,2.8vw,3.25rem)]",
+                    "text-foreground max-w-[18ch] font-semibold tracking-tight",
+                    "text-[clamp(1.85rem,5.2vw,3.4rem)] leading-[1.05]",
+                    "md:max-w-[20ch]",
+                    "lg:text-[clamp(2.4rem,3vw,3.75rem)]",
                   )}
                 >
                   {content.title}
                 </h1>
               </Reveal>
 
-              <Reveal reduce={reduce} delay={0.1}>
+              <Reveal reduce={reduce} delay={0.14}>
                 <p
                   className={cn(
-                    "text-muted-foreground max-w-[34ch] text-base leading-relaxed",
-                    "md:max-w-md md:text-lg md:leading-relaxed",
-                    "lg:text-lede lg:max-w-[36ch]",
+                    "text-muted-foreground max-w-[36ch] text-base leading-relaxed",
+                    "md:max-w-lg md:text-lg",
+                    "lg:text-lede lg:max-w-[38ch]",
                   )}
                 >
                   {content.subtitle}
@@ -370,13 +393,18 @@ export function HomeHero({ content }: { content: CmsHeroSection }) {
               </Reveal>
             </div>
 
-            <Reveal reduce={reduce} delay={0.14}>
+            <Reveal reduce={reduce} delay={0.2}>
               <div className="flex flex-wrap items-center gap-3 pt-1 md:gap-4">
-                <Button asChild size="lg" className="min-w-[9.5rem]">
+                <Button
+                  asChild
+                  size="lg"
+                  variant="signal"
+                  className="shadow-pergon-signal min-w-[10rem]"
+                >
                   <Link href={content.primaryCta.href}>{content.primaryCta.label}</Link>
                 </Button>
                 {hasSecondary ? (
-                  <Button asChild size="lg" variant="outline" className="min-w-[9.5rem]">
+                  <Button asChild size="lg" variant="outline" className="min-w-[10rem]">
                     <Link href={content.secondaryCta!.href}>{content.secondaryCta!.label}</Link>
                   </Button>
                 ) : null}
@@ -384,7 +412,19 @@ export function HomeHero({ content }: { content: CmsHeroSection }) {
             </Reveal>
           </div>
         </div>
-      </div>
+
+        {!reduce ? (
+          <div className="pointer-events-none absolute inset-x-0 bottom-8 flex justify-center">
+            <div
+              className="text-muted-foreground animate-scroll-cue flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.28em]"
+              aria-hidden
+            >
+              <span>Scroll</span>
+              <ChevronDown className="size-4 opacity-70" />
+            </div>
+          </div>
+        ) : null}
+      </motion.div>
     </header>
   );
 }

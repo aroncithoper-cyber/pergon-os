@@ -89,6 +89,14 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        signal: {
+          DEFAULT: "hsl(var(--signal))",
+          foreground: "hsl(var(--signal-foreground))",
+        },
+        cyan: {
+          DEFAULT: "hsl(var(--cyan))",
+          foreground: "hsl(var(--cyan-foreground))",
+        },
         chart: {
           1: "hsl(var(--chart-1))",
           2: "hsl(var(--chart-2))",
@@ -109,6 +117,8 @@ const config = {
         "pergon-md": "var(--shadow-md)",
         "pergon-lg": "var(--shadow-lg)",
         "pergon-overlay": "var(--shadow-overlay)",
+        "pergon-signal": "var(--shadow-signal)",
+        "pergon-depth": "var(--shadow-depth)",
       },
       spacing: {
         "4.5": "1.125rem",
@@ -141,6 +151,14 @@ const config = {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.45" },
         },
+        "pergon-aurora": {
+          "0%": { transform: "translate3d(-2%, -1%, 0) scale(1)", opacity: "0.7" },
+          "100%": { transform: "translate3d(3%, 2%, 0) scale(1.08)", opacity: "1" },
+        },
+        "pergon-scroll-cue": {
+          "0%, 100%": { transform: "translateY(0)", opacity: "0.55" },
+          "50%": { transform: "translateY(6px)", opacity: "1" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -152,6 +170,8 @@ const config = {
       },
       animation: {
         "pergon-pulse": "pergon-pulse 1.4s ease-in-out infinite",
+        "pergon-aurora": "pergon-aurora 14s var(--ease-inout) infinite alternate",
+        "pergon-scroll-cue": "pergon-scroll-cue 2s var(--ease-inout) infinite",
         "accordion-down": "accordion-down var(--duration-ui) var(--ease-out)",
         "accordion-up": "accordion-up var(--duration-ui) var(--ease-in)",
       },

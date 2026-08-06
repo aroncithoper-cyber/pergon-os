@@ -2,14 +2,17 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion, useReducedMotion } from "framer-motion";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@pergon/ui/components/alert";
 import { Button } from "@pergon/ui/components/button";
 import { Container } from "@pergon/ui/components/container";
 import { Label } from "@pergon/ui/components/label";
-import { Separator } from "@pergon/ui/components/separator";
 import { Textarea } from "@pergon/ui/components/textarea";
+import { cn } from "@pergon/ui/lib/utils";
+
+import { AtmosphereLayer } from "@/components/atmosphere-layer";
 
 type AskResponse = {
   outcome: string;
@@ -29,11 +32,39 @@ type Turn = {
   citations?: AskResponse["citations"];
 };
 
+function ExpertOrb({ thinking }: { thinking: boolean }) {
+  const reduce = useReducedMotion();
+  return (
+    <div
+      className="relative mx-auto flex size-28 items-center justify-center sm:size-36"
+      aria-hidden
+    >
+      <motion.div
+        className="absolute inset-0 rounded-full bg-[radial-gradient(circle,hsl(var(--signal)/0.45),transparent_70%)] blur-2xl"
+        animate={
+          reduce
+            ? undefined
+            : thinking
+              ? { scale: [1, 1.18, 1], opacity: [0.55, 0.95, 0.55] }
+              : { scale: [1, 1.06, 1], opacity: [0.4, 0.65, 0.4] }
+        }
+        transition={{ duration: thinking ? 1.4 : 4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="border-signal/40 glow-signal from-signal/30 to-cyan/20 relative size-16 rounded-full border bg-gradient-to-br sm:size-20"
+        animate={reduce ? undefined : { rotate: 360 }}
+        transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+      />
+    </div>
+  );
+}
+
 export function ExpertPanel() {
   const searchParams = useSearchParams();
   const productSlug = searchParams.get("product") ?? undefined;
   const passportId = searchParams.get("passport") ?? undefined;
   const qrCode = searchParams.get("qr") ?? undefined;
+  const reduce = useReducedMotion();
 
   const contextLabel = useMemo(() => {
     const parts: string[] = [];
@@ -131,83 +162,109 @@ export function ExpertPanel() {
   }
 
   return (
-    <Container size="lg" className="py-14 md:py-20">
-      <div className="grid gap-14 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-16">
-        <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
-          <header className="space-y-5">
-            <p className="text-muted-foreground text-xs uppercase tracking-[0.2em]">
-              Ingeniero técnico digital
-            </p>
-            <h1 className="text-foreground text-3xl font-semibold tracking-tight sm:text-4xl">
-              PerGon Expert
-            </h1>
-            <p className="text-muted-foreground max-w-md text-sm leading-relaxed">
-              Especialista de dominio: productos, diluciones, fichas, seguridad, Pasaporte Digital y
-              QR. Responde con fuentes. Si no hay información suficiente, lo declara.
-            </p>
-          </header>
+    <div className="surface-atmosphere relative min-h-[calc(100dvh-var(--navbar-height))] overflow-hidden">
+      <AtmosphereLayer />
+      <Container size="lg" className="relative z-10 py-14 md:py-20">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
+          <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
+            <ExpertOrb thinking={pending} />
+            <header className="space-y-5 text-center lg:text-left">
+              <p className="text-signal text-xs uppercase tracking-[0.28em]">
+                Ingeniero técnico digital
+              </p>
+              <h1 className="text-foreground text-4xl font-semibold tracking-tight sm:text-5xl">
+                PerGon Expert
+              </h1>
+              <p className="text-muted-foreground mx-auto max-w-md text-sm leading-relaxed lg:mx-0">
+                Especialista de dominio: productos, diluciones, fichas, seguridad, Pasaporte Digital
+                y QR. Responde con fuentes. Si no hay información suficiente, lo declara.
+              </p>
+            </header>
 
-          {contextLabel ? (
-            <div className="border-border space-y-2 border-y py-4">
-              <p className="text-muted-foreground text-xs uppercase tracking-[0.16em]">Contexto</p>
-              <p className="text-foreground font-mono text-xs leading-relaxed">{contextLabel}</p>
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-xs leading-relaxed">
-              Sin contexto de producto o pasaporte. Puede añadir `?product=`, `?passport=` o `?qr=`
-              a la URL.
-            </p>
-          )}
+            {contextLabel ? (
+              <div className="glass-panel rounded-xl px-4 py-4">
+                <p className="text-muted-foreground text-xs uppercase tracking-[0.16em]">
+                  Contexto
+                </p>
+                <p className="text-foreground mt-2 font-mono text-xs leading-relaxed">
+                  {contextLabel}
+                </p>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                Sin contexto de producto o pasaporte. Puede añadir `?product=`, `?passport=` o
+                `?qr=` a la URL.
+              </p>
+            )}
 
-          {remaining !== null ? (
-            <p className="text-muted-foreground font-mono text-xs">
-              Consultas restantes hoy · {remaining}
-            </p>
-          ) : null}
-        </aside>
-
-        <div className="space-y-10">
-          <section aria-label="Consulta" className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="expert-message">Consulta técnica</Label>
-              <Textarea
-                id="expert-message"
-                value={message}
-                onChange={(event) => setMessage(event.target.value)}
-                placeholder="Ej.: ¿Cómo verifico un Pasaporte Digital? ¿Qué implica un QR rotado?"
-                rows={5}
-                disabled={pending}
-                className="min-h-[8rem] resize-y"
-              />
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <Button type="button" onClick={ask} disabled={pending || !message.trim()}>
-                {pending ? "Consultando…" : "Consultar especialista"}
-              </Button>
-            </div>
-            {error ? (
-              <Alert variant="destructive">
-                <AlertTitle>No se completó la consulta</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+            {remaining !== null ? (
+              <p className="text-muted-foreground font-mono text-xs">
+                Consultas restantes hoy · {remaining}
+              </p>
             ) : null}
-          </section>
+          </aside>
 
-          {turns.length > 0 ? (
-            <>
-              <Separator />
-              <section aria-label="Dictamen" className="space-y-10">
+          <div className="glass-panel space-y-8 rounded-2xl p-5 md:p-8">
+            <section aria-label="Consulta" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="expert-message">Consulta técnica</Label>
+                <Textarea
+                  id="expert-message"
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder="Ej.: ¿Cómo verifico un Pasaporte Digital? ¿Qué implica un QR rotado?"
+                  rows={5}
+                  disabled={pending}
+                  className="min-h-[8rem] resize-y border-white/10 bg-black/20"
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  type="button"
+                  variant="signal"
+                  onClick={ask}
+                  disabled={pending || !message.trim()}
+                >
+                  {pending ? "Pensando…" : "Consultar especialista"}
+                </Button>
+                {pending ? (
+                  <span className="text-cyan animate-pergon-pulse text-xs tracking-wide">
+                    Escribiendo dictamen
+                  </span>
+                ) : null}
+              </div>
+              {error ? (
+                <Alert variant="destructive">
+                  <AlertTitle>No se completó la consulta</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              ) : null}
+            </section>
+
+            {turns.length > 0 ? (
+              <section aria-label="Dictamen" className="space-y-6">
                 {turns.map((turn, index) => (
-                  <article key={`${turn.role}-${index}`} className="space-y-3">
+                  <motion.article
+                    key={`${turn.role}-${index}`}
+                    className={cn(
+                      "rounded-xl border px-4 py-4",
+                      turn.role === "assistant"
+                        ? "border-signal/25 bg-signal/5"
+                        : "border-border/60 bg-background/40",
+                    )}
+                    initial={reduce ? false : { opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  >
                     <p className="text-muted-foreground text-xs uppercase tracking-[0.16em]">
                       {turn.role === "user" ? "Consulta" : "Dictamen"}
                       {turn.outcome ? ` · ${turn.outcome}` : ""}
                     </p>
-                    <p className="text-foreground whitespace-pre-wrap text-sm leading-relaxed sm:text-[15px]">
+                    <p className="text-foreground mt-3 whitespace-pre-wrap text-sm leading-relaxed sm:text-[15px]">
                       {turn.content}
                     </p>
                     {turn.citations && turn.citations.length > 0 ? (
-                      <ul className="border-border space-y-1 border-l pl-4">
+                      <ul className="border-border mt-3 space-y-1 border-l pl-4">
                         {turn.citations.map((cite, citeIndex) => (
                           <li
                             key={`${cite.title}-${citeIndex}`}
@@ -219,7 +276,7 @@ export function ExpertPanel() {
                       </ul>
                     ) : null}
                     {turn.role === "assistant" && turn.messageId ? (
-                      <div className="flex flex-wrap gap-2 pt-1">
+                      <div className="flex flex-wrap gap-2 pt-3">
                         <Button
                           type="button"
                           size="sm"
@@ -240,16 +297,13 @@ export function ExpertPanel() {
                         </Button>
                       </div>
                     ) : null}
-                  </article>
+                  </motion.article>
                 ))}
               </section>
-            </>
-          ) : null}
+            ) : null}
 
-          {conversationId ? (
-            <>
-              <Separator />
-              <section className="space-y-4">
+            {conversationId ? (
+              <section className="border-border/50 space-y-4 border-t pt-6">
                 <h2 className="text-foreground text-base font-semibold tracking-tight">
                   Soporte humano
                 </h2>
@@ -272,7 +326,12 @@ export function ExpertPanel() {
                       rows={3}
                     />
                     <div className="flex flex-wrap gap-2">
-                      <Button type="button" size="sm" onClick={() => void escalate()}>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="signal"
+                        onClick={() => void escalate()}
+                      >
                         Enviar escalamiento
                       </Button>
                       <Button
@@ -287,10 +346,10 @@ export function ExpertPanel() {
                   </div>
                 )}
               </section>
-            </>
-          ) : null}
+            ) : null}
+          </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 }
