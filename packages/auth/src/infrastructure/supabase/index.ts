@@ -271,6 +271,30 @@ function mapUserRole(row: UserRoleRow): UserRoleRecord {
   };
 }
 
+function throwDbError(table: string, operation: string, error: unknown): never {
+  const e = error as {
+    message?: string;
+    code?: string;
+    details?: string;
+    hint?: string;
+    name?: string;
+  };
+  const message = [
+    `SQL Error en ${table}.${operation}`,
+    e.code ? `code=${e.code}` : null,
+    e.message ? `message=${e.message}` : null,
+    e.details ? `details=${e.details}` : null,
+    e.hint ? `hint=${e.hint}` : null,
+    `table=${table}`,
+  ]
+    .filter(Boolean)
+    .join(" | ");
+  const err = new Error(message);
+  (err as Error & { code: string; table: string }).code = e.code ?? "DB_ERROR";
+  (err as Error & { table: string }).table = table;
+  throw err;
+}
+
 export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): AuthUnitOfWork {
   const db = client ?? createServiceClient();
 
@@ -282,7 +306,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .eq("id", id)
         .is("deleted_at", null)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.organizations", "findById", error);
       return data ? mapOrg(data as OrgRow) : null;
     },
     async findBySlug(slug) {
@@ -292,7 +316,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .eq("slug", slug)
         .is("deleted_at", null)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.organizations", "findBySlug", error);
       return data ? mapOrg(data as OrgRow) : null;
     },
     async save(org) {
@@ -306,7 +330,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         updated_at: org.updatedAt,
         deleted_at: org.deletedAt ?? null,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.organizations", "upsert", error);
     },
   };
 
@@ -318,7 +342,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .eq("id", id)
         .is("deleted_at", null)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.users", "findById", error);
       return data ? mapUser(data as UserRow) : null;
     },
     async findByEmail(email) {
@@ -329,7 +353,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .eq("email", normalized)
         .is("deleted_at", null)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.users", "findByEmail", error);
       return data ? mapUser(data as UserRow) : null;
     },
     async save(user) {
@@ -347,7 +371,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         updated_at: user.updatedAt,
         deleted_at: user.deletedAt ?? null,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.users", "upsert", error);
     },
   };
 
@@ -359,12 +383,12 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .eq("user_id", userId)
         .eq("organization_id", organizationId)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.memberships", "findByUserAndOrg", error);
       return data ? mapMembership(data as MembershipRow) : null;
     },
     async listByUser(userId) {
       const { data, error } = await db.from("memberships").select("*").eq("user_id", userId);
-      if (error) throw error;
+      if (error) throwDbError("public.memberships", "listByUser", error);
       return ((data as MembershipRow[]) ?? []).map(mapMembership);
     },
     async save(membership) {
@@ -377,14 +401,14 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         created_at: membership.createdAt,
         updated_at: membership.updatedAt,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.memberships", "upsert", error);
     },
   };
 
   const roles: RoleRepository = {
     async findById(id) {
       const { data, error } = await db.from("roles").select("*").eq("id", id).maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return data ? mapRole(data as RoleRow) : null;
     },
     async findByKey(key, organizationId) {
@@ -395,7 +419,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
           .eq("key", key)
           .eq("organization_id", organizationId)
           .maybeSingle();
-        if (orgError) throw orgError;
+        if (orgError) throwDbError("public.roles", "findByKey", orgError);
         if (orgRole) return mapRole(orgRole as RoleRow);
       }
       const { data, error } = await db
@@ -404,12 +428,12 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .eq("key", key)
         .is("organization_id", null)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return data ? mapRole(data as RoleRow) : null;
     },
     async listSystem() {
       const { data, error } = await db.from("roles").select("*").eq("is_system", true);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return ((data as RoleRow[]) ?? []).map(mapRole);
     },
     async save(role) {
@@ -421,19 +445,19 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         is_system: role.isSystem,
         created_at: role.createdAt,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
   };
 
   const permissions: PermissionRepository = {
     async findByKey(key) {
       const { data, error } = await db.from("permissions").select("*").eq("key", key).maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return data ? mapPermission(data as PermissionRow) : null;
     },
     async listAll() {
       const { data, error } = await db.from("permissions").select("*");
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return ((data as PermissionRow[]) ?? []).map(mapPermission);
     },
     async save(permission) {
@@ -443,7 +467,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         module: permission.module,
         description: permission.description,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
   };
 
@@ -454,7 +478,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .from("role_permissions")
         .select("permission_id")
         .in("role_id", roleIds);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       const permissionIds = [
         ...new Set(((data as Array<{ permission_id: string }>) ?? []).map((r) => r.permission_id)),
       ];
@@ -463,7 +487,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .from("permissions")
         .select("key")
         .in("id", permissionIds);
-      if (permError) throw permError;
+      if (permError) throwDbError("public.permissions", "listKeys", permError);
       return ((perms as Array<{ key: string }>) ?? []).map((p) => p.key);
     },
     async save(link: RolePermissionRecord) {
@@ -471,7 +495,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         role_id: link.roleId,
         permission_id: link.permissionId,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
   };
 
@@ -482,7 +506,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .select("*")
         .eq("user_id", userId)
         .eq("organization_id", organizationId);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return ((data as UserRoleRow[]) ?? []).map(mapUserRole);
     },
     async save(link) {
@@ -494,18 +518,18 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         org_unit_id: link.orgUnitId ?? null,
         created_at: link.createdAt,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
     async remove(id) {
       const { error } = await db.from("user_roles").delete().eq("id", id);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
   };
 
   const sessions: SessionRepository = {
     async findById(id) {
       const { data, error } = await db.from("sessions").select("*").eq("id", id).maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return data ? mapSession(data as SessionRow) : null;
     },
     async findByRefreshTokenHash(hash) {
@@ -514,7 +538,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .select("*")
         .eq("refresh_token_hash", hash)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return data ? mapSession(data as SessionRow) : null;
     },
     async findByAccessJti(jti) {
@@ -523,12 +547,12 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .select("*")
         .eq("access_token_jti", jti)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return data ? mapSession(data as SessionRow) : null;
     },
     async listByUser(userId) {
       const { data, error } = await db.from("sessions").select("*").eq("user_id", userId);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return ((data as SessionRow[]) ?? []).map(mapSession);
     },
     async save(session) {
@@ -548,7 +572,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         created_at: session.createdAt,
         updated_at: session.updatedAt,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
   };
 
@@ -559,7 +583,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .select("*")
         .eq("token_hash", hash)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return data ? mapInvitation(data as InvitationRow) : null;
     },
     async save(invitation) {
@@ -575,7 +599,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         accepted_at: invitation.acceptedAt ?? null,
         created_at: invitation.createdAt,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
   };
 
@@ -586,7 +610,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .select("*")
         .eq("token_hash", hash)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return data ? mapPasswordReset(data as PasswordResetRow) : null;
     },
     async save(reset) {
@@ -598,7 +622,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         used_at: reset.usedAt ?? null,
         created_at: reset.createdAt,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
   };
 
@@ -609,7 +633,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         .select("*")
         .eq("id", id)
         .maybeSingle();
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
       return data ? mapMfa(data as MfaChallengeRow) : null;
     },
     async save(challenge) {
@@ -621,7 +645,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         expires_at: challenge.expiresAt,
         created_at: challenge.createdAt,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
   };
 
@@ -638,7 +662,7 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
         request_id: entry.requestId ?? null,
         created_at: entry.createdAt,
       } as never);
-      if (error) throw error;
+      if (error) throwDbError("public.auth", "query", error);
     },
   };
 
@@ -664,11 +688,9 @@ export function createSupabaseAuthUnitOfWork(client?: PergonServiceClient): Auth
 /** Prefer Supabase when service role is configured; otherwise shared memory. */
 export function createDefaultAuthUnitOfWork(): AuthUnitOfWork {
   if (hasSupabaseServiceRole()) {
-    try {
-      return createSupabaseAuthUnitOfWork();
-    } catch {
-      return createSharedMemoryUnitOfWork();
-    }
+    // Never silent-fallback to memory when service role is configured:
+    // bootstrap would "succeed" without writing public.organizations.
+    return createSupabaseAuthUnitOfWork();
   }
   return createSharedMemoryUnitOfWork();
 }

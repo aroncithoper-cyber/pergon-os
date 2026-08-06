@@ -84,6 +84,12 @@ export const ADMIN_NAV: NavGroup[] = [
     items: [
       { href: "/settings", label: tStatic("nav.settings"), permission: "settings:read" },
       { href: "/profile", label: tStatic("nav.profile") },
+      ...(process.env.NODE_ENV === "development"
+        ? [
+            { href: "/tools", label: tStatic("nav.tools") },
+            { href: "/tools/auth-diagnosis", label: tStatic("nav.authDiagnosis") },
+          ]
+        : []),
     ],
   },
 ];

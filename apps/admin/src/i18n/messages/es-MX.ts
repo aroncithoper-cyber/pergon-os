@@ -139,6 +139,8 @@ export const esMX: MessageTree = {
     media: "Medios",
     settings: "Configuración",
     profile: "Perfil",
+    tools: "Herramientas",
+    authDiagnosis: "Diagnóstico Auth",
     commandPlaceholder: "Ir a módulo…",
     noResults: "Sin resultados",
     notificationsAria: "Notificaciones",

@@ -142,6 +142,8 @@ export const enUS: MessageTree = {
     media: "Media",
     settings: "Settings",
     profile: "Profile",
+    tools: "Tools",
+    authDiagnosis: "Auth diagnosis",
     commandPlaceholder: "Go to module…",
     noResults: "No results",
     notificationsAria: "Notifications",
