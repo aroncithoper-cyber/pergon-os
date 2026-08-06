@@ -62,6 +62,7 @@ export const signatureUtilities = [
   "sig-data-label",
   "sig-data-value",
   "sig-btn-face",
+  "sig-cursor-glow",
 ] as const;
 
 /** Modular type roles — map to CSS utilities `.type-*` */

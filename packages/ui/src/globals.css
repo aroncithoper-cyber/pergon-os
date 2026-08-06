@@ -683,6 +683,39 @@
     border-radius: var(--radius-md);
   }
 
+  /**
+   * Signature cursor glow — soft electric radial.
+   * Softness via gradient stops only (no filter: blur).
+   * Sits above content with pointer-events: none; soft-light in dark.
+   */
+  .sig-cursor-glow {
+    pointer-events: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 30;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      hsl(var(--electric) / 0.07) 0%,
+      hsl(var(--electric) / 0.035) 34%,
+      transparent 70%
+    );
+    will-change: transform, opacity;
+    contain: layout style paint;
+    transition: opacity var(--duration-ui) var(--ease-out);
+  }
+
+  .dark .sig-cursor-glow {
+    mix-blend-mode: soft-light;
+    background: radial-gradient(
+      circle at center,
+      hsl(var(--electric) / 0.1) 0%,
+      hsl(var(--electric) / 0.05) 32%,
+      transparent 70%
+    );
+  }
+
   .signal-ring {
     box-shadow: var(--shadow-signal);
   }
