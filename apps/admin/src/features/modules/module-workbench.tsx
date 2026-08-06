@@ -18,7 +18,6 @@ import { EmptyState } from "@pergon/ui/components/empty-state";
 import { ErrorState } from "@pergon/ui/components/error-state";
 import { Input } from "@pergon/ui/components/input";
 import { Label } from "@pergon/ui/components/label";
-import { LoadingBlock } from "@pergon/ui/components/loading";
 import {
   Select,
   SelectContent,
@@ -259,17 +258,20 @@ export function ModuleWorkbench<T extends Record<string, unknown>>(props: {
 
   if (module.mode === "actions") {
     return (
-      <div className="space-y-6">
-        <header className="space-y-1">
-          <h1 className="text-foreground text-xl font-semibold tracking-tight">{module.title}</h1>
-          <p className="text-muted-foreground text-xs">{module.description}</p>
+      <div className="space-y-8">
+        <header className="space-y-2">
+          <h1 className="type-h2 text-foreground">{module.title}</h1>
+          <p className="type-small text-muted-foreground max-w-2xl">{module.description}</p>
         </header>
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {(module.actions ?? []).map((action) => (
-            <div key={action.label} className="border-border space-y-3 border p-4">
-              <div>
-                <p className="text-sm font-medium">{action.label}</p>
-                <p className="text-muted-foreground text-xs">{action.description}</p>
+            <div
+              key={action.label}
+              className="border-border bg-background space-y-4 rounded-lg border p-5"
+            >
+              <div className="space-y-1.5">
+                <p className="type-body text-foreground font-medium">{action.label}</p>
+                <p className="type-small text-muted-foreground">{action.description}</p>
               </div>
               <Button
                 size="sm"
@@ -289,22 +291,25 @@ export function ModuleWorkbench<T extends Record<string, unknown>>(props: {
             </div>
           ))}
         </div>
-        {actionMessage ? <p className="text-muted-foreground text-xs">{actionMessage}</p> : null}
+        {actionMessage ? (
+          <p className="type-caption text-muted-foreground">{actionMessage}</p>
+        ) : null}
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-foreground text-xl font-semibold tracking-tight">{module.title}</h1>
-          <p className="text-muted-foreground text-xs">{module.description}</p>
+    <div className="space-y-6">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-2">
+          <h1 className="type-h2 text-foreground">{module.title}</h1>
+          <p className="type-small text-muted-foreground max-w-2xl">{module.description}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {module.upsertPath ? (
             <Button
               size="sm"
+              variant="signal"
               onClick={() => {
                 setDrawerRow({} as T);
                 setEditDraft({});
@@ -357,10 +362,32 @@ export function ModuleWorkbench<T extends Record<string, unknown>>(props: {
       </div>
 
       {error ? <ErrorState title="No se pudo cargar" description={error} /> : null}
-      {pending && !result ? <LoadingBlock label="Cargando…" /> : null}
+      {pending && !result ? (
+        <div className="space-y-3" aria-busy="true" aria-label="Cargando registros">
+          <div className="bg-muted h-10 animate-pulse rounded-md" />
+          <div className="bg-muted h-48 animate-pulse rounded-xl" />
+        </div>
+      ) : null}
 
       {result && result.items.length === 0 && !pending ? (
-        <EmptyState title="Sin registros" description="La API respondió una lista vacía." />
+        <EmptyState
+          title="Sin registros en este módulo"
+          description="Ajuste la búsqueda o cree el primer registro cuando el flujo lo permita."
+          action={
+            module.upsertPath ? (
+              <Button
+                size="sm"
+                variant="signal"
+                onClick={() => {
+                  setDrawerRow({} as T);
+                  setEditDraft({});
+                }}
+              >
+                Crear registro
+              </Button>
+            ) : undefined
+          }
+        />
       ) : null}
 
       {result && result.items.length > 0 ? (

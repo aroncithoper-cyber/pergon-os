@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useReducedMotion } from "framer-motion";
 
 import type { CmsCtaSection, CmsFinalCtaSection, CmsTechnologyMedia } from "@pergon/cms";
 import { Button } from "@pergon/ui/components/button";
 import { Container } from "@pergon/ui/components/container";
-import { cn } from "@pergon/ui/lib/utils";
+import { useReducedMotion } from "framer-motion";
 
 import { BlockMedia } from "./block-media";
 import { SectionReveal } from "./section-reveal";
@@ -20,10 +19,7 @@ const emptyMedia: CmsTechnologyMedia = {
   enableImage: false,
 };
 
-/**
- * Final CTA — narrative close of the Home.
- * Not a banner or card: typography + air + optional elegant media.
- */
+/** Final CTA — editorial close, one primary action. */
 export function FinalCtaSection({ content }: { content: CtaContent }) {
   const reduce = useReducedMotion();
 
@@ -37,27 +33,23 @@ export function FinalCtaSection({ content }: { content: CtaContent }) {
     (media.enableImage && Boolean(media.imageUrl?.trim() || media.posterUrl?.trim()));
 
   return (
-    <section id={content.id} className="border-border scroll-mt-20 border-t">
+    <section id={content.id} className="border-border/40 scroll-mt-20 border-t">
       <Container size="lg" className="chapter-gap">
         <SectionReveal>
-          <div className="mx-auto max-w-3xl space-y-10 text-center md:space-y-14">
-            <h2
-              className={cn(
-                "text-foreground font-semibold tracking-tight",
-                "text-[clamp(2.25rem,6vw,4rem)] leading-[1.05]",
-              )}
-            >
-              {content.title}
-            </h2>
-            <p className="text-muted-foreground text-lede mx-auto max-w-xl">{content.body}</p>
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              <Button asChild size="lg">
+          <div className="type-voice max-w-3xl space-y-10 md:space-y-12">
+            <h2 className="type-display-xl text-foreground text-balance">{content.title}</h2>
+            <p className="type-lead text-muted-foreground max-w-2xl">{content.body}</p>
+            <div className="flex flex-wrap items-center gap-4 md:gap-6">
+              <Button asChild size="lg" variant="signal">
                 <Link href={content.primaryCta.href}>{content.primaryCta.label}</Link>
               </Button>
               {hasSecondary ? (
-                <Button asChild size="lg" variant="outline">
-                  <Link href={content.secondaryCta!.href}>{content.secondaryCta!.label}</Link>
-                </Button>
+                <Link
+                  href={content.secondaryCta!.href}
+                  className="type-small text-muted-foreground hover:text-foreground underline-offset-4 transition-colors hover:underline"
+                >
+                  {content.secondaryCta!.label}
+                </Link>
               ) : null}
             </div>
           </div>
@@ -65,8 +57,8 @@ export function FinalCtaSection({ content }: { content: CtaContent }) {
       </Container>
 
       {hasMedia ? (
-        <SectionReveal delay={0.05}>
-          <div className="border-border border-y">
+        <SectionReveal delay={0.04}>
+          <div className="border-border/40 border-y">
             <BlockMedia media={media} label={content.title} reduce={reduce} aspect="hero" />
           </div>
         </SectionReveal>

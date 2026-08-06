@@ -17,15 +17,22 @@ const ErrorState = forwardRef<HTMLDivElement, ErrorStateProps>(
     <div
       ref={ref}
       role="alert"
-      className={cn("flex flex-col items-center justify-center px-4 py-12 text-center", className)}
+      className={cn(
+        "border-destructive/25 bg-destructive/5 flex flex-col items-center justify-center rounded-lg border px-6 py-14 text-center",
+        className,
+      )}
       {...props}
     >
-      <AlertCircle className="text-destructive mb-4 size-8" aria-hidden="true" />
-      <h2 className="text-base font-semibold tracking-tight">{title}</h2>
+      <div className="border-destructive/30 bg-background/50 mb-5 flex size-12 items-center justify-center rounded-xl border">
+        <AlertCircle className="text-destructive size-5" aria-hidden="true" />
+      </div>
+      <h2 className="type-h3 text-foreground tracking-tight">{title}</h2>
       {description ? (
-        <div className="text-muted-foreground mt-2 max-w-md text-sm leading-6">{description}</div>
+        <div className="type-body text-muted-foreground mt-3 max-w-md leading-relaxed">
+          {description}
+        </div>
       ) : null}
-      {action ? <div className="mt-5">{action}</div> : null}
+      {action ? <div className="mt-6">{action}</div> : null}
     </div>
   ),
 );

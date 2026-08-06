@@ -7,7 +7,7 @@ import { Navbar } from "@pergon/ui/components/navbar";
 export function SiteHeader({ nav }: { nav: CmsNavItem[] }) {
   return (
     <Navbar
-      className="border-border/40 bg-background/55 supports-[backdrop-filter]:bg-background/40"
+      className="border-border bg-background"
       brand={
         <Link
           href="/"

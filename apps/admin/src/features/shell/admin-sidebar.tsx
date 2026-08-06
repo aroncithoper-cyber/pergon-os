@@ -21,28 +21,26 @@ export function AdminSidebar() {
   const { hasPermission, context } = useAuth();
 
   return (
-    <Sidebar>
-      <SidebarHeader>
+    <Sidebar className="border-border bg-background">
+      <SidebarHeader className="px-3 py-4">
         <Link
           href="/dashboard"
-          className="text-foreground truncate px-1 text-sm font-semibold tracking-tight"
+          className="text-foreground truncate px-2 text-sm font-semibold tracking-tight"
         >
           {collapsed ? "PG" : "PerGon"}
         </Link>
       </SidebarHeader>
-      <SidebarContent>
-        <nav className="space-y-6" aria-label="Navegación principal">
+      <SidebarContent className="px-2 pb-4">
+        <nav className="space-y-8" aria-label="Navegación principal">
           {ADMIN_NAV.map((group) => {
             const items = group.items.filter(
               (item) => !item.permission || hasPermission(item.permission),
             );
             if (items.length === 0) return null;
             return (
-              <div key={group.title} className="space-y-1">
+              <div key={group.title} className="space-y-1.5">
                 {!collapsed ? (
-                  <p className="text-muted-foreground px-2 text-[11px] font-medium uppercase tracking-wide">
-                    {group.title}
-                  </p>
+                  <p className="type-label text-muted-foreground px-3">{group.title}</p>
                 ) : null}
                 <ul className="space-y-0.5">
                   {items.map((item) => {
@@ -52,9 +50,9 @@ export function AdminSidebar() {
                         <Link
                           href={item.href}
                           className={cn(
-                            "block rounded-md px-2 py-1.5 text-sm transition-colors",
+                            "duration-ui block rounded-md px-3 py-1.5 text-sm transition-colors",
                             active
-                              ? "bg-accent text-accent-foreground font-medium"
+                              ? "bg-accent text-foreground font-medium"
                               : "text-muted-foreground hover:bg-accent/70 hover:text-foreground",
                           )}
                           title={item.label}
@@ -70,9 +68,9 @@ export function AdminSidebar() {
           })}
         </nav>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-border/40 border-t px-3 py-3">
         {!collapsed ? (
-          <p className="text-muted-foreground truncate px-1 text-[11px]">
+          <p className="type-caption text-muted-foreground truncate px-2">
             {context?.roleKeys?.[0] ?? "operador"} · {context?.organizationId.slice(0, 8)}
           </p>
         ) : null}

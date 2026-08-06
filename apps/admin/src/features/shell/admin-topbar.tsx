@@ -54,19 +54,21 @@ export function AdminTopbar({ onOpenCommand }: { onOpenCommand: () => void }) {
 
   return (
     <Navbar
-      className="border-border/80"
+      className="border-border bg-background"
       brand={<SidebarTrigger />}
       nav={
         <Button
           type="button"
           variant="outline"
           size="sm"
-          className="text-muted-foreground hidden h-8 w-full max-w-sm justify-start gap-2 md:inline-flex"
+          className="text-muted-foreground hidden h-9 w-full max-w-md justify-start gap-2 md:inline-flex"
           onClick={onOpenCommand}
         >
           <Search className="size-3.5" aria-hidden="true" />
           {t("common.searchPlaceholder")}
-          <kbd className="bg-muted ml-auto rounded px-1.5 py-0.5 font-mono text-[10px]">Ctrl K</kbd>
+          <kbd className="bg-muted/80 ml-auto rounded px-1.5 py-0.5 font-mono text-[10px]">
+            Ctrl K
+          </kbd>
         </Button>
       }
       actions={

@@ -7,9 +7,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import type { CmsTechnologySection } from "@pergon/cms";
 import { Button } from "@pergon/ui/components/button";
 import { Container } from "@pergon/ui/components/container";
-import { cn } from "@pergon/ui/lib/utils";
 
 import { SectionReveal } from "./section-reveal";
+import { TechnologyFlowDiagram } from "./technology-flow-diagram";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -172,8 +172,8 @@ function TechnologyMedia({
 }
 
 /**
- * Technology block — editorial Home section after Hero.
- * Consumes CMS technology payload only. No SaaS cards or dashboards.
+ * Technology block — demonstrates the verification chain.
+ * CMS owns copy/media; flow diagram is presentation-only.
  */
 export function TechnologySection({ content }: { content: CmsTechnologySection }) {
   const reduce = useReducedMotion();
@@ -184,46 +184,37 @@ export function TechnologySection({ content }: { content: CmsTechnologySection }
     Boolean(content.secondaryCta?.label?.trim()) && Boolean(content.secondaryCta?.href?.trim());
 
   return (
-    <section id={content.id} className="border-border scroll-mt-20 border-t">
-      {/* Intro — editorial hierarchy, generous air */}
+    <section id={content.id} className="scroll-mt-20">
       <Container size="lg" className="chapter-gap">
         <SectionReveal>
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-20 xl:gap-28">
-            <div className="max-w-xl space-y-8 md:space-y-10">
-              <p className="text-muted-foreground font-mono text-xs uppercase tracking-[0.2em]">
-                Tecnología
-              </p>
-              <h2
-                className={cn(
-                  "text-foreground font-semibold tracking-tight",
-                  "text-[clamp(2rem,5vw,3.5rem)] leading-[1.05]",
-                )}
-              >
-                {content.title}
-              </h2>
-              <p className="text-foreground text-xl font-medium tracking-tight md:text-2xl">
-                {content.subtitle}
-              </p>
-              <p className="text-muted-foreground text-lede max-w-md">{content.description}</p>
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Button asChild size="lg">
-                  <Link href={content.primaryCta.href}>{content.primaryCta.label}</Link>
-                </Button>
-                {hasSecondary ? (
-                  <Button asChild size="lg" variant="outline">
-                    <Link href={content.secondaryCta!.href}>{content.secondaryCta!.label}</Link>
-                  </Button>
-                ) : null}
-              </div>
+          <div className="max-w-2xl space-y-8 md:space-y-10">
+            <p className="type-label text-signal">Arquitectura</p>
+            <h2 className="type-display-xl text-foreground">{content.title}</h2>
+            <p className="type-h2 text-foreground font-medium">{content.subtitle}</p>
+            <p className="type-lead text-muted-foreground max-w-xl">{content.description}</p>
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <Button asChild size="lg" variant="signal">
+                <Link href={content.primaryCta.href}>{content.primaryCta.label}</Link>
+              </Button>
+              {hasSecondary ? (
+                <Link
+                  href={content.secondaryCta!.href}
+                  className="type-small text-muted-foreground hover:text-foreground underline-offset-4 transition-colors hover:underline"
+                >
+                  {content.secondaryCta!.label}
+                </Link>
+              ) : null}
             </div>
-            <div className="hidden lg:block" aria-hidden />
           </div>
+        </SectionReveal>
+
+        <SectionReveal delay={0.06}>
+          <TechnologyFlowDiagram className="mt-12 md:mt-16" />
         </SectionReveal>
       </Container>
 
-      {/* Dominant media plane — same visual language as Hero */}
       <SectionReveal delay={0.04}>
-        <div className="border-border border-y">
+        <div className="border-border/60 border-y">
           <TechnologyMedia content={content} reduce={reduce} />
         </div>
       </SectionReveal>
@@ -241,17 +232,13 @@ export function TechnologySection({ content }: { content: CmsTechnologySection }
               viewport={{ once: true, amount: 0.35 }}
               transition={{ duration: 0.4, delay: reduce ? 0 : index * 0.05, ease: EASE }}
             >
-              <div className="grid gap-4 sm:grid-cols-[4.5rem_minmax(0,1fr)] sm:gap-8">
-                <span className="text-muted-foreground font-mono text-xs tabular-nums tracking-wider">
+              <div className="grid gap-4 sm:grid-cols-[4.5rem_minmax(0,1fr)] sm:gap-8 md:gap-10">
+                <span className="type-label text-cyan tabular-nums">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <div className="space-y-3 md:space-y-4">
-                  <h3 className="text-foreground text-2xl font-semibold tracking-tight md:text-3xl">
-                    {chapter.title}
-                  </h3>
-                  <p className="text-muted-foreground max-w-xl text-base leading-relaxed md:text-lg">
-                    {chapter.body}
-                  </p>
+                  <h3 className="type-h2 text-foreground">{chapter.title}</h3>
+                  <p className="type-body-xl text-muted-foreground max-w-2xl">{chapter.body}</p>
                 </div>
               </div>
             </motion.li>

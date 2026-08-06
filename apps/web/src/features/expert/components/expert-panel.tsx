@@ -52,8 +52,10 @@ function ExpertOrb({ thinking }: { thinking: boolean }) {
       />
       <motion.div
         className="border-signal/40 glow-signal from-signal/30 to-cyan/20 relative size-16 rounded-full border bg-gradient-to-br sm:size-20"
-        animate={reduce ? undefined : { rotate: 360 }}
-        transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+        animate={
+          reduce ? undefined : thinking ? { scale: [1, 1.04, 1] } : { opacity: [0.85, 1, 0.85] }
+        }
+        transition={{ duration: thinking ? 1.2 : 3.5, repeat: Infinity, ease: "easeInOut" }}
       />
     </div>
   );
@@ -169,13 +171,14 @@ export function ExpertPanel() {
           <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
             <ExpertOrb thinking={pending} />
             <header className="space-y-5 text-center lg:text-left">
-              <p className="text-signal text-xs uppercase tracking-[0.28em]">
-                Ingeniero técnico digital
-              </p>
-              <h1 className="text-foreground text-4xl font-semibold tracking-tight sm:text-5xl">
-                PerGon Expert
-              </h1>
-              <p className="text-muted-foreground mx-auto max-w-md text-sm leading-relaxed lg:mx-0">
+              <div className="flex items-center justify-center gap-3 lg:justify-start">
+                <span className="border-signal/30 bg-signal/10 text-signal type-caption rounded-md border px-2 py-1 uppercase tracking-[0.18em]">
+                  Lab
+                </span>
+                <p className="type-label text-signal">Ingeniero técnico digital</p>
+              </div>
+              <h1 className="type-display-xl text-foreground">PerGon Expert</h1>
+              <p className="type-lead text-muted-foreground mx-auto max-w-md lg:mx-0">
                 Especialista de dominio: productos, diluciones, fichas, seguridad, Pasaporte Digital
                 y QR. Responde con fuentes. Si no hay información suficiente, lo declara.
               </p>
@@ -183,10 +186,8 @@ export function ExpertPanel() {
 
             {contextLabel ? (
               <div className="glass-panel rounded-xl px-4 py-4">
-                <p className="text-muted-foreground text-xs uppercase tracking-[0.16em]">
-                  Contexto
-                </p>
-                <p className="text-foreground mt-2 font-mono text-xs leading-relaxed">
+                <p className="type-label text-muted-foreground">Contexto</p>
+                <p className="type-caption text-foreground mt-2 font-mono leading-relaxed">
                   {contextLabel}
                 </p>
               </div>
@@ -204,7 +205,15 @@ export function ExpertPanel() {
             ) : null}
           </aside>
 
-          <div className="glass-panel space-y-8 rounded-2xl p-5 md:p-8">
+          <div className="glass-panel border-signal/15 relative space-y-8 overflow-hidden rounded-2xl border p-5 md:p-8">
+            <div
+              className="via-signal/50 pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent"
+              aria-hidden
+            />
+            <div className="flex items-center justify-between gap-3">
+              <p className="type-label text-muted-foreground">Mesa de análisis</p>
+              <p className="type-caption text-muted-foreground font-mono">SESSION · CONTROLLED</p>
+            </div>
             <section aria-label="Consulta" className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="expert-message">Consulta técnica</Label>
@@ -256,11 +265,11 @@ export function ExpertPanel() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <p className="text-muted-foreground text-xs uppercase tracking-[0.16em]">
+                    <p className="type-label text-muted-foreground">
                       {turn.role === "user" ? "Consulta" : "Dictamen"}
                       {turn.outcome ? ` · ${turn.outcome}` : ""}
                     </p>
-                    <p className="text-foreground mt-3 whitespace-pre-wrap text-sm leading-relaxed sm:text-[15px]">
+                    <p className="type-body text-foreground mt-3 whitespace-pre-wrap leading-relaxed">
                       {turn.content}
                     </p>
                     {turn.citations && turn.citations.length > 0 ? (
@@ -304,9 +313,7 @@ export function ExpertPanel() {
 
             {conversationId ? (
               <section className="border-border/50 space-y-4 border-t pt-6">
-                <h2 className="text-foreground text-base font-semibold tracking-tight">
-                  Soporte humano
-                </h2>
+                <h2 className="type-h3 text-foreground">Soporte humano</h2>
                 {!escalateOpen ? (
                   <Button
                     type="button"

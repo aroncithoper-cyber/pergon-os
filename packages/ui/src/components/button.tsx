@@ -5,27 +5,35 @@ import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn } from "@pergon/ui/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 transition-[transform,box-shadow,background-color,color,border-color] duration-ui ease-pergon-out active:scale-[0.98]",
+  [
+    "sig-btn-face relative inline-flex items-center justify-center overflow-hidden whitespace-nowrap text-sm font-medium cursor-pointer",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    "disabled:pointer-events-none disabled:opacity-50",
+    "transition-[transform,box-shadow,background-color,color,border-color,filter] duration-ui ease-pergon-out",
+    "active:scale-[0.98]",
+    "before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:bg-white/0 before:transition-colors before:duration-ui",
+    "active:before:bg-white/10",
+  ].join(" "),
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-pergon-md hover:bg-primary/90 hover:shadow-pergon-lg hover:scale-[1.02]",
+          "bg-primary text-primary-foreground shadow-pergon-sm hover:bg-primary/90 hover:shadow-pergon-md",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/80",
         outline:
-          "border border-input bg-background/60 backdrop-blur-sm hover:border-signal/50 hover:bg-accent hover:text-accent-foreground hover:shadow-pergon-signal",
+          "border border-border bg-background hover:border-foreground/25 hover:bg-accent/50 hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/70",
         ghost: "hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
         link: "text-primary underline-offset-4 hover:underline",
         signal:
-          "bg-signal text-signal-foreground shadow-pergon-signal hover:brightness-110 hover:scale-[1.02]",
+          "bg-signal text-signal-foreground shadow-pergon-sm hover:brightness-110 hover:shadow-pergon-md",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-12 rounded-md px-8 text-[15px]",
+        sm: "h-9 px-3",
+        lg: "h-12 px-8 text-[15px] tracking-[-0.01em]",
         icon: "h-10 w-10",
       },
     },

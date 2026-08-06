@@ -18,24 +18,24 @@ export function ProductGallery({ items }: ProductGalleryProps) {
             description="Las imágenes de galería aparecerán cuando existan assets kind=gallery."
           />
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="bg-border grid gap-px sm:grid-cols-2">
             {items.map((item) => (
-              <li key={item.id} className="border-border bg-panel overflow-hidden border">
+              <li key={item.id} className="bg-background overflow-hidden">
                 {item.publicUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={item.publicUrl}
                     alt={item.altText ?? item.title ?? "Imagen de producto"}
-                    className="aspect-[4/5] w-full object-cover"
+                    className="aspect-[16/10] w-full object-cover"
                     loading="lazy"
                   />
                 ) : (
-                  <div className="text-muted-foreground flex aspect-[4/5] items-center justify-center text-xs">
+                  <div className="text-muted-foreground flex aspect-[16/10] items-center justify-center text-xs">
                     Asset sin URL pública
                   </div>
                 )}
                 {(item.caption || item.title) && (
-                  <p className="text-muted-foreground px-3 py-2 text-xs">
+                  <p className="type-caption text-muted-foreground px-4 py-3">
                     {item.caption ?? item.title}
                   </p>
                 )}

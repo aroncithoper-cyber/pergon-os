@@ -10,12 +10,12 @@ export interface NavbarProps extends HTMLAttributes<HTMLElement> {
 }
 
 const Navbar = forwardRef<HTMLElement, NavbarProps>(
-  ({ actions, backdrop = true, brand, className, nav, ...props }, ref) => (
+  ({ actions, backdrop = false, brand, className, nav, ...props }, ref) => (
     <nav
       ref={ref}
       className={cn(
-        "h-navbar border-border bg-background/95 sticky top-0 z-40 border-b",
-        backdrop && "supports-[backdrop-filter]:bg-background/80 backdrop-blur",
+        "h-navbar border-border bg-background sticky top-0 z-40 border-b",
+        backdrop && "bg-background/90 supports-[backdrop-filter]:bg-background/80 backdrop-blur-sm",
         className,
       )}
       {...props}

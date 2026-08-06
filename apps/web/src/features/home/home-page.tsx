@@ -23,10 +23,13 @@ import { ExpertSection } from "./components/expert-section";
 import { FeaturedProductsSection } from "./components/featured-products-section";
 import { FinalCtaSection } from "./components/final-cta-section";
 import { HomeHero } from "./components/home-hero";
+import { beatForSectionType } from "./lib/narrative-beats";
+import { NarrativeChapter } from "./components/narrative-chapter";
 import { SiteFooter } from "./components/site-footer";
 import { SiteHeader } from "./components/site-header";
 import { SystemChaptersSection } from "./components/system-chapters-section";
 import { TechnologySection } from "./components/technology-section";
+import { TrustIndicators } from "./components/trust-indicators";
 import { WhyPergonSection } from "./components/why-pergon-section";
 
 function renderBlock(section: CmsHomeSection) {
@@ -62,16 +65,18 @@ function renderBlock(section: CmsHomeSection) {
 }
 
 /**
- * Home Composer — cinematic narrative shell.
- * CMS still owns content; design is presentation-only.
+ * Home — documentary narrative shell.
+ * CMS owns content; chapters/tones are presentation-only.
  */
 export function HomePage(props: { payload: CmsHomePayload; preview?: boolean }) {
   const { payload, preview } = props;
   const nav = payload.nav;
   const blocks = listEnabledHomeBlocks(payload);
 
+  let chapterOrdinal = 0;
+
   return (
-    <div className="surface-atmosphere text-foreground relative flex min-h-dvh flex-col overflow-x-clip">
+    <div className="sig-universe text-foreground relative flex min-h-dvh flex-col overflow-x-clip">
       <AtmosphereLayer className="fixed inset-0 z-0" />
       {preview ? (
         <div className="bg-signal text-signal-foreground relative z-50 px-4 py-2 text-center text-xs font-medium tracking-wide">
@@ -81,7 +86,43 @@ export function HomePage(props: { payload: CmsHomePayload; preview?: boolean }) 
       <div className="relative z-10 flex min-h-dvh flex-col">
         <SiteHeader nav={nav} />
         <div id="main" className="flex flex-1 flex-col">
-          {blocks.map((section) => renderBlock(section))}
+          {blocks.map((section) => {
+            const inner = renderBlock(section);
+            if (!inner) return null;
+
+            if (section.type === "footer") {
+              return (
+                <div key={section.id}>
+                  <TrustIndicators />
+                  {inner}
+                </div>
+              );
+            }
+
+            if (section.type === "hero") {
+              chapterOrdinal += 1;
+              const beat = beatForSectionType("hero", chapterOrdinal);
+              return (
+                <NarrativeChapter
+                  key={section.id}
+                  beat={beat!}
+                  showQuestion={false}
+                  className="min-h-0"
+                >
+                  {inner}
+                </NarrativeChapter>
+              );
+            }
+
+            const beat = beatForSectionType(section.type, ++chapterOrdinal);
+            if (!beat) return <div key={section.id}>{inner}</div>;
+
+            return (
+              <NarrativeChapter key={section.id} beat={beat}>
+                {inner}
+              </NarrativeChapter>
+            );
+          })}
         </div>
       </div>
     </div>

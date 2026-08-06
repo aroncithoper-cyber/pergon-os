@@ -22,18 +22,21 @@ export function ProductBenefits({ items }: ProductBenefitsProps) {
               description="Se listarán al crearlos en catálogo."
             />
           ) : (
-            <ol className="grid gap-10 md:grid-cols-3">
+            <ol className="divide-border mx-auto max-w-3xl divide-y">
               {items.map((item, index) => (
-                <li key={item.id} className="space-y-3">
-                  <p className="text-muted-foreground font-mono text-xs tabular-nums">
+                <li
+                  key={item.id}
+                  className="grid gap-3 py-8 sm:grid-cols-[4.5rem_minmax(0,1fr)] sm:gap-8"
+                >
+                  <p className="type-label text-muted-foreground tabular-nums">
                     {String(index + 1).padStart(2, "0")}
                   </p>
-                  <h3 className="text-foreground text-lg font-semibold tracking-tight">
-                    {item.title}
-                  </h3>
-                  {item.body ? (
-                    <p className="text-muted-foreground text-sm leading-relaxed">{item.body}</p>
-                  ) : null}
+                  <div className="space-y-3">
+                    <h3 className="type-h3 text-foreground">{item.title}</h3>
+                    {item.body ? (
+                      <p className="type-body text-muted-foreground max-w-2xl">{item.body}</p>
+                    ) : null}
+                  </div>
                 </li>
               ))}
             </ol>

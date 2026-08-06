@@ -156,5 +156,13 @@ export { Container } from "./components/container";
 export { QrViewer } from "./components/qr-viewer";
 export { PassportBadge } from "./components/passport-badge";
 export { StatusBadge } from "./components/status-badge";
+export {
+  SignatureDataBlock,
+  SignatureDivider,
+  SignatureIcon,
+  SignaturePanel,
+  signatureIconVariants,
+  signaturePanelVariants,
+} from "./components/signature";
 
 export { useIsMobile } from "./hooks/use-mobile";

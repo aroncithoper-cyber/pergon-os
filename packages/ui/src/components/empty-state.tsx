@@ -13,15 +13,24 @@ const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(
   ({ className, icon, title, description, action, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex flex-col items-center justify-center px-4 py-12 text-center", className)}
+      className={cn(
+        "border-border/60 bg-panel/30 flex flex-col items-center justify-center rounded-lg border border-dashed px-6 py-14 text-center",
+        className,
+      )}
       {...props}
     >
-      {icon ? <div className="text-muted-foreground mb-4 [&>svg]:size-8">{icon}</div> : null}
-      <h2 className="text-base font-semibold tracking-tight">{title}</h2>
-      {description ? (
-        <div className="text-muted-foreground mt-2 max-w-md text-sm leading-6">{description}</div>
+      {icon ? (
+        <div className="border-border/80 bg-background/60 text-muted-foreground mb-5 flex size-12 items-center justify-center rounded-xl border [&>svg]:size-5">
+          {icon}
+        </div>
       ) : null}
-      {action ? <div className="mt-5">{action}</div> : null}
+      <h2 className="type-h3 text-foreground tracking-tight">{title}</h2>
+      {description ? (
+        <div className="type-body text-muted-foreground mt-3 max-w-md leading-relaxed">
+          {description}
+        </div>
+      ) : null}
+      {action ? <div className="mt-6">{action}</div> : null}
     </div>
   ),
 );

@@ -5,7 +5,7 @@ import { Button } from "@pergon/ui/components/button";
 import { Container } from "@pergon/ui/components/container";
 import { PassportBadge } from "@pergon/ui/components/passport-badge";
 import { QrViewer } from "@pergon/ui/components/qr-viewer";
-import { Section } from "@pergon/ui/components/section";
+import { cn } from "@pergon/ui/lib/utils";
 
 import { SectionReveal } from "./section-reveal";
 
@@ -27,6 +27,8 @@ function MiniQr() {
 }
 
 export function SystemChaptersSection({ content }: { content: CmsSystemSection }) {
+  if (!content.enabled) return null;
+
   return (
     <div id={content.id} className="scroll-mt-20">
       {content.chapters.map((chapter, index) => {
@@ -34,30 +36,37 @@ export function SystemChaptersSection({ content }: { content: CmsSystemSection }
         const href = chapter.href;
 
         return (
-          <div key={chapter.id} className={index % 2 === 0 ? "bg-background" : "bg-panel"}>
-            <Container size="lg" asChild>
-              <Section id={chapter.id} className="scroll-mt-20" density="cinematic">
-                <SectionReveal>
-                  <div
-                    className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-20 ${odd ? "lg:[&>*:first-child]:order-2" : ""}`}
-                  >
-                    <div className="space-y-6">
-                      <p className="text-muted-foreground font-mono text-xs uppercase tracking-[0.18em]">
-                        Sistema · {String(index + 1).padStart(2, "0")}
-                      </p>
-                      <h2 className="text-foreground text-3xl font-semibold tracking-tight sm:text-4xl">
-                        {chapter.title}
-                      </h2>
-                      <p className="text-muted-foreground text-lede max-w-xl">{chapter.body}</p>
-                      {href ? (
-                        <Button asChild variant="outline" size="sm">
-                          <Link href={href}>Abrir Expert</Link>
-                        </Button>
-                      ) : null}
-                    </div>
+          <div
+            key={chapter.id}
+            className={cn(
+              "border-border/40 border-t",
+              index % 2 === 0 ? "bg-background" : "bg-panel/50",
+            )}
+          >
+            <Container size="lg" className="chapter-gap">
+              <SectionReveal>
+                <div
+                  className={cn(
+                    "grid items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-24",
+                    odd && "lg:[&>*:first-child]:order-2",
+                  )}
+                >
+                  <div className="max-w-xl space-y-6 md:space-y-8">
+                    <p className="type-label text-signal">
+                      Sistema · {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <h2 className="type-display-l text-foreground text-balance">{chapter.title}</h2>
+                    <p className="type-lead text-muted-foreground">{chapter.body}</p>
+                    {href ? (
+                      <Button asChild variant="outline" size="lg">
+                        <Link href={href}>Abrir Expert</Link>
+                      </Button>
+                    ) : null}
+                  </div>
 
-                    <div className="border-border bg-background flex min-h-[18rem] items-center justify-center border p-10">
-                      {chapter.id === "tecnologia-qr" && (
+                  <div className="glass-panel flex min-h-[18rem] items-center justify-center rounded-2xl p-8 md:min-h-[20rem] md:p-10">
+                    {chapter.id === "tecnologia-qr" ? (
+                      <div className="glow-cyan rounded-xl p-2">
                         <QrViewer
                           alt="Representación estructural QR"
                           size="md"
@@ -65,42 +74,33 @@ export function SystemChaptersSection({ content }: { content: CmsSystemSection }
                         >
                           <MiniQr />
                         </QrViewer>
-                      )}
-                      {chapter.id === "pasaporte-digital" && (
-                        <div className="space-y-5 text-center">
-                          <PassportBadge publicId="PASSPORT-STRUCTURE" state="active" />
-                          <p className="text-muted-foreground text-xs tracking-wide">
-                            Identidad del Design System
-                          </p>
-                        </div>
-                      )}
-                      {chapter.id === "academia" && (
-                        <div className="max-w-sm space-y-4 text-left">
-                          <p className="text-muted-foreground text-xs uppercase tracking-[0.18em]">
-                            Formación
-                          </p>
-                          <p className="text-foreground text-lg font-medium tracking-tight">
-                            Academia PerGon
-                          </p>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
-                            Curriculum y recursos se publicarán con la misma precisión tipográfica.
-                          </p>
-                        </div>
-                      )}
-                      {![
-                        "tecnologia-qr",
-                        "pasaporte-digital",
-                        "pergon-expert",
-                        "academia",
-                      ].includes(chapter.id) && (
-                        <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
-                          {chapter.title}
+                      </div>
+                    ) : null}
+                    {chapter.id === "pasaporte-digital" ? (
+                      <div className="space-y-5 text-center">
+                        <PassportBadge publicId="PASSPORT-STRUCTURE" state="active" />
+                        <p className="type-caption text-muted-foreground">
+                          Identidad del Design System
                         </p>
-                      )}
-                    </div>
+                      </div>
+                    ) : null}
+                    {chapter.id === "academia" ? (
+                      <div className="max-w-sm space-y-4 text-left">
+                        <p className="type-label text-cyan">Formación</p>
+                        <p className="type-h3 text-foreground">Academia PerGon</p>
+                        <p className="type-body text-muted-foreground">
+                          Curriculum y recursos se publicarán con la misma precisión tipográfica.
+                        </p>
+                      </div>
+                    ) : null}
+                    {!["tecnologia-qr", "pasaporte-digital", "pergon-expert", "academia"].includes(
+                      chapter.id,
+                    ) ? (
+                      <p className="type-body text-muted-foreground max-w-sm">{chapter.title}</p>
+                    ) : null}
                   </div>
-                </SectionReveal>
-              </Section>
+                </div>
+              </SectionReveal>
             </Container>
           </div>
         );

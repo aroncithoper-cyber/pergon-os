@@ -16,20 +16,26 @@ function QrViewer({ alt, children, className, label, size = "md", src, ...props 
   }
 
   return (
-    <figure className={cn("inline-flex flex-col gap-2", className)} {...props}>
+    <figure className={cn("inline-flex flex-col gap-3", className)} {...props}>
       <div
         className={cn(
-          "border-border bg-background flex aspect-square items-center justify-center overflow-hidden rounded-lg border p-2",
+          "sig-qr",
           size === "sm" && "w-24",
           size === "md" && "w-40",
           size === "lg" && "w-56",
         )}
       >
-        {src ? <img src={src} alt={alt} className="h-full w-full object-contain" /> : children}
+        {src ? (
+          <img src={src} alt={alt} className="relative z-[1] h-full w-full object-contain" />
+        ) : (
+          <div className="relative z-[1] flex size-full items-center justify-center">
+            {children}
+          </div>
+        )}
       </div>
-      {label && (
-        <figcaption className="text-muted-foreground text-center text-xs">{label}</figcaption>
-      )}
+      {label ? (
+        <figcaption className="type-caption text-muted-foreground text-center">{label}</figcaption>
+      ) : null}
     </figure>
   );
 }

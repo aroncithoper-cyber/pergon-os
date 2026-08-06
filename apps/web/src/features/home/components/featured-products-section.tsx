@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
-import { useRef, type MouseEvent } from "react";
+import { useReducedMotion } from "framer-motion";
 
 import type { CmsFeaturedProductItem, CmsFeaturedProductsSection } from "@pergon/cms";
 import { Button } from "@pergon/ui/components/button";
@@ -11,60 +10,6 @@ import { cn } from "@pergon/ui/lib/utils";
 
 import { BlockMedia } from "./block-media";
 import { SectionReveal } from "./section-reveal";
-
-const EASE = [0.16, 1, 0.3, 1] as const;
-
-function TiltFrame({
-  children,
-  reduce,
-  className,
-}: {
-  children: React.ReactNode;
-  reduce: boolean | null;
-  className?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), {
-    stiffness: 120,
-    damping: 18,
-  });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-10, 10]), {
-    stiffness: 120,
-    damping: 18,
-  });
-
-  function onMove(event: MouseEvent<HTMLDivElement>) {
-    if (reduce || !ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    x.set((event.clientX - rect.left) / rect.width - 0.5);
-    y.set((event.clientY - rect.top) / rect.height - 0.5);
-  }
-
-  function onLeave() {
-    x.set(0);
-    y.set(0);
-  }
-
-  return (
-    <motion.div
-      ref={ref}
-      className={cn("relative [perspective:1200px]", className)}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      style={reduce ? undefined : { rotateX, rotateY, transformStyle: "preserve-3d" }}
-    >
-      <div className="shadow-pergon-depth relative overflow-hidden rounded-xl border border-white/10">
-        {children}
-        <div
-          className="from-signal/10 to-cyan/10 pointer-events-none absolute inset-0 bg-gradient-to-tr via-transparent"
-          aria-hidden
-        />
-      </div>
-    </motion.div>
-  );
-}
 
 function FeaturedProduct({
   item,
@@ -78,50 +23,32 @@ function FeaturedProduct({
   const reverse = index % 2 === 1;
 
   return (
-    <motion.article
-      id={item.id}
-      className="chapter-viewport border-border/60 scroll-mt-24 border-t"
-      initial={reduce ? false : { opacity: 0, y: 36 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.25 }}
-      transition={{ duration: 0.55, ease: EASE }}
-    >
+    <article id={item.id} className="chapter-viewport border-border/30 scroll-mt-24 border-t">
       <div
         className={cn(
-          "grid items-center gap-10 lg:gap-16 xl:gap-24",
+          "grid items-center gap-12 lg:gap-20 xl:gap-28",
           "lg:grid-cols-2",
           reverse && "lg:[&>*:first-child]:order-2",
         )}
       >
-        <TiltFrame reduce={reduce} className="px-4 md:px-8 lg:px-10">
+        <div className="relative overflow-hidden">
           <BlockMedia
             media={item.media}
             label={item.name}
             reduce={reduce}
             aspect="portrait"
-            className="lg:aspect-auto lg:min-h-[min(68vh,34rem)]"
+            className="lg:aspect-auto lg:min-h-[min(72vh,36rem)]"
           />
-        </TiltFrame>
+        </div>
 
-        <Container size="lg" className="py-12 md:py-16 lg:px-10 lg:py-20 xl:px-16">
-          <div className="mx-auto max-w-md space-y-8 md:space-y-10 lg:mx-0">
-            <p className="text-cyan font-mono text-xs tabular-nums tracking-[0.28em]">
+        <Container size="lg" className="py-14 md:py-20 lg:px-10 lg:py-24 xl:px-12">
+          <div className="type-voice mx-auto max-w-xl space-y-8 md:space-y-10 lg:mx-0 lg:max-w-lg">
+            <p className="type-label text-muted-foreground tabular-nums">
               {String(index + 1).padStart(2, "0")}
             </p>
-            <h3
-              className={cn(
-                "text-foreground font-semibold tracking-tight",
-                "text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.05]",
-              )}
-            >
-              {item.name}
-            </h3>
-            <p className="text-muted-foreground text-base leading-relaxed md:text-lg">
-              {item.description}
-            </p>
-            <p className="text-foreground text-lg font-medium tracking-tight md:text-xl">
-              {item.benefit}
-            </p>
+            <h3 className="type-display-l text-foreground">{item.name}</h3>
+            <p className="type-body-xl text-muted-foreground">{item.description}</p>
+            <p className="type-h3 text-foreground font-medium tracking-tight">{item.benefit}</p>
             <div className="pt-2">
               <Button asChild size="lg" variant="signal">
                 <Link href={item.href}>{item.ctaLabel}</Link>
@@ -130,13 +57,11 @@ function FeaturedProduct({
           </div>
         </Container>
       </div>
-    </motion.article>
+    </article>
   );
 }
 
-/**
- * Featured Products — premium editorial blocks with tilt depth.
- */
+/** Featured Products — Tesla-like editorial nodes, no card chrome. */
 export function FeaturedProductsSection({ content }: { content: CmsFeaturedProductsSection }) {
   const reduce = useReducedMotion();
 
@@ -152,27 +77,18 @@ export function FeaturedProductsSection({ content }: { content: CmsFeaturedProdu
     <section id={content.id} className="scroll-mt-20">
       <Container size="lg" className="chapter-gap">
         <SectionReveal>
-          <div className="max-w-xl space-y-8 md:space-y-10">
-            <p className="text-signal font-mono text-xs uppercase tracking-[0.28em]">Productos</p>
-            <h2
-              className={cn(
-                "text-foreground font-semibold tracking-tight",
-                "text-[clamp(2.4rem,6vw,4.25rem)] leading-[1.02]",
-              )}
-            >
-              {content.title}
-            </h2>
+          <div className="type-voice max-w-3xl space-y-8 md:space-y-10">
+            <p className="type-label text-signal">Ecosistema</p>
+            <h2 className="type-display-xl text-foreground">{content.title}</h2>
             {content.subtitle ? (
-              <p className="text-foreground text-xl font-medium tracking-tight md:text-2xl">
-                {content.subtitle}
-              </p>
+              <p className="type-h2 text-foreground font-medium">{content.subtitle}</p>
             ) : null}
-            <p className="text-muted-foreground text-lede max-w-md">{content.description}</p>
+            <p className="type-lead text-muted-foreground max-w-2xl">{content.description}</p>
           </div>
         </SectionReveal>
       </Container>
 
-      <div className="border-border/60 border-b">
+      <div className="border-border/30 border-b">
         {items.map((item, index) => (
           <FeaturedProduct key={item.id} item={item} index={index} reduce={reduce} />
         ))}
