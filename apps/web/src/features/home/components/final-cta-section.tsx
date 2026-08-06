@@ -36,17 +36,17 @@ export function FinalCtaSection({ content }: { content: CtaContent }) {
     <section id={content.id} className="border-border/40 scroll-mt-20 border-t">
       <Container size="lg" className="chapter-gap">
         <SectionReveal>
-          <div className="type-voice max-w-3xl space-y-10 md:space-y-12">
+          <div className="type-voice max-w-3xl">
             <h2 className="type-display-xl text-foreground text-balance">{content.title}</h2>
-            <p className="type-lead text-muted-foreground max-w-2xl">{content.body}</p>
-            <div className="flex flex-wrap items-center gap-4 md:gap-6">
+            <p className="type-lead text-muted-foreground">{content.body}</p>
+            <div className="flex flex-wrap items-center gap-5 md:gap-7">
               <Button asChild size="lg" variant="signal">
                 <Link href={content.primaryCta.href}>{content.primaryCta.label}</Link>
               </Button>
               {hasSecondary ? (
                 <Link
                   href={content.secondaryCta!.href}
-                  className="type-small text-muted-foreground hover:text-foreground underline-offset-4 transition-colors hover:underline"
+                  className="type-small text-muted-foreground hover:text-foreground underline-offset-[6px] transition-colors hover:underline"
                 >
                   {content.secondaryCta!.label}
                 </Link>

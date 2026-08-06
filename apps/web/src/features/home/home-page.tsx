@@ -76,7 +76,7 @@ export function HomePage(props: { payload: CmsHomePayload; preview?: boolean }) 
   let chapterOrdinal = 0;
 
   return (
-    <div className="sig-universe text-foreground relative flex min-h-dvh flex-col overflow-x-clip">
+    <div className="sig-universe text-foreground relative flex min-h-dvh flex-col">
       <AtmosphereLayer className="fixed inset-0 z-0" />
       {preview ? (
         <div className="bg-signal text-signal-foreground relative z-50 px-4 py-2 text-center text-xs font-medium tracking-wide">
@@ -85,7 +85,7 @@ export function HomePage(props: { payload: CmsHomePayload; preview?: boolean }) 
       ) : null}
       <div className="relative z-10 flex min-h-dvh flex-col">
         <SiteHeader nav={nav} />
-        <div id="main" className="flex flex-1 flex-col">
+        <main id="main" className="flex flex-1 flex-col">
           {blocks.map((section) => {
             const inner = renderBlock(section);
             if (!inner) return null;
@@ -123,7 +123,7 @@ export function HomePage(props: { payload: CmsHomePayload; preview?: boolean }) 
               </NarrativeChapter>
             );
           })}
-        </div>
+        </main>
       </div>
     </div>
   );

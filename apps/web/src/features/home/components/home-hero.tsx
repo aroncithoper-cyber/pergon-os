@@ -257,33 +257,31 @@ export function HomeHero({ content }: { content: CmsHeroSection }) {
     Boolean(content.secondaryCta?.label?.trim()) && Boolean(content.secondaryCta?.href?.trim());
 
   return (
-    <header className="relative isolate min-h-[100dvh] overflow-x-clip pt-[var(--navbar-height)]">
+    <header className="relative isolate min-h-[100dvh] pt-[var(--navbar-height)]">
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="sig-universe absolute inset-0" />
-        <div className="surface-stage absolute inset-0 opacity-[0.18]" />
+        <div className="surface-stage absolute inset-0 opacity-[0.12]" />
       </div>
 
-      <div className="layout-hero relative z-10 py-16 md:py-20 lg:py-8 xl:py-0">
+      <div className="layout-hero relative z-10 py-20 md:py-24 lg:py-10 xl:py-0">
         <Reveal reduce={reduce}>
-          <div className="type-voice flex flex-col justify-center gap-8 md:gap-10 lg:max-w-[var(--hero-narrative-max)] lg:pr-6 xl:pr-8">
-            <div className="flex flex-wrap items-center gap-3 md:gap-4">
-              <p className="type-label text-signal">{content.brand}</p>
-            </div>
+          <div className="type-voice flex flex-col justify-center lg:max-w-[var(--hero-narrative-max)] lg:pr-8 xl:pr-12">
+            <p className="type-label text-signal">{content.brand}</p>
 
             <h1 className="text-hero-title text-foreground">{content.title}</h1>
 
-            <p className="type-lead text-muted-foreground max-w-xl md:max-w-2xl">
+            <p className="type-lead text-muted-foreground max-w-[32ch] md:max-w-[40ch]">
               {content.subtitle}
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 pt-1 md:gap-6">
-              <Button asChild size="lg" variant="signal" className="min-w-[10rem]">
+            <div className="flex flex-wrap items-center gap-5 pt-2 md:gap-7">
+              <Button asChild size="lg" variant="signal">
                 <Link href={content.primaryCta.href}>{content.primaryCta.label}</Link>
               </Button>
               {hasSecondary ? (
                 <Link
                   href={content.secondaryCta!.href}
-                  className="type-small text-muted-foreground hover:text-foreground underline-offset-4 transition-colors hover:underline"
+                  className="type-small text-muted-foreground hover:text-foreground underline-offset-[6px] transition-colors hover:underline"
                 >
                   {content.secondaryCta!.label}
                 </Link>
@@ -294,30 +292,30 @@ export function HomeHero({ content }: { content: CmsHeroSection }) {
 
         <Reveal
           reduce={reduce}
-          className="relative mx-auto w-full max-w-lg sm:max-w-xl lg:mx-0 lg:max-w-none"
+          className="relative mx-auto w-full max-w-md sm:max-w-lg lg:mx-0 lg:max-w-none"
         >
           <div className="sig-panel-raised relative overflow-hidden">
-            <div className="relative aspect-[4/5] w-full sm:aspect-[5/6] lg:aspect-auto lg:min-h-[26rem] xl:min-h-[30rem]">
+            <div className="relative aspect-[4/5] w-full sm:aspect-[5/6] lg:aspect-auto lg:min-h-[28rem] xl:min-h-[34rem]">
               <MediaFill content={content} reduceMotion={reduce} />
               <div
-                className="from-background/90 pointer-events-none absolute inset-0 bg-gradient-to-t via-transparent to-transparent"
+                className="from-background/95 via-background/20 pointer-events-none absolute inset-0 bg-gradient-to-t to-transparent"
                 aria-hidden
               />
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 md:p-6">
-              <div className="space-y-1.5">
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-6 md:p-8">
+              <div className="space-y-2">
                 <p className="type-label text-muted-foreground">Pasaporte Digital</p>
                 <p className="type-small text-foreground/90 flex items-center gap-2">
-                  <ShieldCheck className="text-signal size-3.5" aria-hidden />
+                  <ShieldCheck className="text-signal size-3.5 shrink-0" aria-hidden />
                   Verificación server-side
                 </p>
               </div>
               <div
-                className="sig-icon flex size-11 items-center justify-center md:size-12"
+                className="sig-icon flex size-10 items-center justify-center md:size-11"
                 aria-hidden
               >
-                <QrCode className="size-5 md:size-6" strokeWidth={1.5} />
+                <QrCode className="size-5" strokeWidth={1.5} />
               </div>
             </div>
           </div>

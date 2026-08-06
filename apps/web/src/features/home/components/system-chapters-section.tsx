@@ -64,7 +64,7 @@ export function SystemChaptersSection({ content }: { content: CmsSystemSection }
                     ) : null}
                   </div>
 
-                  <div className="glass-panel flex min-h-[18rem] items-center justify-center rounded-2xl p-8 md:min-h-[20rem] md:p-10">
+                  <div className="sig-panel-raised flex min-h-[16rem] items-center justify-center p-6 sm:min-h-[18rem] sm:p-8 md:min-h-[20rem] md:p-10">
                     {chapter.id === "tecnologia-qr" ? (
                       <div className="glow-cyan rounded-xl p-2">
                         <QrViewer

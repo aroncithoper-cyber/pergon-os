@@ -25,23 +25,23 @@ export function ExpertSection({ content }: { content: CmsExpertSection }) {
       <Container size="lg" className="chapter-gap">
         <SectionReveal>
           <div className="grid gap-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center lg:gap-20">
-            <div className="type-voice max-w-2xl space-y-8 md:space-y-10">
+            <div className="type-voice max-w-2xl">
               <p className="type-label text-signal">PerGon Expert</p>
               <h2 className="type-display-xl text-foreground text-balance">{content.title}</h2>
               {content.subtitle ? (
                 <p className="type-h2 text-foreground font-medium">{content.subtitle}</p>
               ) : null}
               {description ? (
-                <p className="type-lead text-muted-foreground max-w-xl">{description}</p>
+                <p className="type-lead text-muted-foreground">{description}</p>
               ) : null}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-5 pt-1">
                 <Button asChild size="lg" variant="signal">
                   <Link href={content.primaryCta.href}>{content.primaryCta.label}</Link>
                 </Button>
                 {hasSecondary ? (
                   <Link
                     href={content.secondaryCta!.href}
-                    className="type-small text-muted-foreground hover:text-foreground underline-offset-4 transition-colors hover:underline"
+                    className="type-small text-muted-foreground hover:text-foreground underline-offset-[6px] transition-colors hover:underline"
                   >
                     {content.secondaryCta!.label}
                   </Link>

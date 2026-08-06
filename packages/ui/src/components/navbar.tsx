@@ -13,14 +13,15 @@ const Navbar = forwardRef<HTMLElement, NavbarProps>(
   ({ actions, backdrop = false, brand, className, nav, ...props }, ref) => (
     <nav
       ref={ref}
+      aria-label={props["aria-label"] ?? "Navegación"}
       className={cn(
-        "h-navbar border-border bg-background sticky top-0 z-40 border-b",
-        backdrop && "bg-background/90 supports-[backdrop-filter]:bg-background/80 backdrop-blur-sm",
+        "h-navbar border-border/60 bg-background/95 sticky top-0 z-40 border-b",
+        backdrop && "supports-[backdrop-filter]:bg-background/80 backdrop-blur-sm",
         className,
       )}
       {...props}
     >
-      <div className="flex h-full items-center gap-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex h-full w-full items-center gap-8 px-6 md:px-10 lg:px-14">
         {brand && <div className="shrink-0">{brand}</div>}
         {nav && <div className="flex min-w-0 flex-1 items-center gap-1">{nav}</div>}
         {actions && <div className="ml-auto flex shrink-0 items-center gap-2">{actions}</div>}

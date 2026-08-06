@@ -4,11 +4,12 @@ import { GeistSans } from "geist/font/sans";
 import { DEFAULT_LOCALE } from "@pergon/shared/constants";
 
 import { AppProviders } from "@/components/providers";
-import { siteMetadata } from "@/lib/seo";
+import { siteMetadata, siteViewport } from "@/lib/seo";
 
 import "@pergon/ui/globals.css";
 
 export const metadata = siteMetadata;
+export const viewport = siteViewport;
 
 export default function RootLayout({
   children,

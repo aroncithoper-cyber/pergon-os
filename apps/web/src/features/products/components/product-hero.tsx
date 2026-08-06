@@ -1,4 +1,5 @@
 import type { PublishedProductExperience } from "@pergon/catalog";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@pergon/ui/components/button";
@@ -17,24 +18,26 @@ export function ProductHero({ product }: ProductHeroProps) {
       <div className="grid min-h-[calc(100dvh-var(--navbar-height))] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
         <Container
           size="lg"
-          className="flex flex-col justify-center py-20 lg:max-w-none lg:px-8 xl:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]"
+          className="flex flex-col justify-center py-16 sm:py-20 lg:max-w-none lg:px-10 xl:pl-[max(2.5rem,calc(100%-40rem+2.5rem))] xl:pr-12"
         >
-          <div className="type-voice max-w-xl space-y-10">
-            <div className="space-y-5">
+          <div className="type-voice max-w-xl">
+            <div className="space-y-6">
               <p className="type-label text-signal">PerGon</p>
               <h1 className="text-hero-title text-foreground">{product.name}</h1>
               {hero.eyebrow ? (
                 <p className="type-caption text-muted-foreground">{hero.eyebrow}</p>
               ) : null}
             </div>
-            <div className="space-y-5">
-              <p className="type-h2 text-foreground max-w-[24ch] font-medium">{hero.headline}</p>
+            <div className="space-y-6">
+              <p className="type-h2 text-foreground max-w-[26ch] text-pretty font-medium">
+                {hero.headline}
+              </p>
               {hero.support ? (
-                <p className="type-lead text-muted-foreground max-w-md">{hero.support}</p>
+                <p className="type-lead text-muted-foreground">{hero.support}</p>
               ) : null}
             </div>
             {(hero.primaryCta || hero.secondaryCta) && (
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-5 pt-1">
                 {hero.primaryCta ? (
                   <Button asChild size="lg" variant="signal">
                     <Link href={hero.primaryCta.href}>{hero.primaryCta.label}</Link>
@@ -43,7 +46,7 @@ export function ProductHero({ product }: ProductHeroProps) {
                 {hero.secondaryCta ? (
                   <Link
                     href={hero.secondaryCta.href}
-                    className="type-small text-muted-foreground hover:text-foreground underline-offset-4 transition-colors hover:underline"
+                    className="type-small text-muted-foreground hover:text-foreground underline-offset-[6px] transition-colors hover:underline"
                   >
                     {hero.secondaryCta.label}
                   </Link>
@@ -58,12 +61,13 @@ export function ProductHero({ product }: ProductHeroProps) {
           aria-label="Visual principal del producto"
         >
           {hero.media?.publicUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={hero.media.publicUrl}
               alt={hero.media.altText ?? product.name}
-              className="absolute inset-0 size-full object-cover"
-              fetchPriority="high"
+              fill
+              priority
+              sizes="(max-width:1023px) 100vw, 55vw"
+              className="object-cover"
             />
           ) : (
             <div className="surface-stage absolute inset-0" />

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { PublishedProductExperience } from "@pergon/catalog";
 
 import { Container } from "@pergon/ui/components/container";
@@ -22,13 +23,16 @@ export function ProductGallery({ items }: ProductGalleryProps) {
             {items.map((item) => (
               <li key={item.id} className="bg-background overflow-hidden">
                 {item.publicUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={item.publicUrl}
-                    alt={item.altText ?? item.title ?? "Imagen de producto"}
-                    className="aspect-[16/10] w-full object-cover"
-                    loading="lazy"
-                  />
+                  <div className="relative aspect-[16/10] w-full">
+                    <Image
+                      src={item.publicUrl}
+                      alt={item.altText ?? item.title ?? "Imagen de producto"}
+                      fill
+                      sizes="(max-width:640px) 100vw, 50vw"
+                      className="object-cover"
+                      loading="lazy"
+                    />
+                  </div>
                 ) : (
                   <div className="text-muted-foreground flex aspect-[16/10] items-center justify-center text-xs">
                     Asset sin URL pública

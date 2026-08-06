@@ -51,6 +51,8 @@ export const signatureUtilities = [
   "sig-glass-deep",
   "sig-panel",
   "sig-panel-raised",
+  "sig-document",
+  "sig-instrument",
   "sig-divider",
   "sig-divider-strong",
   "sig-card",

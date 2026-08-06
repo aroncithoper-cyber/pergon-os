@@ -21,7 +21,7 @@ type VerifyExperienceProps = {
   passportId: string;
 };
 
-/** Stripe Identity–like institutional verification document. */
+/** Institutional verification document — solemn, precise, no marketing chrome. */
 export function VerifyExperience({ passportId }: VerifyExperienceProps) {
   const reduce = useReducedMotion();
   const [phase, setPhase] = useState<VerifyPhase>("verifying");
@@ -78,25 +78,25 @@ export function VerifyExperience({ passportId }: VerifyExperienceProps) {
 
   return (
     <div className="bg-background relative min-h-[calc(100dvh-var(--navbar-height))]">
-      <Container size="md" className="relative z-10 py-16 sm:py-20">
+      <Container size="md" className="relative z-10 py-20 sm:py-24">
         <motion.article
-          className="border-border bg-panel/30 overflow-hidden rounded-lg border"
+          className="sig-document overflow-hidden"
           initial={reduce ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           aria-label="Dictamen de verificación"
         >
-          <div className="border-border flex items-center justify-between gap-4 border-b px-6 py-4 sm:px-10">
-            <div>
+          <header className="border-border flex flex-col gap-4 border-b px-6 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-10 sm:py-6">
+            <div className="space-y-2">
               <p className="type-label text-signal">Documento de verificación</p>
-              <p className="type-caption text-muted-foreground mt-1">
+              <p className="type-caption text-muted-foreground">
                 PerGon OS · lectura pública mínima
               </p>
             </div>
-            <p className="type-caption text-muted-foreground hidden font-mono sm:block">VERIFY</p>
-          </div>
+            <p className="type-caption text-muted-foreground font-mono tracking-[0.14em]">VERIFY</p>
+          </header>
 
-          <div className="space-y-12 p-6 sm:p-10">
+          <div className="space-y-12 p-6 sm:space-y-14 sm:p-10 md:p-12">
             <VerifyResultHeader
               outcome={data.outcome}
               publicId={data.passport?.publicId}
@@ -116,11 +116,11 @@ export function VerifyExperience({ passportId }: VerifyExperienceProps) {
             )}
           </div>
 
-          <div className="border-border bg-background/60 border-t px-6 py-3 sm:px-10">
-            <p className="type-caption text-muted-foreground">
+          <footer className="border-border bg-panel/40 border-t px-6 py-4 sm:px-10">
+            <p className="type-caption text-muted-foreground max-w-2xl text-pretty">
               La autenticidad depende de la respuesta del servidor. No confíe en capturas offline.
             </p>
-          </div>
+          </footer>
         </motion.article>
       </Container>
     </div>

@@ -36,7 +36,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <AdminSidebar />
         <SidebarInset className="bg-background relative z-10 flex min-h-svh flex-col">
           <AdminTopbar onOpenCommand={() => setOpen(true)} />
-          <div className={cn("flex-1 overflow-auto p-5 md:p-6 lg:p-8")}>{children}</div>
+          <div id="main" className={cn("flex-1 overflow-auto px-5 py-5 md:px-6 md:py-6 lg:px-8")}>
+            {children}
+          </div>
         </SidebarInset>
         <AdminCommandPalette open={open} onOpenChange={setOpen} />
       </div>

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getAppUrl } from "@pergon/shared";
+import { APP_NAME, getAppUrl } from "@pergon/shared";
 
 import { getCatalogServices } from "@/lib/catalog";
 import { ProductExperience } from "@/features/products/components/product-experience";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -25,6 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const canonical = `${appUrl}/productos/${product.slug}`;
+  const ogImage = product.seo.ogImageUrl ?? DEFAULT_OG_IMAGE;
 
   return {
     title: product.seo.title,
@@ -34,16 +36,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     openGraph: {
       type: "website",
+      siteName: APP_NAME,
+      locale: "es_MX",
       title: product.seo.title,
       description: product.seo.description,
       url: canonical,
-      images: product.seo.ogImageUrl ? [{ url: product.seo.ogImageUrl }] : undefined,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: product.name }],
     },
     twitter: {
       card: "summary_large_image",
       title: product.seo.title,
       description: product.seo.description,
-      images: product.seo.ogImageUrl ? [product.seo.ogImageUrl] : undefined,
+      images: [ogImage],
     },
   };
 }

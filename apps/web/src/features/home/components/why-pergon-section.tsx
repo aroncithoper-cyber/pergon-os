@@ -14,7 +14,7 @@ export function WhyPergonSection({ content }: { content: CmsWhySection }) {
             <p className="type-label text-signal">Por qué PerGon</p>
             <h2 className="type-display-l text-foreground text-balance">{content.title}</h2>
             {content.description ? (
-              <p className="type-lead text-muted-foreground max-w-xl">{content.description}</p>
+              <p className="type-lead text-muted-foreground">{content.description}</p>
             ) : null}
           </div>
         </SectionReveal>

@@ -5,6 +5,7 @@ import { EmptyState } from "@pergon/ui/components/empty-state";
 
 import { HomePage } from "@/features/home/home-page";
 import { homeSeoFromPayload, loadPublishedHome } from "@/features/home/lib/load-home";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -13,6 +14,7 @@ const appUrl = getAppUrl("http://localhost:3000");
 export async function generateMetadata(): Promise<Metadata> {
   const payload = await loadPublishedHome("es");
   const seo = homeSeoFromPayload(payload);
+  const ogImage = seo.ogImageUrl ?? DEFAULT_OG_IMAGE;
   return {
     title: { absolute: seo.title },
     description: seo.description,
@@ -24,12 +26,13 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: APP_NAME,
       title: seo.title,
       description: seo.description,
-      ...(seo.ogImageUrl ? { images: [{ url: seo.ogImageUrl }] } : {}),
+      images: [{ url: ogImage, width: 1200, height: 630, alt: seo.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: seo.title,
       description: seo.description,
+      images: [ogImage],
     },
     robots: { index: true, follow: true },
   };

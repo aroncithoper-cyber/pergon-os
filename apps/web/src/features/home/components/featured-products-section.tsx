@@ -26,7 +26,7 @@ function FeaturedProduct({
     <article id={item.id} className="chapter-viewport border-border/30 scroll-mt-24 border-t">
       <div
         className={cn(
-          "grid items-center gap-12 lg:gap-20 xl:gap-28",
+          "grid items-center gap-14 lg:gap-24 xl:gap-32",
           "lg:grid-cols-2",
           reverse && "lg:[&>*:first-child]:order-2",
         )}
@@ -37,16 +37,16 @@ function FeaturedProduct({
             label={item.name}
             reduce={reduce}
             aspect="portrait"
-            className="lg:aspect-auto lg:min-h-[min(72vh,36rem)]"
+            className="lg:aspect-auto lg:min-h-[min(72vh,38rem)]"
           />
         </div>
 
-        <Container size="lg" className="py-14 md:py-20 lg:px-10 lg:py-24 xl:px-12">
-          <div className="type-voice mx-auto max-w-xl space-y-8 md:space-y-10 lg:mx-0 lg:max-w-lg">
+        <Container size="lg" className="py-16 md:py-24 lg:px-10 lg:py-28 xl:px-14">
+          <div className="type-voice mx-auto max-w-xl lg:mx-0 lg:max-w-md">
             <p className="type-label text-muted-foreground tabular-nums">
               {String(index + 1).padStart(2, "0")}
             </p>
-            <h3 className="type-display-l text-foreground">{item.name}</h3>
+            <h3 className="type-display-l text-foreground text-balance">{item.name}</h3>
             <p className="type-body-xl text-muted-foreground">{item.description}</p>
             <p className="type-h3 text-foreground font-medium tracking-tight">{item.benefit}</p>
             <div className="pt-2">
@@ -77,13 +77,13 @@ export function FeaturedProductsSection({ content }: { content: CmsFeaturedProdu
     <section id={content.id} className="scroll-mt-20">
       <Container size="lg" className="chapter-gap">
         <SectionReveal>
-          <div className="type-voice max-w-3xl space-y-8 md:space-y-10">
+          <div className="type-voice max-w-3xl">
             <p className="type-label text-signal">Ecosistema</p>
             <h2 className="type-display-xl text-foreground">{content.title}</h2>
             {content.subtitle ? (
               <p className="type-h2 text-foreground font-medium">{content.subtitle}</p>
             ) : null}
-            <p className="type-lead text-muted-foreground max-w-2xl">{content.description}</p>
+            <p className="type-lead text-muted-foreground">{content.description}</p>
           </div>
         </SectionReveal>
       </Container>

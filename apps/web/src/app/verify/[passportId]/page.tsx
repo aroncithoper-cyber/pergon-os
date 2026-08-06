@@ -5,6 +5,7 @@ import { Button } from "@pergon/ui/components/button";
 import { Navbar } from "@pergon/ui/components/navbar";
 
 import { VerifyExperience } from "@/features/verify/components/verify-experience";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 
 type PageProps = {
   params: Promise<{ passportId: string }>;
@@ -13,11 +14,12 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { passportId } = await params;
   const id = passportId.toUpperCase();
+  const description =
+    "Verifique la autenticidad de un producto PerGon mediante su Pasaporte Digital y sistema QR.";
 
   return {
     title: "Verificación de autenticidad",
-    description:
-      "Verifique la autenticidad de un producto PerGon mediante su Pasaporte Digital y sistema QR.",
+    description,
     alternates: {
       canonical: `/verify/${encodeURIComponent(id)}`,
     },
@@ -31,6 +33,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description:
         "Consulta solemne del Pasaporte Digital. La autenticidad se confirma siempre en servidor.",
       type: "website",
+      images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: "PerGon OS" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Verificación de autenticidad · PerGon",
+      description,
+      images: [DEFAULT_OG_IMAGE],
     },
   };
 }
@@ -59,10 +68,11 @@ export default async function VerifyPassportPage({ params }: PageProps) {
       />
       <div className="bg-background text-foreground flex min-h-dvh flex-col">
         <Navbar
+          aria-label="Navegación de verificación"
           brand={
             <Link
               href="/"
-              className="text-foreground text-lg font-semibold tracking-tight transition-opacity hover:opacity-80"
+              className="text-foreground focus-visible:ring-ring focus-visible:ring-offset-background rounded-sm text-lg font-semibold tracking-tight transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             >
               PerGon
             </Link>

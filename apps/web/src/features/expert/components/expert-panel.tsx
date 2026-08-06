@@ -36,27 +36,26 @@ function ExpertOrb({ thinking }: { thinking: boolean }) {
   const reduce = useReducedMotion();
   return (
     <div
-      className="relative mx-auto flex size-28 items-center justify-center sm:size-36"
+      className="relative mx-auto flex size-24 items-center justify-center sm:size-28"
       aria-hidden
     >
       <motion.div
-        className="absolute inset-0 rounded-full bg-[radial-gradient(circle,hsl(var(--signal)/0.45),transparent_70%)] blur-2xl"
+        className="border-steel/40 absolute inset-0 rounded-full border"
+        animate={reduce ? undefined : thinking ? { opacity: [0.35, 0.7, 0.35] } : { opacity: 0.45 }}
+        transition={{ duration: thinking ? 1.6 : 4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="border-signal/50 absolute inset-3 rounded-full border"
         animate={
           reduce
             ? undefined
             : thinking
-              ? { scale: [1, 1.18, 1], opacity: [0.55, 0.95, 0.55] }
-              : { scale: [1, 1.06, 1], opacity: [0.4, 0.65, 0.4] }
-        }
-        transition={{ duration: thinking ? 1.4 : 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="border-signal/40 glow-signal from-signal/30 to-cyan/20 relative size-16 rounded-full border bg-gradient-to-br sm:size-20"
-        animate={
-          reduce ? undefined : thinking ? { scale: [1, 1.04, 1] } : { opacity: [0.85, 1, 0.85] }
+              ? { scale: [1, 1.03, 1], opacity: [0.55, 1, 0.55] }
+              : { opacity: 0.7 }
         }
         transition={{ duration: thinking ? 1.2 : 3.5, repeat: Infinity, ease: "easeInOut" }}
       />
+      <div className="bg-elevated border-border relative size-10 rounded-full border sm:size-12" />
     </div>
   );
 }
@@ -166,57 +165,54 @@ export function ExpertPanel() {
   return (
     <div className="surface-atmosphere relative min-h-[calc(100dvh-var(--navbar-height))] overflow-hidden">
       <AtmosphereLayer />
-      <Container size="lg" className="relative z-10 py-14 md:py-20">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
-          <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
+      <Container size="lg" className="relative z-10 py-16 md:py-24">
+        <div className="grid gap-14 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16 xl:gap-20">
+          <aside className="space-y-10 lg:sticky lg:top-24 lg:self-start">
             <ExpertOrb thinking={pending} />
-            <header className="space-y-5 text-center lg:text-left">
-              <div className="flex items-center justify-center gap-3 lg:justify-start">
-                <span className="border-signal/30 bg-signal/10 text-signal type-caption rounded-md border px-2 py-1 uppercase tracking-[0.18em]">
-                  Lab
-                </span>
-                <p className="type-label text-signal">Ingeniero técnico digital</p>
-              </div>
+            <header className="type-voice text-center lg:text-left">
+              <p className="type-label text-signal">Laboratorio técnico</p>
               <h1 className="type-display-xl text-foreground">PerGon Expert</h1>
-              <p className="type-lead text-muted-foreground mx-auto max-w-md lg:mx-0">
+              <p className="type-lead text-muted-foreground mx-auto lg:mx-0">
                 Especialista de dominio: productos, diluciones, fichas, seguridad, Pasaporte Digital
                 y QR. Responde con fuentes. Si no hay información suficiente, lo declara.
               </p>
             </header>
 
             {contextLabel ? (
-              <div className="glass-panel rounded-xl px-4 py-4">
-                <p className="type-label text-muted-foreground">Contexto</p>
-                <p className="type-caption text-foreground mt-2 font-mono leading-relaxed">
-                  {contextLabel}
-                </p>
+              <div className="sig-data">
+                <p className="sig-data-label">Contexto de sesión</p>
+                <p className="sig-data-value mt-2">{contextLabel}</p>
               </div>
             ) : (
-              <p className="text-muted-foreground text-xs leading-relaxed">
-                Sin contexto de producto o pasaporte. Puede añadir `?product=`, `?passport=` o
-                `?qr=` a la URL.
+              <p className="type-caption text-muted-foreground text-pretty">
+                Sin contexto de producto o pasaporte. Añada `?product=`, `?passport=` o `?qr=` a la
+                URL.
               </p>
             )}
 
             {remaining !== null ? (
-              <p className="text-muted-foreground font-mono text-xs">
+              <p className="type-caption text-muted-foreground font-mono">
                 Consultas restantes hoy · {remaining}
               </p>
             ) : null}
           </aside>
 
-          <div className="glass-panel border-signal/15 relative space-y-8 overflow-hidden rounded-2xl border p-5 md:p-8">
+          <div className="sig-instrument relative space-y-8 overflow-hidden p-6 md:space-y-10 md:p-9">
             <div
-              className="via-signal/50 pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent"
+              className="via-signal/40 pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent"
               aria-hidden
             />
-            <div className="flex items-center justify-between gap-3">
-              <p className="type-label text-muted-foreground">Mesa de análisis</p>
-              <p className="type-caption text-muted-foreground font-mono">SESSION · CONTROLLED</p>
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <p className="type-label text-muted-foreground">Instrumento de consulta</p>
+              <p className="type-caption text-muted-foreground font-mono tracking-[0.12em]">
+                SESSION · CONTROLLED
+              </p>
             </div>
-            <section aria-label="Consulta" className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="expert-message">Consulta técnica</Label>
+            <section aria-label="Consulta" aria-busy={pending} className="space-y-5">
+              <div className="space-y-3">
+                <Label htmlFor="expert-message" className="type-caption text-muted-foreground">
+                  Entrada técnica
+                </Label>
                 <Textarea
                   id="expert-message"
                   value={message}
@@ -224,21 +220,26 @@ export function ExpertPanel() {
                   placeholder="Ej.: ¿Cómo verifico un Pasaporte Digital? ¿Qué implica un QR rotado?"
                   rows={5}
                   disabled={pending}
-                  className="min-h-[8rem] resize-y border-white/10 bg-black/20"
+                  className="bg-background/60 min-h-[9rem] resize-y"
                 />
               </div>
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-4">
                 <Button
                   type="button"
                   variant="signal"
+                  size="lg"
                   onClick={ask}
                   disabled={pending || !message.trim()}
                 >
-                  {pending ? "Pensando…" : "Consultar especialista"}
+                  {pending ? "Procesando…" : "Ejecutar consulta"}
                 </Button>
                 {pending ? (
-                  <span className="text-cyan animate-pergon-pulse text-xs tracking-wide">
-                    Escribiendo dictamen
+                  <span
+                    className="type-caption text-cyan tracking-wide"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    Generando dictamen
                   </span>
                 ) : null}
               </div>
@@ -256,20 +257,20 @@ export function ExpertPanel() {
                   <motion.article
                     key={`${turn.role}-${index}`}
                     className={cn(
-                      "rounded-xl border px-4 py-4",
+                      "border-border border-l-2 px-5 py-4",
                       turn.role === "assistant"
-                        ? "border-signal/25 bg-signal/5"
-                        : "border-border/60 bg-background/40",
+                        ? "border-l-signal/50 bg-panel/40"
+                        : "border-l-steel/40",
                     )}
-                    initial={reduce ? false : { opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    initial={reduce ? false : { opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   >
                     <p className="type-label text-muted-foreground">
-                      {turn.role === "user" ? "Consulta" : "Dictamen"}
+                      {turn.role === "user" ? "Entrada" : "Dictamen"}
                       {turn.outcome ? ` · ${turn.outcome}` : ""}
                     </p>
-                    <p className="type-body text-foreground mt-3 whitespace-pre-wrap leading-relaxed">
+                    <p className="type-body text-foreground mt-4 whitespace-pre-wrap">
                       {turn.content}
                     </p>
                     {turn.citations && turn.citations.length > 0 ? (
