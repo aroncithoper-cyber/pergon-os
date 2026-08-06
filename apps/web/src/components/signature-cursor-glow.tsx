@@ -5,21 +5,27 @@ import { useEffect, useRef, useState } from "react";
 const LERP = 0.12;
 const GLOW_SIZE = 480;
 
-function canUseCursorGlow(): boolean {
+/**
+ * Capability check for *behavior* (not mount).
+ * Uses any-pointer / any-hover so hybrid Windows laptops with a mouse still qualify.
+ * Primary `pointer: fine` alone often fails on touch+mouse devices → glow never enabled.
+ */
+function canTrackCursorGlow(): boolean {
   if (typeof window === "undefined") return false;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return false;
+  if (!window.matchMedia("(any-hover: hover)").matches) return false;
+  if (!window.matchMedia("(any-pointer: fine)").matches) return false;
   return true;
 }
 
 /**
  * Signature cursor glow — electric radial with lerp + requestAnimationFrame.
- * No filter:blur. No per-frame React state. Off on touch and reduced-motion.
+ * Always mounts `.sig-cursor-glow` in the DOM. Tracking/opacity are gated by capability.
  */
 export function SignatureCursorGlow() {
-  const [enabled, setEnabled] = useState(false);
+  const [active, setActive] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
-  const enabledRef = useRef(false);
+  const activeRef = useRef(false);
   const targetRef = useRef({ x: 0, y: 0 });
   const currentRef = useRef({ x: 0, y: 0 });
   const visibleRef = useRef(false);
@@ -28,26 +34,32 @@ export function SignatureCursorGlow() {
 
   useEffect(() => {
     const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const pointerMq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const hoverMq = window.matchMedia("(any-hover: hover)");
+    const pointerMq = window.matchMedia("(any-pointer: fine)");
 
-    const applyEnabled = (next: boolean) => {
-      enabledRef.current = next;
-      setEnabled(next);
+    const applyActive = (next: boolean) => {
+      activeRef.current = next;
+      setActive(next);
       if (!next) {
         visibleRef.current = false;
         const node = nodeRef.current;
-        if (node) node.style.opacity = "0";
+        if (node) {
+          node.style.opacity = "0";
+          node.dataset.active = "false";
+        }
+      } else if (nodeRef.current) {
+        nodeRef.current.dataset.active = "true";
       }
     };
 
-    applyEnabled(canUseCursorGlow());
+    applyActive(canTrackCursorGlow());
 
     const onCapabilityChange = () => {
-      applyEnabled(canUseCursorGlow());
+      applyActive(canTrackCursorGlow());
     };
 
     const onPointerMove = (event: PointerEvent) => {
-      if (!enabledRef.current) return;
+      if (!activeRef.current) return;
       if (event.pointerType !== "mouse") return;
       targetRef.current.x = event.clientX;
       targetRef.current.y = event.clientY;
@@ -64,7 +76,7 @@ export function SignatureCursorGlow() {
 
     const tick = () => {
       rafRef.current = requestAnimationFrame(tick);
-      if (!enabledRef.current || document.hidden) return;
+      if (!activeRef.current || document.hidden) return;
 
       const node = nodeRef.current;
       if (!node) return;
@@ -80,6 +92,7 @@ export function SignatureCursorGlow() {
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     document.documentElement.addEventListener("mouseleave", onPointerLeave);
     reduceMq.addEventListener("change", onCapabilityChange);
+    hoverMq.addEventListener("change", onCapabilityChange);
     pointerMq.addEventListener("change", onCapabilityChange);
     rafRef.current = requestAnimationFrame(tick);
 
@@ -88,17 +101,18 @@ export function SignatureCursorGlow() {
       window.removeEventListener("pointermove", onPointerMove);
       document.documentElement.removeEventListener("mouseleave", onPointerLeave);
       reduceMq.removeEventListener("change", onCapabilityChange);
+      hoverMq.removeEventListener("change", onCapabilityChange);
       pointerMq.removeEventListener("change", onCapabilityChange);
     };
   }, [half]);
 
-  if (!enabled) return null;
-
+  // Always mount — never return null (root cause of missing DevTools node).
   return (
     <div
       ref={nodeRef}
       aria-hidden
       className="sig-cursor-glow"
+      data-active={active ? "true" : "false"}
       style={{
         width: GLOW_SIZE,
         height: GLOW_SIZE,
