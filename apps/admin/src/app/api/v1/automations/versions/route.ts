@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const automationId = url.searchParams.get("automationId");
     if (!automationId) {
       return Response.json(
-        { error: { code: "VALIDATION_FAILED", message: "automationId required" } },
+        { error: { code: "VALIDATION_FAILED", message: "Se requiere automationId." } },
         { status: 400 },
       );
     }

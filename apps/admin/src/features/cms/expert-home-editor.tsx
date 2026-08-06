@@ -203,7 +203,7 @@ export function CmsExpertHomeEditor() {
           ) : null}
           {canWrite ? (
             <Button size="sm" variant="outline" disabled={pending} onClick={preview}>
-              Preview
+              Vista previa
             </Button>
           ) : null}
           {canPublish ? (
@@ -344,7 +344,7 @@ export function CmsExpertHomeEditor() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="ex-cta-href">Href</Label>
+            <Label htmlFor="ex-cta-href">Enlace</Label>
             <Input
               id="ex-cta-href"
               value={expert.primaryCta.href}
@@ -373,7 +373,7 @@ export function CmsExpertHomeEditor() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="ex-cta2-href">Href secundario</Label>
+            <Label htmlFor="ex-cta2-href">Enlace secundario</Label>
             <Input
               id="ex-cta2-href"
               value={expert.secondaryCta?.href ?? ""}

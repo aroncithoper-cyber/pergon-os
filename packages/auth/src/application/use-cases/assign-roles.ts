@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   UserNotFoundError,
   ValidationFailedError,
@@ -11,7 +12,7 @@ import type { AuthUnitOfWork } from "../ports";
 export async function assignRoles(uow: AuthUnitOfWork, ctx: AuthContext, raw: unknown) {
   requirePermission(ctx, "roles:assign");
   const parsed = assignRolesSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
 
   const input = parsed.data;
   if (input.organizationId !== ctx.organizationId) {

@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 /**
  * Identity/Auth bridge modules for Admin Ops.
  * Passport/QR/Users/Roles domain lives in @pergon/identity and @pergon/auth.
@@ -37,7 +38,7 @@ export const rolesModuleContract = {
 
 export function parseBridgeListQuery(raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   return parsed.data;
 }
 

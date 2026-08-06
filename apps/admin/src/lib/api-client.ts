@@ -1,5 +1,7 @@
 "use client";
 
+import { messageForHttpStatus, sanitizeOperatorMessage } from "@pergon/shared/i18n";
+
 const ACCESS_TOKEN_KEY = "pergon.admin.accessToken";
 const REFRESH_TOKEN_KEY = "pergon.admin.refreshToken";
 const CONTEXT_KEY = "pergon.admin.context";
@@ -52,6 +54,11 @@ export function clearSession() {
   window.localStorage.removeItem(CONTEXT_KEY);
 }
 
+function notifySessionExpired() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("pergon:session-expired"));
+}
+
 export async function apiFetch<T>(
   path: string,
   init: RequestInit & { json?: unknown } = {},
@@ -66,12 +73,20 @@ export async function apiFetch<T>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(path, {
-    ...init,
-    headers,
-    body: init.json !== undefined ? JSON.stringify(init.json) : init.body,
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(path, {
+      ...init,
+      headers,
+      body: init.json !== undefined ? JSON.stringify(init.json) : init.body,
+      cache: "no-store",
+    });
+  } catch {
+    throw Object.assign(new Error("Verifica tu conexi\u00f3n."), {
+      code: "NETWORK_ERROR",
+      status: 0,
+    });
+  }
 
   const payload = (await response.json().catch(() => ({}))) as {
     data?: T;
@@ -79,8 +94,24 @@ export async function apiFetch<T>(
   };
 
   if (!response.ok) {
-    throw Object.assign(new Error(payload.error?.message ?? "Request failed"), {
-      code: payload.error?.code ?? "HTTP_ERROR",
+    const code = payload.error?.code ?? "HTTP_ERROR";
+    const message = sanitizeOperatorMessage(payload.error?.message, {
+      code,
+      status: response.status,
+    });
+
+    if (
+      response.status === 401 ||
+      code === "SESSION_NOT_FOUND" ||
+      code === "UNAUTHORIZED" ||
+      code === "INVALID_CREDENTIALS"
+    ) {
+      clearSession();
+      notifySessionExpired();
+    }
+
+    throw Object.assign(new Error(message || messageForHttpStatus(response.status)), {
+      code,
       status: response.status,
     });
   }

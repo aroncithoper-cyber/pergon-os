@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   buildPassportEvent,
   createPassportPublicSnapshot,
@@ -15,7 +16,7 @@ import type { CreatePassportInput, IdentityUnitOfWork } from "../ports";
 export async function createPassport(uow: IdentityUnitOfWork, raw: CreatePassportInput) {
   const parsed = createPassportSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new ValidationFailedError(parsed.error.message);
+    throw new ValidationFailedError(formatZodError(parsed.error));
   }
 
   const input = parsed.data;

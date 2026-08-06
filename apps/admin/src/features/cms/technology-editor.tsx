@@ -329,7 +329,7 @@ export function CmsTechnologyEditor() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="tech-cta-href">Href</Label>
+            <Label htmlFor="tech-cta-href">Enlace</Label>
             <Input
               id="tech-cta-href"
               value={tech.primaryCta.href}
@@ -356,7 +356,7 @@ export function CmsTechnologyEditor() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="tech-cta2-href">Href secundario</Label>
+            <Label htmlFor="tech-cta2-href">Enlace secundario</Label>
             <Input
               id="tech-cta2-href"
               value={tech.secondaryCta?.href ?? ""}

@@ -11,8 +11,10 @@ import { Input } from "@pergon/ui/components/input";
 import { Label } from "@pergon/ui/components/label";
 
 import { useAuth } from "@/features/auth/auth-provider";
+import { useI18n } from "@/i18n";
 
 export function LoginForm() {
+  const { t } = useI18n();
   const { login } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -33,7 +35,7 @@ export function LoginForm() {
         });
         router.replace("/dashboard");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "No se pudo iniciar sesión");
+        setError(err instanceof Error ? err.message : t("auth.loginFailed"));
       }
     });
   }
@@ -42,16 +44,18 @@ export function LoginForm() {
     <Container size="sm" className="flex min-h-svh flex-col justify-center py-12">
       <div className="space-y-8">
         <div className="space-y-2">
-          <p className="text-muted-foreground text-xs uppercase tracking-[0.18em]">PerGon OS</p>
-          <h1 className="text-foreground text-2xl font-semibold tracking-tight">Admin</h1>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            Herramienta operativa. Densidad alta, sin teatro visual.
+          <p className="text-muted-foreground text-xs uppercase tracking-[0.18em]">
+            {t("brand.name")}
           </p>
+          <h1 className="text-foreground text-2xl font-semibold tracking-tight">
+            {t("auth.loginTitle")}
+          </h1>
+          <p className="text-muted-foreground text-sm leading-relaxed">{t("brand.tagline")}</p>
         </div>
 
         <form className="space-y-4" onSubmit={onSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("auth.email")}</Label>
             <Input
               id="email"
               type="email"
@@ -62,7 +66,7 @@ export function LoginForm() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
+            <Label htmlFor="password">{t("auth.password")}</Label>
             <Input
               id="password"
               type="password"
@@ -73,7 +77,7 @@ export function LoginForm() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="org">Slug organización (opcional)</Label>
+            <Label htmlFor="org">{t("auth.orgSlugOptional")}</Label>
             <Input
               id="org"
               value={organizationSlug}
@@ -83,19 +87,19 @@ export function LoginForm() {
           </div>
           {error ? (
             <Alert variant="destructive">
-              <AlertTitle>Acceso denegado</AlertTitle>
+              <AlertTitle>{t("auth.accessDenied")}</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           ) : null}
           <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? "Entrando…" : "Entrar"}
+            {pending ? t("states.processing") : t("auth.submit")}
           </Button>
         </form>
 
         <p className="text-muted-foreground text-xs">
           ¿Primera vez?{" "}
           <Link href="/setup" className="text-foreground underline-offset-4 hover:underline">
-            Crear organización
+            {t("auth.createOrg")}
           </Link>
         </p>
       </div>

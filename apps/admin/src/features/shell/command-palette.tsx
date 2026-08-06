@@ -14,6 +14,7 @@ import {
 } from "@pergon/ui/components/command";
 
 import { useAuth } from "@/features/auth/auth-provider";
+import { useI18n } from "@/i18n";
 import { COMMAND_ITEMS } from "./nav";
 
 export function AdminCommandPalette({
@@ -23,6 +24,7 @@ export function AdminCommandPalette({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useI18n();
   const router = useRouter();
   const { hasPermission, logout } = useAuth();
 
@@ -43,9 +45,9 @@ export function AdminCommandPalette({
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
-      <CommandInput placeholder="Ir a módulo, acción o configuración…" />
+      <CommandInput placeholder={t("nav.commandPlaceholder")} />
       <CommandList>
-        <CommandEmpty>Sin resultados</CommandEmpty>
+        <CommandEmpty>{t("nav.noResults")}</CommandEmpty>
         {groups.map((group) => (
           <CommandGroup key={group} heading={group}>
             {items

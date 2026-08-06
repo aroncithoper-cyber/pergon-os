@@ -10,43 +10,52 @@ export class IdentityError extends Error {
 
 export class InvalidTransitionError extends IdentityError {
   constructor(from: string, to: string) {
-    super("INVALID_TRANSITION", `Cannot transition passport from ${from} to ${to}`);
+    super("INVALID_TRANSITION", `No se puede cambiar el estado del pasaporte de ${from} a ${to}.`);
     this.name = "InvalidTransitionError";
   }
 }
 
 export class PassportNotFoundError extends IdentityError {
   constructor(id: string) {
-    super("PASSPORT_NOT_FOUND", `Passport not found: ${id}`);
+    super("PASSPORT_NOT_FOUND", "No encontramos ese pasaporte.");
     this.name = "PassportNotFoundError";
+    void id;
   }
 }
 
 export class QrNotFoundError extends IdentityError {
   constructor(code: string) {
-    super("QR_NOT_FOUND", `QR not found: ${code}`);
+    super("QR_NOT_FOUND", "No encontramos ese código QR.");
     this.name = "QrNotFoundError";
+    void code;
   }
 }
 
 export class QrNotActiveError extends IdentityError {
   constructor(code: string, status: string) {
-    super("QR_NOT_ACTIVE", `QR ${code} is not active (status=${status})`);
+    super("QR_NOT_ACTIVE", `El código QR no está activo (estado: ${status}).`);
     this.name = "QrNotActiveError";
+    void code;
   }
 }
 
 export class PassportDeletedError extends IdentityError {
   constructor(id: string) {
-    super("PASSPORT_DELETED", `Passport is soft-deleted: ${id}`);
+    super("PASSPORT_DELETED", "Este pasaporte fue eliminado.");
     this.name = "PassportDeletedError";
+    void id;
   }
 }
 
 export class ConcurrencyError extends IdentityError {
   constructor(entity: string, id: string) {
-    super("CONCURRENCY_CONFLICT", `Concurrency conflict on ${entity}:${id}`);
+    super(
+      "CONCURRENCY_CONFLICT",
+      "Otro cambio se aplicó al mismo tiempo. Actualiza e intenta de nuevo.",
+    );
     this.name = "ConcurrencyError";
+    void entity;
+    void id;
   }
 }
 

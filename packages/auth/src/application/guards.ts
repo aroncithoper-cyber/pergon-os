@@ -107,5 +107,9 @@ export function mapAuthHttpError(error: unknown): {
               : 400;
     return { status, code: e.code, message: e.message };
   }
-  return { status: 500, code: "INTERNAL", message: "Internal error" };
+  return {
+    status: 500,
+    code: "INTERNAL",
+    message: "Ocurrió un problema interno. Intenta nuevamente.",
+  };
 }

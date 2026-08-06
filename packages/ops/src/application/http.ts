@@ -39,5 +39,9 @@ export function mapOpsHttpError(error: unknown): {
     const status = AUTH_STATUS_BY_CODE[e.code] ?? 400;
     return { status, code: e.code, message: e.message };
   }
-  return { status: 500, code: "INTERNAL", message: "Internal error" };
+  return {
+    status: 500,
+    code: "INTERNAL",
+    message: "Ocurrió un problema interno. Intenta nuevamente.",
+  };
 }

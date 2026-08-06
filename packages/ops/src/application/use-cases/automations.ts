@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   ConflictError,
   NotFoundError,
@@ -22,7 +23,7 @@ import type { OpsUnitOfWork } from "../ports";
 
 export async function listAutomations(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.automations.listByOrg(parsed.data.organizationId);
   return runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "key",
@@ -35,7 +36,7 @@ export async function listAutomations(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function upsertAutomation(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = upsertAutomationSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const helpers = createOpsHelpers(uow);
   const engine = automationEngineFrom(uow);
@@ -128,7 +129,7 @@ export async function upsertAutomation(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function triggerAutomation(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = triggerAutomationSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const engine = automationEngineFrom(uow);
 
@@ -140,7 +141,7 @@ export async function triggerAutomation(uow: OpsUnitOfWork, raw: unknown) {
     throw new NotFoundError("automation", input.automationId);
   }
   if (automation.status !== "enabled" && automation.trigger !== "manual") {
-    throw new ConflictError("Automation is not enabled");
+    throw new ConflictError("La automatización no está activa.");
   }
 
   const { run, idempotent } = await engine.enqueueRun({
@@ -186,7 +187,7 @@ export async function triggerAutomation(uow: OpsUnitOfWork, raw: unknown) {
 /** Decoupled bus entry — any module can publish a typed system event. */
 export async function dispatchAutomationEvent(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = dispatchAutomationEventSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const engine = automationEngineFrom(uow);
   const result = await engine.dispatchEvent({
@@ -219,7 +220,7 @@ export async function dispatchAutomationEvent(uow: OpsUnitOfWork, raw: unknown) 
 /** Background worker drain — retries, delays, pending queue. */
 export async function drainAutomations(uow: OpsUnitOfWork, raw: unknown = {}) {
   const parsed = drainAutomationsSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const engine = automationEngineFrom(uow);
 
@@ -235,7 +236,7 @@ export async function drainAutomations(uow: OpsUnitOfWork, raw: unknown = {}) {
 
 export async function registerAutomationWebhook(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = registerAutomationWebhookSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const automation = await uow.automations.findById(input.automationId);
   if (!automation || automation.organizationId !== input.organizationId) {
@@ -263,7 +264,7 @@ export async function registerAutomationWebhook(uow: OpsUnitOfWork, raw: unknown
 
 export async function ingestAutomationWebhook(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = ingestAutomationWebhookSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const engine = automationEngineFrom(uow);
   const result = await engine.ingestWebhook(input.pathKey, input.payload, input.secret);

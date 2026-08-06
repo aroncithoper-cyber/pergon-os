@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   ConflictError,
   NotFoundError,
@@ -13,7 +14,7 @@ import type { OpsUnitOfWork } from "../ports";
 
 export async function listCustomers(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.customers.listByOrg(parsed.data.organizationId);
   const page = runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "code",
@@ -27,7 +28,7 @@ export async function listCustomers(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function upsertCustomer(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = upsertCustomerSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const helpers = createOpsHelpers(uow);
   const now = nowIso();
@@ -108,7 +109,7 @@ export async function upsertCustomer(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function listDistributors(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.distributors.listByOrg(parsed.data.organizationId);
   const page = runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "code",
@@ -122,7 +123,7 @@ export async function listDistributors(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function upsertDistributor(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = upsertDistributorSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const helpers = createOpsHelpers(uow);
   const now = nowIso();

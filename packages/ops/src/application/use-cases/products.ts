@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   ConflictError,
   NotFoundError,
@@ -13,7 +14,7 @@ import type { OpsUnitOfWork } from "../ports";
 
 export async function listProducts(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.products.listByOrg(parsed.data.organizationId);
   const page = runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "sku",
@@ -28,7 +29,7 @@ export async function listProducts(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function upsertProduct(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = upsertProductSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const helpers = createOpsHelpers(uow);
   const now = nowIso();

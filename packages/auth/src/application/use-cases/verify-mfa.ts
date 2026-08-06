@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   SessionNotFoundError,
   ValidationFailedError,
@@ -24,7 +25,7 @@ export function verifyTotpCode(_secretEncrypted: string | undefined, code: strin
 
 export async function verifyMfaChallenge(uow: AuthUnitOfWork, raw: unknown): Promise<LoginResult> {
   const parsed = verifyMfaSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
 
   const input = parsed.data;
   const challenge = await uow.mfaChallenges.findById(input.challengeId);
@@ -43,7 +44,7 @@ export async function verifyMfaChallenge(uow: AuthUnitOfWork, raw: unknown): Pro
     throw new SessionNotFoundError();
   }
   if (!verifyTotpCode(user.mfaSecretEncrypted, input.code)) {
-    throw new ValidationFailedError("Invalid MFA code");
+    throw new ValidationFailedError("El código MFA no es válido.");
   }
 
   const now = new Date().toISOString();

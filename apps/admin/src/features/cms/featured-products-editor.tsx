@@ -267,7 +267,7 @@ export function CmsFeaturedProductsEditor() {
           ) : null}
           {canWrite ? (
             <Button size="sm" variant="outline" disabled={pending} onClick={preview}>
-              Preview
+              Vista previa
             </Button>
           ) : null}
           {canPublish ? (

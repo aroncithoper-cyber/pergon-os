@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   ValidationFailedError,
   addDurationMs,
@@ -11,7 +12,7 @@ import type { AuthUnitOfWork } from "../ports";
 
 export async function requestPasswordReset(uow: AuthUnitOfWork, raw: unknown) {
   const parsed = forgotPasswordSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
 
   const user = await uow.users.findByEmail(parsed.data.email);
   // Always succeed to avoid account enumeration.
@@ -45,15 +46,15 @@ export async function requestPasswordReset(uow: AuthUnitOfWork, raw: unknown) {
 
 export async function resetPassword(uow: AuthUnitOfWork, raw: unknown) {
   const parsed = resetPasswordSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
 
   const reset = await uow.passwordResets.findByTokenHash(hashToken(parsed.data.token));
   if (!reset || reset.usedAt || Date.parse(reset.expiresAt) <= Date.now()) {
-    throw new ValidationFailedError("Invalid or expired reset token");
+    throw new ValidationFailedError("El token de restablecimiento no es válido o expiró.");
   }
 
   const user = await uow.users.findById(reset.userId);
-  if (!user) throw new ValidationFailedError("Invalid or expired reset token");
+  if (!user) throw new ValidationFailedError("El token de restablecimiento no es válido o expiró.");
 
   const now = new Date().toISOString();
   user.passwordHash = hashPassword(parsed.data.password);

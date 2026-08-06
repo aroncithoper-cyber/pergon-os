@@ -45,10 +45,12 @@ export function SettingsView() {
     <div className="mx-auto max-w-3xl space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Configuración</h1>
-        <p className="text-muted-foreground text-sm">GET/PUT `/api/v1/settings`.</p>
+        <p className="text-muted-foreground text-sm">
+          Administra la configuración de la organización.
+        </p>
       </header>
       <div className="space-y-2">
-        <Label htmlFor="settings-json">Payload JSON</Label>
+        <Label htmlFor="settings-json">JSON de configuración</Label>
         <Textarea
           id="settings-json"
           className="min-h-64 font-mono text-xs"
@@ -97,16 +99,14 @@ export function ProfileView() {
     <div className="mx-auto max-w-2xl space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Perfil</h1>
-        <p className="text-muted-foreground text-sm">
-          Datos de sesión desde `/api/v1/auth/session`.
-        </p>
+        <p className="text-muted-foreground text-sm">Información de tu sesión activa.</p>
       </header>
       <div className="space-y-2">
-        <Label>User ID</Label>
+        <Label>ID de usuario</Label>
         <Input value={context?.userId ?? ""} readOnly />
       </div>
       <div className="space-y-2">
-        <Label>Organization ID</Label>
+        <Label>ID de organización</Label>
         <Input value={context?.organizationId ?? ""} readOnly />
       </div>
       <div className="space-y-2">

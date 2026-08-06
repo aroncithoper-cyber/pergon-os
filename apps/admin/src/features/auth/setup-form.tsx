@@ -10,10 +10,12 @@ import { Container } from "@pergon/ui/components/container";
 import { Input } from "@pergon/ui/components/input";
 import { Label } from "@pergon/ui/components/label";
 
-import { apiFetch } from "@/lib/api-client";
 import { useAuth } from "@/features/auth/auth-provider";
+import { useI18n } from "@/i18n";
+import { apiFetch } from "@/lib/api-client";
 
 export function SetupForm() {
+  const { t } = useI18n();
   const router = useRouter();
   const { login } = useAuth();
   const [form, setForm] = useState({
@@ -47,31 +49,33 @@ export function SetupForm() {
         });
         router.replace("/dashboard");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "No se pudo crear la organización");
+        setError(err instanceof Error ? err.message : t("errors.saveFailed"));
       }
     });
   }
+
+  const fields = [
+    ["name", t("auth.organizationName")],
+    ["slug", "Slug"],
+    ["ownerFullName", t("auth.ownerName")],
+    ["ownerEmail", t("auth.ownerEmail")],
+    ["ownerPassword", t("auth.password")],
+    ["setupSecret", t("auth.setupSecret")],
+  ] as const;
 
   return (
     <Container size="sm" className="flex min-h-svh flex-col justify-center py-12">
       <div className="space-y-8">
         <div className="space-y-2">
-          <h1 className="text-foreground text-3xl font-semibold tracking-tight">Setup</h1>
+          <h1 className="text-foreground text-3xl font-semibold tracking-tight">
+            {t("auth.setupTitle")}
+          </h1>
           <p className="text-muted-foreground text-sm">
-            Bootstrap vía `POST /api/v1/organizations` (API Auth existente).
+            Crea la primera organización para operar PerGon OS.
           </p>
         </div>
         <form className="space-y-4" onSubmit={onSubmit}>
-          {(
-            [
-              ["name", "Nombre organización"],
-              ["slug", "Slug"],
-              ["ownerFullName", "Nombre del owner"],
-              ["ownerEmail", "Email owner"],
-              ["ownerPassword", "Contraseña owner"],
-              ["setupSecret", "Setup secret"],
-            ] as const
-          ).map(([key, label]) => (
+          {fields.map(([key, label]) => (
             <div key={key} className="space-y-2">
               <Label htmlFor={key}>{label}</Label>
               <Input
@@ -92,17 +96,17 @@ export function SetupForm() {
           ))}
           {error ? (
             <Alert variant="destructive">
-              <AlertTitle>Error</AlertTitle>
+              <AlertTitle>{t("errors.generic")}</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           ) : null}
           <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? "Creando…" : "Crear y entrar"}
+            {pending ? t("states.processing") : t("auth.createOrg")}
           </Button>
         </form>
         <p className="text-muted-foreground text-xs">
           <Link href="/login" className="underline-offset-4 hover:underline">
-            Volver al login
+            Volver al inicio de sesión
           </Link>
         </p>
       </div>

@@ -27,7 +27,15 @@ export function toCmsErrorResponse(error: unknown) {
     return Response.json({ error: { code: error.code, message: error.message } }, { status });
   }
   logger.exception("cms.api_unhandled", error);
-  return Response.json({ error: { code: "INTERNAL", message: "Internal error" } }, { status: 500 });
+  return Response.json(
+    {
+      error: {
+        code: "INTERNAL",
+        message: "Ocurrió un problema interno. Intenta nuevamente.",
+      },
+    },
+    { status: 500 },
+  );
 }
 
 /** Notify Web to drop Home cache after publish/rollback/schedule drain. */

@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import type { CatalogAssetRecord, PublishedProductExperience } from "../../domain/models";
 import type {
   CatalogUnitOfWork,
@@ -25,7 +26,7 @@ export async function getPublishedProductBySlug(
 ): Promise<GetPublishedProductBySlugResult> {
   const parsed = getPublishedProductBySlugSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new CatalogValidationError(parsed.error.message);
+    throw new CatalogValidationError(formatZodError(parsed.error));
   }
 
   const product = await uow.products.findPublishedBySlug(parsed.data.slug);

@@ -30,22 +30,25 @@ export class ValidationFailedError extends OpsError {
 
 export class NotFoundError extends OpsError {
   constructor(entity: string, id?: string) {
-    super("NOT_FOUND", id ? `${entity} not found: ${id}` : `${entity} not found`);
+    super("NOT_FOUND", "No encontramos la información solicitada.");
     this.name = "NotFoundError";
+    void entity;
+    void id;
   }
 }
 
 export class ConflictError extends OpsError {
   constructor(message: string) {
-    super("CONFLICT", message);
+    super("CONFLICT", message || "Ya existe un registro con esos datos.");
     this.name = "ConflictError";
   }
 }
 
 export class ForbiddenOpsError extends OpsError {
   constructor(permission?: string) {
-    super("FORBIDDEN", permission ? `Missing permission: ${permission}` : "Forbidden");
+    super("FORBIDDEN", "No tienes permisos para realizar esta acción.");
     this.name = "ForbiddenOpsError";
+    void permission;
   }
 }
 

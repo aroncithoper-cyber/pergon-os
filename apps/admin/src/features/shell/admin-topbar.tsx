@@ -19,6 +19,7 @@ import { SidebarTrigger } from "@pergon/ui/components/sidebar";
 
 import { apiFetch } from "@/lib/api-client";
 import { useAuth } from "@/features/auth/auth-provider";
+import { useI18n } from "@/i18n";
 
 type NotificationItem = {
   id: string;
@@ -30,6 +31,7 @@ type NotificationItem = {
 };
 
 export function AdminTopbar({ onOpenCommand }: { onOpenCommand: () => void }) {
+  const { t } = useI18n();
   const { logout, context, hasPermission } = useAuth();
   const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -63,7 +65,7 @@ export function AdminTopbar({ onOpenCommand }: { onOpenCommand: () => void }) {
           onClick={onOpenCommand}
         >
           <Search className="size-3.5" aria-hidden="true" />
-          Buscar…
+          {t("common.searchPlaceholder")}
           <kbd className="bg-muted ml-auto rounded px-1.5 py-0.5 font-mono text-[10px]">Ctrl K</kbd>
         </Button>
       }
@@ -71,12 +73,17 @@ export function AdminTopbar({ onOpenCommand }: { onOpenCommand: () => void }) {
         <div className="flex items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button type="button" size="icon" variant="ghost" aria-label="Notificaciones">
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                aria-label={t("nav.notificationsAria")}
+              >
                 <Bell className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("nav.notifications")}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {notifications.length === 0 ? (
                 <div className="text-muted-foreground px-2 py-6 text-center text-xs">
@@ -96,7 +103,7 @@ export function AdminTopbar({ onOpenCommand }: { onOpenCommand: () => void }) {
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/notifications">Ver todas</Link>
+                <Link href="/notifications">{t("nav.viewAll")}</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -104,7 +111,7 @@ export function AdminTopbar({ onOpenCommand }: { onOpenCommand: () => void }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button type="button" size="sm" variant="ghost">
-                Perfil
+                {t("nav.profile")}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -116,10 +123,10 @@ export function AdminTopbar({ onOpenCommand }: { onOpenCommand: () => void }) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/profile">Perfil</Link>
+                <Link href="/profile">{t("nav.profile")}</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/settings">Configuración</Link>
+                <Link href="/settings">{t("nav.settings")}</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -127,7 +134,7 @@ export function AdminTopbar({ onOpenCommand }: { onOpenCommand: () => void }) {
                   void logout().then(() => router.replace("/login"));
                 }}
               >
-                Cerrar sesión
+                {t("auth.logout")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   InvalidCredentialsError,
   ValidationFailedError,
@@ -18,7 +19,7 @@ const REFRESH_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 export async function login(uow: AuthUnitOfWork, raw: unknown): Promise<LoginResult> {
   const parsed = loginSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
 
   const input = parsed.data;
   const user = await uow.users.findByEmail(input.email);
@@ -41,7 +42,7 @@ export async function login(uow: AuthUnitOfWork, raw: unknown): Promise<LoginRes
     if (memberships.length === 1) organizationId = memberships[0]!.organizationId;
   }
   if (!organizationId) {
-    throw new ValidationFailedError("organizationId or organizationSlug is required");
+    throw new ValidationFailedError("Se requiere organizationId o el slug de la organización.");
   }
 
   const membership = await uow.memberships.findByUserAndOrg(user.id, organizationId);

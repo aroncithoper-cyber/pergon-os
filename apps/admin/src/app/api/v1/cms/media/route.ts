@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     const ctx = await requireApiPermission(request, "cms:read");
     if (!canReadMedia(ctx.permissions)) {
       return Response.json(
-        { error: { code: "FORBIDDEN", message: "cms.media:read required" } },
+        { error: { code: "FORBIDDEN", message: "Se requiere el permiso cms.media:read." } },
         { status: 403 },
       );
     }
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     const ctx = await requireApiPermission(request, "cms:write");
     if (!canWriteMedia(ctx.permissions)) {
       return Response.json(
-        { error: { code: "FORBIDDEN", message: "cms.media:write required" } },
+        { error: { code: "FORBIDDEN", message: "Se requiere el permiso cms.media:write." } },
         { status: 403 },
       );
     }
@@ -80,7 +80,7 @@ export async function PUT(request: Request) {
     const ctx = await requireApiPermission(request, "cms:write");
     if (!canWriteMedia(ctx.permissions)) {
       return Response.json(
-        { error: { code: "FORBIDDEN", message: "cms.media:write required" } },
+        { error: { code: "FORBIDDEN", message: "Se requiere el permiso cms.media:write." } },
         { status: 403 },
       );
     }
@@ -89,7 +89,7 @@ export async function PUT(request: Request) {
     const file = form.get("file");
     if (!(file instanceof File)) {
       return Response.json(
-        { error: { code: "VALIDATION_FAILED", message: "file required" } },
+        { error: { code: "VALIDATION_FAILED", message: "Debes seleccionar un archivo." } },
         { status: 400 },
       );
     }
@@ -100,7 +100,7 @@ export async function PUT(request: Request) {
         {
           error: {
             code: "VALIDATION_FAILED",
-            message: "Video upload not supported; register a URL instead",
+            message: "La carga de video no está soportada; registra una URL.",
           },
         },
         { status: 400 },

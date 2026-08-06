@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   buildPassportEvent,
   createPassportPublicSnapshot,
@@ -12,7 +13,7 @@ import type { IdentityUnitOfWork, TransitionPassportInput } from "../ports";
 export async function transitionPassport(uow: IdentityUnitOfWork, raw: TransitionPassportInput) {
   const parsed = transitionPassportSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new ValidationFailedError(parsed.error.message);
+    throw new ValidationFailedError(formatZodError(parsed.error));
   }
 
   const input = parsed.data;

@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   ConflictError,
   NotFoundError,
@@ -24,7 +25,7 @@ import type { OpsUnitOfWork } from "../ports";
 
 export async function createWarehouse(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = createWarehouseSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const now = nowIso();
   const warehouse = {
@@ -54,7 +55,7 @@ export async function createWarehouse(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function listInventory(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.inventory.listByOrg(parsed.data.organizationId);
   const page = runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "warehouseId",
@@ -91,14 +92,14 @@ async function applyDelta(
         reserved: 0,
         updatedAt: now,
       };
-  if (level.quantity < 0) throw new ConflictError("Insufficient inventory");
+  if (level.quantity < 0) throw new ConflictError("Inventario insuficiente.");
   await uow.inventory.save(level);
   return level;
 }
 
 export async function adjustInventory(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = adjustInventorySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const existingMove = await uow.stockMoves.findByIdempotencyKey(input.idempotencyKey);
   if (existingMove) return { move: existingMove, idempotent: true as const };
@@ -153,7 +154,7 @@ export async function adjustInventory(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function transferInventory(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = transferInventorySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const existingMove = await uow.stockMoves.findByIdempotencyKey(input.idempotencyKey);
   if (existingMove) return { move: existingMove, idempotent: true as const };
@@ -207,7 +208,7 @@ export async function transferInventory(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function createProductionOrder(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = createProductionOrderSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const clash = await uow.productionOrders.findByCode(input.organizationId, input.code);
   if (clash) throw new ConflictError(`Production order code exists: ${input.code}`);
@@ -254,7 +255,7 @@ export async function createProductionOrder(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function completeProductionOrder(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = completeProductionOrderSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const order = await uow.productionOrders.findById(input.productionOrderId);
   if (!order || order.organizationId !== input.organizationId) {
@@ -343,7 +344,7 @@ export async function completeProductionOrder(uow: OpsUnitOfWork, raw: unknown) 
 
 export async function listProductionOrders(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.productionOrders.listByOrg(parsed.data.organizationId);
   return runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "code",
@@ -354,7 +355,7 @@ export async function listProductionOrders(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function listBatches(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.batches.listByOrg(parsed.data.organizationId);
   return runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "code",

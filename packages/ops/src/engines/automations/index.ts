@@ -229,7 +229,7 @@ export function createAutomationEngine(
           log.output = result.output ?? {};
         } else {
           log.status = "failed";
-          log.error = result.error ?? "Action failed";
+          log.error = result.error ?? "La acción falló.";
           run.stepLogs = logs;
           const max = run.maxAttempts ?? DEFAULT_RETRY.maxAttempts;
           const backoff = automation.retryPolicy?.backoffMs ?? DEFAULT_RETRY.backoffMs;
@@ -252,7 +252,7 @@ export function createAutomationEngine(
       } catch (error) {
         log.status = "failed";
         log.finishedAt = nowIso();
-        log.error = error instanceof Error ? error.message : "Action threw";
+        log.error = error instanceof Error ? error.message : "La acción generó un error.";
         run.status = "failed";
         run.error = log.error;
         run.finishedAt = nowIso();
@@ -360,19 +360,19 @@ export function createAutomationEngine(
     async ingestWebhook(pathKey: string, payload: Record<string, unknown>, secret?: string) {
       const webhook = await sink.findWebhookByPathKey(pathKey);
       if (!webhook || webhook.status !== "active") {
-        return { ok: false as const, error: "Webhook not found" };
+        return { ok: false as const, error: "No encontramos ese Webhook." };
       }
       if (!secret) {
-        return { ok: false as const, error: "Webhook secret required" };
+        return { ok: false as const, error: "Se requiere el secreto del Webhook." };
       }
       const expected = Buffer.from(webhook.secret);
       const provided = Buffer.from(secret);
       if (expected.length !== provided.length || !timingSafeEqual(expected, provided)) {
-        return { ok: false as const, error: "Invalid webhook secret" };
+        return { ok: false as const, error: "El secreto del Webhook no es válido." };
       }
       const automation = await sink.findAutomation(webhook.automationId);
       if (!automation || automation.status !== "enabled") {
-        return { ok: false as const, error: "Automation not enabled" };
+        return { ok: false as const, error: "La automatización no está activa." };
       }
       if (!evaluateConditions(automation.conditions, payload)) {
         return { ok: true as const, skipped: true as const, reason: "conditions_not_met" as const };
@@ -420,7 +420,7 @@ export function createAutomationEngine(
         const automation = await sink.findAutomation(job.automationId);
         if (!automation) {
           job.status = "failed";
-          job.error = "Automation missing";
+          job.error = "No encontramos esa automatización.";
           job.finishedAt = nowIso();
           await sink.saveRun(job);
           failed += 1;

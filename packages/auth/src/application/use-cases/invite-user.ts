@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   ValidationFailedError,
   addDurationMs,
@@ -13,7 +14,7 @@ import type { AuthUnitOfWork } from "../ports";
 export async function inviteUser(uow: AuthUnitOfWork, ctx: AuthContext, raw: unknown) {
   requirePermission(ctx, "users:invite");
   const parsed = inviteUserSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
 
   const input = parsed.data;
   if (input.organizationId !== ctx.organizationId) {

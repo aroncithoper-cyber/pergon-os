@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { createHash, randomUUID } from "node:crypto";
 
 import { z } from "zod";
@@ -84,9 +85,7 @@ function verifySignedPreviewToken(token: string): SignedPreviewBody | null {
 function parseOrThrow<T>(schema: z.ZodType<T>, input: unknown): T {
   const result = schema.safeParse(input);
   if (!result.success) {
-    throw new CmsValidationError(
-      result.error.issues.map((i) => i.message).join("; ") || "Invalid input",
-    );
+    throw new CmsValidationError(formatZodError(result.error));
   }
   return result.data;
 }
@@ -164,7 +163,7 @@ export async function saveHomeDraft(
     data.expectedWorkingVersion !== doc.workingVersion
   ) {
     throw new CmsConflictError(
-      `Working version mismatch: expected ${data.expectedWorkingVersion}, got ${doc.workingVersion}`,
+      `Conflicto de versión de trabajo: se esperaba ${data.expectedWorkingVersion}, se recibió ${doc.workingVersion}`,
     );
   }
 
@@ -227,7 +226,9 @@ export async function scheduleHome(
   const unpublishAt = data.unpublishAt ?? undefined;
 
   if (publishAt && unpublishAt && new Date(unpublishAt) <= new Date(publishAt)) {
-    throw new CmsValidationError("unpublishAt must be after publishAt");
+    throw new CmsValidationError(
+      "La fecha de despublicación debe ser posterior a la de publicación.",
+    );
   }
 
   const now = Date.now();
@@ -291,7 +292,7 @@ export async function createPreviewToken(
   if (data.versionId) {
     const version = await uow.homeVersions.findById(data.versionId);
     if (!version || version.documentId !== doc.id) {
-      throw new CmsNotFoundError("Version not found");
+      throw new CmsNotFoundError("No encontramos esa versión.");
     }
     payload = version.payload;
   }
@@ -329,7 +330,7 @@ export async function getPreviewHome(
   uow: CmsUnitOfWork,
   token: string,
 ): Promise<{ payload: CmsHomePayload; documentId: string; expiresAt: string }> {
-  if (!token?.trim()) throw new CmsPreviewError("Missing preview token");
+  if (!token?.trim()) throw new CmsPreviewError("Falta el token de vista previa.");
   const trimmed = token.trim();
 
   const signed = verifySignedPreviewToken(trimmed);
@@ -342,17 +343,18 @@ export async function getPreviewHome(
   }
 
   const record = await uow.homePreviewTokens.findByTokenHash(hashToken(trimmed));
-  if (!record || record.revokedAt) throw new CmsPreviewError("Invalid preview token");
+  if (!record || record.revokedAt)
+    throw new CmsPreviewError("El token de vista previa no es válido.");
   if (new Date(record.expiresAt).getTime() < Date.now()) {
-    throw new CmsPreviewError("Preview token expired");
+    throw new CmsPreviewError("El token de vista previa expiró.");
   }
 
   const exact = await uow.homeDocuments.findById(record.documentId);
-  if (!exact) throw new CmsPreviewError("Preview document missing");
+  if (!exact) throw new CmsPreviewError("Falta el documento de vista previa.");
 
   if (record.source === "version" && record.versionId) {
     const version = await uow.homeVersions.findById(record.versionId);
-    if (!version) throw new CmsPreviewError("Preview version missing");
+    if (!version) throw new CmsPreviewError("Falta la versión de vista previa.");
     return {
       payload: normalizeHomePayload(version.payload),
       documentId: exact.id,
@@ -405,7 +407,7 @@ export async function rollbackHome(
   const doc = await ensureHomeDocument(uow, data.organizationId, data.locale, data.actorId);
   const target = await uow.homeVersions.findById(data.versionId);
   if (!target || target.documentId !== doc.id) {
-    throw new CmsNotFoundError("Version not found");
+    throw new CmsNotFoundError("No encontramos esa versión.");
   }
 
   const ts = nowIso();

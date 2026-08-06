@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   PERMISSION_KEYS,
   ROLE_PERMISSION_MAP,
@@ -50,11 +51,11 @@ export async function createOrganizationWithOwner(uow: AuthUnitOfWork, raw: unkn
   await bootstrapSystemCatalog(uow);
 
   const parsed = createOrganizationSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
 
   const existingSlug = await uow.organizations.findBySlug(input.slug);
-  if (existingSlug) throw new ValidationFailedError("Organization slug already exists");
+  if (existingSlug) throw new ValidationFailedError("Ya existe una organización con ese slug.");
 
   const now = new Date().toISOString();
   const organizationId = newId();

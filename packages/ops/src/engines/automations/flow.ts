@@ -114,6 +114,6 @@ export function createEmptyFlowScaffold(triggerKind = "event"): FlowBuilderScaff
       ],
       edges: [],
     },
-    warnings: ["Scaffold only — connect condition/action nodes in a future Flow Builder UI."],
+    warnings: ["Solo estructura base: conecta nodos de condición/acción en el Flow Builder."],
   };
 }

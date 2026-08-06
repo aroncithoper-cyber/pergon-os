@@ -3,7 +3,7 @@ import {
   authenticateRequest,
   authorizeRequest,
   createAuthServices,
-  createSharedMemoryUnitOfWork,
+  createDefaultAuthUnitOfWork,
   mapAuthHttpError,
   type AuthContext,
   type PermissionKey,
@@ -11,12 +11,11 @@ import {
 import { logger } from "@pergon/shared/logger";
 
 export function getAuthServices() {
-  const uow = createSharedMemoryUnitOfWork();
-  return createAuthServices(uow);
+  return createAuthServices(createDefaultAuthUnitOfWork());
 }
 
 export function getAuthUnitOfWork() {
-  return createSharedMemoryUnitOfWork();
+  return createDefaultAuthUnitOfWork();
 }
 
 export async function requireAuthContext(request: Request): Promise<AuthContext> {
@@ -42,5 +41,13 @@ export function toAuthErrorResponse(error: unknown) {
   }
 
   logger.exception("auth.api_unhandled", error);
-  return Response.json({ error: { code: "INTERNAL", message: "Internal error" } }, { status: 500 });
+  return Response.json(
+    {
+      error: {
+        code: "INTERNAL",
+        message: "Ocurri\u00f3 un problema interno. Intenta nuevamente.",
+      },
+    },
+    { status: 500 },
+  );
 }

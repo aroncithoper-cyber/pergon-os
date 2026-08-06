@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { SessionNotFoundError, ValidationFailedError, hashToken, newId } from "../../domain";
 import { logoutSchema } from "../../validation/schemas";
 import { decodeAccessToken } from "../guards";
@@ -5,7 +6,7 @@ import type { AuthUnitOfWork } from "../ports";
 
 export async function logout(uow: AuthUnitOfWork, raw: unknown): Promise<{ revoked: number }> {
   const parsed = logoutSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
 
   const input = parsed.data;
   const now = new Date().toISOString();

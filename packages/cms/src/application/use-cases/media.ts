@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { randomUUID } from "node:crypto";
 
 import { z } from "zod";
@@ -19,9 +20,7 @@ function nowIso() {
 function parseOrThrow<T>(schema: z.ZodType<T>, input: unknown): T {
   const result = schema.safeParse(input);
   if (!result.success) {
-    throw new CmsValidationError(
-      result.error.issues.map((i) => i.message).join("; ") || "Invalid input",
-    );
+    throw new CmsValidationError(formatZodError(result.error));
   }
   return result.data;
 }
@@ -29,18 +28,18 @@ function parseOrThrow<T>(schema: z.ZodType<T>, input: unknown): T {
 function assertVideoRules(input: { kind: string; videoProvider?: string | null; url: string }) {
   if (input.kind !== "video") return;
   if (!input.videoProvider) {
-    throw new CmsValidationError("videoProvider is required for video assets");
+    throw new CmsValidationError("El proveedor de video es obligatorio para activos de video.");
   }
   // Videos are registered by URL only (no binary upload in Media V1).
   if (!input.url.trim()) {
-    throw new CmsValidationError("Video URL is required");
+    throw new CmsValidationError("La URL de video es obligatoria.");
   }
 }
 
 function assertLogoRules(input: { kind: string; logoVariant?: string | null }) {
   if (input.kind !== "logo") return;
   if (!input.logoVariant) {
-    throw new CmsValidationError("logoVariant is required for logo assets");
+    throw new CmsValidationError("La variante de logo es obligatoria para activos de logo.");
   }
 }
 
@@ -69,7 +68,7 @@ export async function getMediaAsset(uow: CmsUnitOfWork, input: unknown) {
   const data = parseOrThrow(mediaIdSchema, input);
   const row = await uow.mediaAssets.findById(data.id);
   if (!row || row.organizationId !== data.organizationId || row.deletedAt) {
-    throw new CmsNotFoundError("Media asset not found");
+    throw new CmsNotFoundError("No encontramos ese archivo de medios.");
   }
   return row;
 }
@@ -84,7 +83,7 @@ export async function createMediaAsset(
 
   if (data.kind === "video" && data.source === "upload") {
     throw new CmsValidationError(
-      "Video upload is not supported; register a YouTube, Vimeo, or file URL",
+      "La carga de video no está soportada; registra una URL de YouTube, Vimeo o archivo.",
     );
   }
 
@@ -126,7 +125,7 @@ export async function updateMediaAsset(
   const data = parseOrThrow(updateMediaSchema, input);
   const existing = await uow.mediaAssets.findById(data.id);
   if (!existing || existing.organizationId !== data.organizationId || existing.deletedAt) {
-    throw new CmsNotFoundError("Media asset not found");
+    throw new CmsNotFoundError("No encontramos ese archivo de medios.");
   }
 
   const nextUrl = data.url ?? existing.url;
@@ -171,7 +170,7 @@ export async function deleteMediaAsset(uow: CmsUnitOfWork, input: unknown) {
   const data = parseOrThrow(mediaIdSchema, input);
   const existing = await uow.mediaAssets.findById(data.id);
   if (!existing || existing.organizationId !== data.organizationId || existing.deletedAt) {
-    throw new CmsNotFoundError("Media asset not found");
+    throw new CmsNotFoundError("No encontramos ese archivo de medios.");
   }
   const updated: CmsMediaAssetRecord = {
     ...existing,
@@ -187,7 +186,7 @@ export async function toggleMediaFavorite(uow: CmsUnitOfWork, input: unknown) {
   const data = parseOrThrow(mediaIdSchema, input);
   const existing = await uow.mediaAssets.findById(data.id);
   if (!existing || existing.organizationId !== data.organizationId || existing.deletedAt) {
-    throw new CmsNotFoundError("Media asset not found");
+    throw new CmsNotFoundError("No encontramos ese archivo de medios.");
   }
   const updated: CmsMediaAssetRecord = {
     ...existing,

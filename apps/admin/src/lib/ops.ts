@@ -27,7 +27,15 @@ export function toOpsErrorResponse(error: unknown) {
     );
   }
   logger.exception("ops.api_unhandled", error);
-  return Response.json({ error: { code: "INTERNAL", message: "Internal error" } }, { status: 500 });
+  return Response.json(
+    {
+      error: {
+        code: "INTERNAL",
+        message: "Ocurrió un problema interno. Intenta nuevamente.",
+      },
+    },
+    { status: 500 },
+  );
 }
 
 export function actorFromContext(userId: string) {

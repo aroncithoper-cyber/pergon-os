@@ -16,7 +16,7 @@ export class ExpertValidationError extends ExpertError {
 }
 
 export class ExpertRateLimitedError extends ExpertError {
-  constructor(message = "Daily Expert limit reached") {
+  constructor(message = "Se alcanzó el límite diario de Expert.") {
     super(message, "RATE_LIMITED");
     this.name = "ExpertRateLimitedError";
   }

@@ -1,17 +1,33 @@
 import { CmsError } from "@pergon/cms";
 
 import { requireApiPermission, toAuthErrorResponse } from "@/lib/auth";
-import { getCmsServices, toCmsErrorResponse } from "@/lib/cms";
+import { getCmsServices, revalidateWebHomeCache, toCmsErrorResponse } from "@/lib/cms";
 
+/**
+ * Load Home working document. If it was never published, publish the default
+ * seed once so the public Web never stays on "Home sin publicar".
+ */
 export async function GET(request: Request) {
   try {
     const ctx = await requireApiPermission(request, "cms:read");
     const url = new URL(request.url);
     const locale = url.searchParams.get("locale") ?? "es";
-    const data = await getCmsServices().getHomeDocument({
+    let data = await getCmsServices().getHomeDocument({
       organizationId: ctx.organizationId,
       locale,
     });
+
+    if (!data.publishedPayload || data.publishedVersion === 0) {
+      const published = await getCmsServices().publishHome({
+        organizationId: ctx.organizationId,
+        locale,
+        note: "Publicaci\u00f3n inicial autom\u00e1tica del Home",
+        actorId: ctx.userId,
+      });
+      data = published.document;
+      await revalidateWebHomeCache();
+    }
+
     return Response.json({ data });
   } catch (error) {
     if (error instanceof CmsError) return toCmsErrorResponse(error);

@@ -719,7 +719,7 @@ function UploadDialog({
       const payload = (await res.json().catch(() => ({}))) as {
         error?: { message?: string };
       };
-      if (!res.ok) throw new Error(payload.error?.message ?? "Upload failed");
+      if (!res.ok) throw new Error(payload.error?.message ?? "No fue posible subir el archivo.");
 
       setFile(null);
       setName("");

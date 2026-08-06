@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   buildPassportEvent,
   canTransition,
@@ -13,7 +14,7 @@ import type { IdentityUnitOfWork, RechargePassportInput } from "../ports";
 export async function rechargePassport(uow: IdentityUnitOfWork, raw: RechargePassportInput) {
   const parsed = rechargePassportSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new ValidationFailedError(parsed.error.message);
+    throw new ValidationFailedError(formatZodError(parsed.error));
   }
 
   const input = parsed.data;
@@ -43,7 +44,7 @@ export async function rechargePassport(uow: IdentityUnitOfWork, raw: RechargePas
     if (!canTransition(next.state, input.toState)) {
       // Prefer domain path WASHING → REFILLED for refill cycles when requested illegally
       throw new ValidationFailedError(
-        `Cannot recharge into state ${input.toState} from ${next.state}`,
+        `No se puede recargar al estado ${input.toState} desde ${next.state}`,
       );
     }
     next = withCustody(transitionPassportState(next, input.toState, input.actor));

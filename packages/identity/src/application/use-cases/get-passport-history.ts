@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { PassportNotFoundError, ValidationFailedError } from "../../domain/errors";
 import { getHistorySchema } from "../../validation/schemas";
 import type { IdentityUnitOfWork } from "../ports";
@@ -8,7 +9,7 @@ export async function getPassportHistory(
 ) {
   const parsed = getHistorySchema.safeParse(raw);
   if (!parsed.success) {
-    throw new ValidationFailedError(parsed.error.message);
+    throw new ValidationFailedError(formatZodError(parsed.error));
   }
 
   const passport = await uow.passports.findById(parsed.data.passportId);

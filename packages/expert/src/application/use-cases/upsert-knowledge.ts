@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { randomUUID } from "node:crypto";
 
 import type { KnowledgeDocumentRecord } from "../../domain/models";
@@ -12,7 +13,7 @@ export async function upsertKnowledgeDocument(
 ): Promise<KnowledgeDocumentRecord> {
   const parsed = upsertKnowledgeSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new ExpertValidationError(parsed.error.message);
+    throw new ExpertValidationError(formatZodError(parsed.error));
   }
 
   const input = parsed.data;

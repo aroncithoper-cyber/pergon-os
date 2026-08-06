@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   InvitationNotFoundError,
   ValidationFailedError,
@@ -10,7 +11,7 @@ import type { AuthUnitOfWork } from "../ports";
 
 export async function acceptInvitation(uow: AuthUnitOfWork, raw: unknown) {
   const parsed = acceptInvitationSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
 
   const input = parsed.data;
   const invitation = await uow.invitations.findByTokenHash(hashToken(input.token));

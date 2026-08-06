@@ -66,6 +66,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [refreshSession]);
 
+  useEffect(() => {
+    const onExpired = () => {
+      clearSession();
+      setContext(null);
+    };
+    window.addEventListener("pergon:session-expired", onExpired);
+    return () => window.removeEventListener("pergon:session-expired", onExpired);
+  }, []);
+
   const login = useCallback(
     async (input: { email: string; password: string; organizationSlug?: string }) => {
       const data = await apiFetch<{

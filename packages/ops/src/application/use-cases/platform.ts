@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { ValidationFailedError, newId, nowIso } from "../../domain/base";
 import type { DashboardLayoutRecord, SavedViewRecord } from "../../domain/models";
 import { createDashboardEngine } from "../../engines/dashboard";
@@ -37,13 +38,13 @@ export function getDashboardEngine(uow: OpsUnitOfWork) {
 
 export async function fetchDashboardWidget(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = fetchWidgetSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   return getDashboardEngine(uow).fetchWidget(parsed.data);
 }
 
 export async function saveDashboardLayout(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = saveDashboardLayoutSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const now = nowIso();
   const layout: DashboardLayoutRecord = {
@@ -82,7 +83,7 @@ export async function getDashboardLayout(uow: OpsUnitOfWork, id: string) {
 
 export async function listAudit(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.audit.listByOrg(parsed.data.organizationId, 1000);
   const page = runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "action",
@@ -96,7 +97,7 @@ export async function listAudit(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function enqueueNotification(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = enqueueNotificationSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const engine = createNotificationEngine(notificationSink(uow));
   const notification = await engine.enqueue(input);
@@ -117,7 +118,7 @@ export async function enqueueNotification(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function listNotifications(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.notifications.listByOrg(parsed.data.organizationId, 500);
   return runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "title",
@@ -146,7 +147,7 @@ export async function markNotificationRead(
 
 export async function createSavedView(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = createSavedViewSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const now = nowIso();
   const view: SavedViewRecord = {

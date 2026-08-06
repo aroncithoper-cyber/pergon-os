@@ -1,2 +1,2 @@
 export { createMemoryUnitOfWork, createSharedMemoryUnitOfWork } from "./memory";
-export { createDefaultAuthUnitOfWork } from "./supabase";
+export { createDefaultAuthUnitOfWork, createSupabaseAuthUnitOfWork } from "./supabase";

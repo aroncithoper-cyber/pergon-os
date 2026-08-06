@@ -278,9 +278,9 @@ export function ModuleWorkbench<T extends Record<string, unknown>>(props: {
                   if (!context) return;
                   void action
                     .run({ organizationId: context.organizationId, apiFetch })
-                    .then(() => setActionMessage(`${action.label}: OK`))
+                    .then(() => setActionMessage(`${action.label}: listo`))
                     .catch((err: unknown) =>
-                      setActionMessage(err instanceof Error ? err.message : "Error"),
+                      setActionMessage(err instanceof Error ? err.message : "Error al ejecutar"),
                     );
                 }}
               >

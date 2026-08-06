@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { randomUUID } from "node:crypto";
 
 import type { CatalogProductRecord } from "../../domain/models";
@@ -11,7 +12,7 @@ export async function upsertCatalogProduct(
 ): Promise<CatalogProductRecord> {
   const parsed = upsertCatalogProductSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new CatalogValidationError(parsed.error.message);
+    throw new CatalogValidationError(formatZodError(parsed.error));
   }
 
   const input = parsed.data;

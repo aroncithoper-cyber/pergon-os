@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { randomUUID } from "node:crypto";
 
 import { ExpertNotFoundError, ExpertValidationError } from "../../domain/errors";
@@ -6,15 +7,15 @@ import type { EscalateSupportInput, ExpertUnitOfWork, SubmitFeedbackInput } from
 
 export async function submitFeedback(uow: ExpertUnitOfWork, raw: SubmitFeedbackInput) {
   const parsed = submitFeedbackSchema.safeParse(raw);
-  if (!parsed.success) throw new ExpertValidationError(parsed.error.message);
+  if (!parsed.success) throw new ExpertValidationError(formatZodError(parsed.error));
 
   const input = parsed.data;
   const conversation = await uow.conversations.findById(input.conversationId);
-  if (!conversation) throw new ExpertNotFoundError("Conversation not found");
+  if (!conversation) throw new ExpertNotFoundError("No encontramos esa conversación.");
 
   const message = await uow.messages.findById(input.messageId);
   if (!message || message.conversationId !== input.conversationId) {
-    throw new ExpertNotFoundError("Message not found");
+    throw new ExpertNotFoundError("No encontramos ese mensaje.");
   }
 
   const record = {
@@ -35,11 +36,11 @@ export async function submitFeedback(uow: ExpertUnitOfWork, raw: SubmitFeedbackI
 
 export async function escalateSupport(uow: ExpertUnitOfWork, raw: EscalateSupportInput) {
   const parsed = escalateSupportSchema.safeParse(raw);
-  if (!parsed.success) throw new ExpertValidationError(parsed.error.message);
+  if (!parsed.success) throw new ExpertValidationError(formatZodError(parsed.error));
 
   const input = parsed.data;
   const conversation = await uow.conversations.findById(input.conversationId);
-  if (!conversation) throw new ExpertNotFoundError("Conversation not found");
+  if (!conversation) throw new ExpertNotFoundError("No encontramos esa conversación.");
 
   const now = new Date().toISOString();
   conversation.status = "escalated";
@@ -69,7 +70,7 @@ export async function getConversation(
   access?: { anonymousKey?: string; userId?: string },
 ) {
   const conversation = await uow.conversations.findById(conversationId);
-  if (!conversation) throw new ExpertNotFoundError("Conversation not found");
+  if (!conversation) throw new ExpertNotFoundError("No encontramos esa conversación.");
 
   if (access?.anonymousKey || access?.userId) {
     const ownsByAnon =
@@ -79,7 +80,7 @@ export async function getConversation(
     const ownsByUser =
       access.userId && conversation.userId && conversation.userId === access.userId;
     if (!ownsByAnon && !ownsByUser) {
-      throw new ExpertNotFoundError("Conversation not found");
+      throw new ExpertNotFoundError("No encontramos esa conversación.");
     }
   }
 

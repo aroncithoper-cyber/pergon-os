@@ -17,7 +17,7 @@ export class CatalogValidationError extends CatalogError {
 
 export class CatalogNotFoundError extends CatalogError {
   constructor(slug: string) {
-    super(`Product not found: ${slug}`, "NOT_FOUND");
+    super(`No encontramos el producto: ${slug}`, "NOT_FOUND");
     this.name = "CatalogNotFoundError";
   }
 }

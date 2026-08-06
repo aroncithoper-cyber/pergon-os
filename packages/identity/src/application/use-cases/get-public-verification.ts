@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import type { PassportEventRecord, PassportRecord, ScanEventRecord } from "../../domain/models";
 import type { PassportState, ScanResult } from "../../domain/states";
 import { ValidationFailedError } from "../../domain/errors";
@@ -247,7 +248,7 @@ export async function getPublicVerification(
 ): Promise<PublicVerificationResult> {
   const parsed = getPublicVerificationSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new ValidationFailedError(parsed.error.message);
+    throw new ValidationFailedError(formatZodError(parsed.error));
   }
 
   const input = parsed.data;

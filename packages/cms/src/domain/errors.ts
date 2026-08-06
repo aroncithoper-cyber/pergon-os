@@ -16,7 +16,7 @@ export class CmsValidationError extends CmsError {
 }
 
 export class CmsNotFoundError extends CmsError {
-  constructor(message = "CMS home document not found") {
+  constructor(message = "No encontramos el documento del Home en el CMS.") {
     super(message, "NOT_FOUND");
     this.name = "CmsNotFoundError";
   }

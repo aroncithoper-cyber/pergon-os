@@ -54,7 +54,7 @@ export const customersModule: ModuleDefinition<Row> = {
   columns: [
     idKey,
     { id: "name", header: "Nombre", cell: (r) => text(r.name) },
-    { id: "email", header: "Email", cell: (r) => text(r.email) },
+    { id: "email", header: "Correo electrónico", cell: (r) => text(r.email) },
     {
       id: "status",
       header: "Estado",
@@ -63,7 +63,7 @@ export const customersModule: ModuleDefinition<Row> = {
   ],
   upsertFields: [
     { key: "name", label: "Nombre", required: true },
-    { key: "email", label: "Email" },
+    { key: "email", label: "Correo electrónico" },
     { key: "status", label: "Estado" },
   ],
 };
@@ -144,7 +144,7 @@ export const automationsModule: ModuleDefinition<Row> = {
       header: "Estado",
       cell: (r) => <StatusBadge status={String(r.status ?? "draft")} />,
     },
-    { id: "trigger", header: "Trigger", cell: (r) => text(r.triggerType ?? r.trigger) },
+    { id: "trigger", header: "Disparador", cell: (r) => text(r.triggerType ?? r.trigger) },
   ],
   upsertFields: [
     { key: "name", label: "Nombre", required: true },
@@ -322,7 +322,7 @@ export const usersModule: ModuleDefinition<Row> = {
       label: "Invitar usuario",
       description: "POST /api/v1/users/invite",
       async run({ organizationId, apiFetch }) {
-        const email = window.prompt("Email");
+        const email = window.prompt("Correo electrónico");
         if (!email) return;
         await apiFetch("/api/v1/users/invite", {
           method: "POST",

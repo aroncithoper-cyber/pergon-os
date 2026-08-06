@@ -60,7 +60,7 @@ export function DashboardView() {
         setWidgets(results.filter((item): item is WidgetResult => Boolean(item)));
       })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : "Error dashboard");
+        setError(err instanceof Error ? err.message : "Error al cargar el panel");
       })
       .finally(() => setLoading(false));
   }, [context, hasPermission]);
@@ -72,7 +72,7 @@ export function DashboardView() {
   }
 
   if (loading) return <LoadingBlock label="Cargando centro de control…" />;
-  if (error) return <ErrorState title="Dashboard" description={error} />;
+  if (error) return <ErrorState title="Panel" description={error} />;
 
   const kpiWidget = widgets.find((w) => w.widgetKey === "kpi");
   const kpis = Array.isArray(kpiWidget?.data.kpis)

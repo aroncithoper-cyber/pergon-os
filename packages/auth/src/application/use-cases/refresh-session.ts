@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import {
   SessionNotFoundError,
   ValidationFailedError,
@@ -15,7 +16,7 @@ import { AUTH_TOKEN_TTL } from "./login";
 
 export async function refreshSession(uow: AuthUnitOfWork, raw: unknown): Promise<TokenPair> {
   const parsed = refreshSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
 
   const input = parsed.data;
   const existing = await uow.sessions.findByRefreshTokenHash(hashToken(input.refreshToken));

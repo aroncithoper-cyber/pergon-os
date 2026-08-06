@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { buildPassportEvent, newId, newPublicCode, nextQrStatusAfterRotate } from "../../domain";
 import { PassportNotFoundError, ValidationFailedError } from "../../domain/errors";
 import { rotateQrSchema } from "../../validation/schemas";
@@ -6,7 +7,7 @@ import type { IdentityUnitOfWork, RotateQrInput } from "../ports";
 export async function rotateQr(uow: IdentityUnitOfWork, raw: RotateQrInput) {
   const parsed = rotateQrSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new ValidationFailedError(parsed.error.message);
+    throw new ValidationFailedError(formatZodError(parsed.error));
   }
 
   const input = parsed.data;

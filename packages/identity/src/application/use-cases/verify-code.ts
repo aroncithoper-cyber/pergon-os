@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { newId } from "../../domain";
 import type { ScanResult } from "../../domain/states";
 import { ValidationFailedError } from "../../domain/errors";
@@ -20,7 +21,7 @@ export async function verifyCode(
 ): Promise<VerifyCodeResult> {
   const parsed = verifyCodeSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new ValidationFailedError(parsed.error.message);
+    throw new ValidationFailedError(formatZodError(parsed.error));
   }
 
   const input = parsed.data;

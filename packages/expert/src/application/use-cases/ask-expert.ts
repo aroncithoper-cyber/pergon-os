@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { randomUUID } from "node:crypto";
 
 import type { ConversationRecord, MessageCitation, MessageRecord } from "../../domain/models";
@@ -40,7 +41,7 @@ async function ensureConversation(
     const existing = await uow.conversations.findById(input.conversationId);
     if (!existing) throw new ExpertNotFoundError("Conversation not found");
     if (existing.status === "closed") {
-      throw new ExpertValidationError("Conversation is closed");
+      throw new ExpertValidationError("La conversación está cerrada.");
     }
     existing.contextProductSlug = input.productSlug ?? existing.contextProductSlug;
     existing.contextPassportId = input.passportId ?? existing.contextPassportId;
@@ -79,7 +80,7 @@ async function assertAndIncrementUsage(
   },
 ): Promise<number> {
   if (!input.userId && !input.anonymousKey) {
-    throw new ExpertValidationError("userId or anonymousKey is required for usage limits");
+    throw new ExpertValidationError("Se requiere userId o anonymousKey para los límites de uso.");
   }
 
   const usageDate = todayUtc();
@@ -114,7 +115,7 @@ export async function askExpert(
 ): Promise<AskExpertResult> {
   const parsed = askExpertSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new ExpertValidationError(parsed.error.message);
+    throw new ExpertValidationError(formatZodError(parsed.error));
   }
 
   const input = parsed.data;

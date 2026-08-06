@@ -1,3 +1,4 @@
+import { formatZodError } from "@pergon/shared/i18n";
 import { NotFoundError, ValidationFailedError, newId, nowIso } from "../../domain/base";
 import type { AiSessionRecord, ReportDefinitionRecord, ReportJobRecord } from "../../domain/models";
 import { listQuerySchema, runListQuery } from "../../engines/filters";
@@ -12,7 +13,7 @@ import type { OpsUnitOfWork } from "../ports";
 
 export async function createAiSession(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = createAiSessionSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const now = nowIso();
   const session: AiSessionRecord = {
@@ -44,13 +45,13 @@ export async function createAiSession(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function appendAiMessage(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = appendAiMessageSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const session = await uow.aiSessions.findById(input.sessionId);
   if (!session || session.organizationId !== input.organizationId) {
     throw new NotFoundError("ai_session", input.sessionId);
   }
-  if (session.status !== "open") throw new ValidationFailedError("Session is closed");
+  if (session.status !== "open") throw new ValidationFailedError("La sesión está cerrada.");
 
   session.messages.push({ role: input.role, content: input.content, at: nowIso() });
   session.updatedAt = nowIso();
@@ -61,7 +62,7 @@ export async function appendAiMessage(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function listAiSessions(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = listQuerySchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const items = await uow.aiSessions.listByOrg(parsed.data.organizationId);
   return runListQuery(items as unknown as Record<string, unknown>[], parsed.data, [
     "purpose",
@@ -72,7 +73,7 @@ export async function listAiSessions(uow: OpsUnitOfWork, raw: unknown) {
 
 export async function runReport(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = runReportSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const helpers = createOpsHelpers(uow);
   const now = nowIso();
@@ -139,7 +140,7 @@ export async function listReportJobs(uow: OpsUnitOfWork, organizationId: string)
 
 export async function upsertSetting(uow: OpsUnitOfWork, raw: unknown) {
   const parsed = upsertSettingSchema.safeParse(raw);
-  if (!parsed.success) throw new ValidationFailedError(parsed.error.message);
+  if (!parsed.success) throw new ValidationFailedError(formatZodError(parsed.error));
   const input = parsed.data;
   const existing = await uow.settings.findByKey(input.organizationId, input.key);
   const now = nowIso();

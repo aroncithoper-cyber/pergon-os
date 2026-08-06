@@ -38,5 +38,13 @@ export function toErrorResponse(error: unknown) {
   }
 
   logger.exception("identity.api_unhandled", error);
-  return Response.json({ error: { code: "INTERNAL", message: "Internal error" } }, { status: 500 });
+  return Response.json(
+    {
+      error: {
+        code: "INTERNAL",
+        message: "Ocurrió un problema interno. Intenta nuevamente.",
+      },
+    },
+    { status: 500 },
+  );
 }
